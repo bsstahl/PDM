@@ -1,0 +1,9 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "PDM.Core.Test.ProtoBuf";
+
+message MismatchedType {
+  string StringValue = 50;
+  string FloatValue = 100;
+  int32 IntegerValue = 150;
+}

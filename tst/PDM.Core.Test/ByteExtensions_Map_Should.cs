@@ -89,4 +89,46 @@ public class ByteExtensions_Map_Should
         Assert.Equal(sourceData.IntegerValue, actualData.IntegerValue);
         Assert.Equal(sourceData.StringValue, actualData.StringValue);
     }
+
+    [Fact]
+    public async Task IgnoreAFieldThatMatchesByNameButNotByType_FloatToString()
+    {
+        var sourceData = new ProtoBuf.ThreeFields()
+        {
+            IntegerValue = Int32.MaxValue.GetRandom(),
+            FloatValue = float.MaxValue.GetRandom(),
+            StringValue = String.Empty.GetRandom()
+        };
+
+        var sourceMessage = sourceData.ToByteArray();
+
+        var sourceDescriptor = ProtoBuf.ThreeFields.Descriptor;
+        var targetDescriptor = ProtoBuf.MismatchedType.Descriptor;
+
+        var actual = await sourceMessage.MapAsync(sourceDescriptor, targetDescriptor, string.Empty);
+        var actualData = ProtoBuf.MismatchedType.Parser.ParseFrom(actual);
+
+        Assert.Equal(String.Empty, actualData.FloatValue);
+    }
+
+    [Fact]
+    public async Task IgnoreAFieldThatMatchesByNameButNotByType_StringToFloat()
+    {
+        var sourceData = new ProtoBuf.MismatchedType()
+        {
+            IntegerValue = Int32.MaxValue.GetRandom(),
+            FloatValue = float.MaxValue.GetRandom().ToString(),
+            StringValue = String.Empty.GetRandom()
+        };
+
+        var sourceMessage = sourceData.ToByteArray();
+
+        var sourceDescriptor = ProtoBuf.MismatchedType.Descriptor;
+        var targetDescriptor = ProtoBuf.ThreeFields.Descriptor;
+
+        var actual = await sourceMessage.MapAsync(sourceDescriptor, targetDescriptor, string.Empty);
+        var actualData = ProtoBuf.ThreeFields.Parser.ParseFrom(actual);
+
+        Assert.Equal(0.0, actualData.FloatValue);
+    }
 }

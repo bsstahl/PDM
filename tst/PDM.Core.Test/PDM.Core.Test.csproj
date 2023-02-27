@@ -8,6 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="ProtoBuf\MismatchedType.proto" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="ProtoBuf\MismatchedType.proto" GrpcServices="Client" />
     <Protobuf Include="ProtoBuf\TwoFields.proto" GrpcServices="Client">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Protobuf>
