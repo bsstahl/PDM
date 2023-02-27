@@ -1,5 +1,3 @@
-using Google.Protobuf.Reflection;
-
 namespace PDM.Core.Test;
 
 [ExcludeFromCodeCoverage]
