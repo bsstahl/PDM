@@ -1,7 +1,7 @@
 ﻿using Google.Protobuf;
 using Google.Protobuf.Reflection;
 
-namespace PDM;
+namespace PDM.Extensions;
 
 internal static class ByteExtensions
 {
