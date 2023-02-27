@@ -1,8 +1,55 @@
+using Google.Protobuf.Reflection;
+
 namespace PDM.Core.Test;
 
 [ExcludeFromCodeCoverage]
 public class ByteExtensions_Map_Should
 {
+    [Fact]
+    public async Task ThrowIfNoSourceMessageSupplied()
+    {
+        var sourceData = new ProtoBuf.TwoFields()
+        {
+            IntegerValue = Int32.MaxValue.GetRandom(),
+            StringValue = String.Empty.GetRandom()
+        };
+
+        byte[]? sourceMessage = null;
+
+        var ex = await Assert.ThrowsAsync<ArgumentNullException>(() => sourceMessage!.MapAsync(ProtoBuf.TwoFields.Descriptor, ProtoBuf.TwoFields.Descriptor, string.Empty));
+        Assert.Equal("sourceMessage", ex.ParamName);
+    }
+
+    [Fact]
+    public async Task ThrowIfNoSourceDescriptorSupplied()
+    {
+        var sourceData = new ProtoBuf.TwoFields()
+        {
+            IntegerValue = Int32.MaxValue.GetRandom(),
+            StringValue = String.Empty.GetRandom()
+        };
+
+        var sourceMessage = sourceData.ToByteArray();
+
+        var ex = await Assert.ThrowsAsync<ArgumentNullException>(() => sourceMessage!.MapAsync(null!, ProtoBuf.TwoFields.Descriptor, string.Empty));
+        Assert.Equal("sourceDescriptor", ex.ParamName);
+    }
+
+    [Fact]
+    public async Task ThrowIfNoTargetDescriptorSupplied()
+    {
+        var sourceData = new ProtoBuf.TwoFields()
+        {
+            IntegerValue = Int32.MaxValue.GetRandom(),
+            StringValue = String.Empty.GetRandom()
+        };
+
+        var sourceMessage = sourceData.ToByteArray();
+
+        var ex = await Assert.ThrowsAsync<ArgumentNullException>(() => sourceMessage!.MapAsync(ProtoBuf.TwoFields.Descriptor, null!, string.Empty));
+        Assert.Equal("targetDescriptor", ex.ParamName);
+    }
+
     [Fact]
     public async Task ProperlyMapATypeToTheSameType()
     {
