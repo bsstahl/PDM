@@ -109,6 +109,8 @@ public class ByteExtensions_Map_Should
         var actualData = ProtoBuf.MismatchedType.Parser.ParseFrom(actual);
 
         Assert.Equal(String.Empty, actualData.FloatValue);
+        Assert.Equal(sourceData.IntegerValue, actualData.IntegerValue);
+        Assert.Equal(sourceData.StringValue, actualData.StringValue);
     }
 
     [Fact]
@@ -130,5 +132,7 @@ public class ByteExtensions_Map_Should
         var actualData = ProtoBuf.ThreeFields.Parser.ParseFrom(actual);
 
         Assert.Equal(0.0, actualData.FloatValue);
+        Assert.Equal(sourceData.IntegerValue, actualData.IntegerValue);
+        Assert.Equal(sourceData.StringValue, actualData.StringValue);
     }
 }
