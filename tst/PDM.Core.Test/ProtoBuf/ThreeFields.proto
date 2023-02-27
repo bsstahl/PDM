@@ -1,0 +1,9 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "PDM.Core.Test.ProtoBuf";
+
+message ThreeFields {
+  string StringValue = 5;
+  float FloatValue = 10;
+  int32 IntegerValue = 15;
+}

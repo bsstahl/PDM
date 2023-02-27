@@ -1,36 +1,39 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<Nullable>enable</Nullable>
-		<IsPackable>false</IsPackable>
-	</PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
 
-	<ItemGroup>
-		<Protobuf Include="ProtoBuf\TwoFields.proto" GrpcServices="Client">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Protobuf>
-	</ItemGroup>
+  <ItemGroup>
+    <Protobuf Include="ProtoBuf\TwoFields.proto" GrpcServices="Client">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Protobuf>
+    <Protobuf Include="ProtoBuf\ThreeFields.proto" GrpcServices="Client">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Protobuf>
+  </ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="Grpc.Tools" Version="2.51.0" />
-		<PackageReference Include="Google.Protobuf" Version="3.22.0" />
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
-		<PackageReference Include="xunit" Version="2.4.1" />
-		<PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-			<PrivateAssets>all</PrivateAssets>
-		</PackageReference>
-		<PackageReference Include="coverlet.collector" Version="3.1.2">
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-			<PrivateAssets>all</PrivateAssets>
-		</PackageReference>
-		<PackageReference Include="TestHelperExtensions" Version="2.1.0.1" />
-	</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Grpc.Tools" Version="2.51.0" />
+    <PackageReference Include="Google.Protobuf" Version="3.22.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="coverlet.collector" Version="3.1.2">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="TestHelperExtensions" Version="2.1.0.1" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\..\src\PDM.Core\PDM.Core.csproj" />
-	</ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\PDM.Core\PDM.Core.csproj" />
+  </ItemGroup>
 
 </Project>
