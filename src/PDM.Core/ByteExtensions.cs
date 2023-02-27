@@ -17,8 +17,11 @@ public static class ByteExtensions
         foreach (var targetField in targetDescriptor.Fields.InFieldNumberOrder())
         {
             var sourceField = sourceDescriptor.FindFieldByName(targetField.Name);
-            var targetFieldValue = sourceField.Accessor.GetValue(sourceProto);
-            targetField.Accessor.SetValue(targetProto, targetFieldValue);
+            if (sourceField.FieldType == targetField.FieldType)
+            {
+                var targetFieldValue = sourceField.Accessor.GetValue(sourceProto);
+                targetField.Accessor.SetValue(targetProto, targetFieldValue);
+            }
         }
 
         return Task.FromResult<byte[]>(targetProto.ToByteArray());
