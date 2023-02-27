@@ -1,7 +1,7 @@
 namespace PDM.Core.Test;
 
 [ExcludeFromCodeCoverage]
-public class ByteExtensions_Map_Should
+public class ProtobufMapper_MapAsync_Should
 {
     [Fact]
     public async Task ThrowIfNoSourceMessageSupplied()
@@ -14,7 +14,8 @@ public class ByteExtensions_Map_Should
 
         byte[]? sourceMessage = null;
 
-        var ex = await Assert.ThrowsAsync<ArgumentNullException>(() => sourceMessage!.MapAsync(ProtoBuf.TwoFields.Descriptor, ProtoBuf.TwoFields.Descriptor, string.Empty));
+        var target = new ProtobufMapper(ProtoBuf.TwoFields.Descriptor, ProtoBuf.TwoFields.Descriptor);
+        var ex = await Assert.ThrowsAsync<ArgumentNullException>(() => target.MapAsync(sourceMessage!, string.Empty));
         Assert.Equal("sourceMessage", ex.ParamName);
     }
 
@@ -29,7 +30,8 @@ public class ByteExtensions_Map_Should
 
         var sourceMessage = sourceData.ToByteArray();
 
-        var ex = await Assert.ThrowsAsync<ArgumentNullException>(() => sourceMessage!.MapAsync(null!, ProtoBuf.TwoFields.Descriptor, string.Empty));
+        var target = new ProtobufMapper(null!, ProtoBuf.TwoFields.Descriptor);
+        var ex = await Assert.ThrowsAsync<ArgumentNullException>(() => target.MapAsync(sourceMessage, string.Empty));
         Assert.Equal("sourceDescriptor", ex.ParamName);
     }
 
@@ -44,7 +46,8 @@ public class ByteExtensions_Map_Should
 
         var sourceMessage = sourceData.ToByteArray();
 
-        var ex = await Assert.ThrowsAsync<ArgumentNullException>(() => sourceMessage!.MapAsync(ProtoBuf.TwoFields.Descriptor, null!, string.Empty));
+        var target = new ProtobufMapper(ProtoBuf.TwoFields.Descriptor, null!);
+        var ex = await Assert.ThrowsAsync<ArgumentNullException>(() => target.MapAsync(sourceMessage, string.Empty));
         Assert.Equal("targetDescriptor", ex.ParamName);
     }
 
@@ -59,7 +62,8 @@ public class ByteExtensions_Map_Should
         
         var sourceMessage = sourceData.ToByteArray();
 
-        var actual = await sourceMessage.MapAsync(ProtoBuf.TwoFields.Descriptor, ProtoBuf.TwoFields.Descriptor, string.Empty);
+        var target = new ProtobufMapper(ProtoBuf.TwoFields.Descriptor, ProtoBuf.TwoFields.Descriptor);
+        var actual = await target.MapAsync(sourceMessage, string.Empty);
         var actualData = ProtoBuf.TwoFields.Parser.ParseFrom(actual);
 
         Assert.Equal(sourceData.IntegerValue, actualData.IntegerValue);
@@ -79,9 +83,10 @@ public class ByteExtensions_Map_Should
         var sourceMessage = sourceData.ToByteArray();
 
         var sourceDescriptor = ProtoBuf.ThreeFields.Descriptor;
-        var targetDescriptor = ProtoBuf.TwoFields.Descriptor; 
+        var targetDescriptor = ProtoBuf.TwoFields.Descriptor;
 
-        var actual = await sourceMessage.MapAsync(sourceDescriptor, targetDescriptor, string.Empty);
+        var target = new ProtobufMapper(sourceDescriptor, targetDescriptor);
+        var actual = await target.MapAsync(sourceMessage, string.Empty);
         var actualData = ProtoBuf.TwoFields.Parser.ParseFrom(actual);
 
         Assert.Equal(sourceData.IntegerValue, actualData.IntegerValue);
@@ -103,7 +108,8 @@ public class ByteExtensions_Map_Should
         var sourceDescriptor = ProtoBuf.ThreeFields.Descriptor;
         var targetDescriptor = ProtoBuf.MismatchedType.Descriptor;
 
-        var actual = await sourceMessage.MapAsync(sourceDescriptor, targetDescriptor, string.Empty);
+        var target = new ProtobufMapper(sourceDescriptor, targetDescriptor);
+        var actual = await target.MapAsync(sourceMessage, string.Empty);
         var actualData = ProtoBuf.MismatchedType.Parser.ParseFrom(actual);
 
         Assert.Equal(String.Empty, actualData.FloatValue);
@@ -126,7 +132,8 @@ public class ByteExtensions_Map_Should
         var sourceDescriptor = ProtoBuf.MismatchedType.Descriptor;
         var targetDescriptor = ProtoBuf.ThreeFields.Descriptor;
 
-        var actual = await sourceMessage.MapAsync(sourceDescriptor, targetDescriptor, string.Empty);
+        var target = new ProtobufMapper(sourceDescriptor, targetDescriptor);
+        var actual = await target.MapAsync(sourceMessage, string.Empty);
         var actualData = ProtoBuf.ThreeFields.Parser.ParseFrom(actual);
 
         Assert.Equal(0.0, actualData.FloatValue);

@@ -3,9 +3,9 @@ using Google.Protobuf.Reflection;
 
 namespace PDM;
 
-public static class ByteExtensions
+internal static class ByteExtensions
 {
-    public static Task<byte[]> MapAsync(this byte[] sourceMessage, MessageDescriptor sourceDescriptor, MessageDescriptor targetDescriptor, string transformation)
+    internal static Task<byte[]> MapAsync(this byte[] sourceMessage, MessageDescriptor sourceDescriptor, MessageDescriptor targetDescriptor, string transformation)
     {
         if (sourceMessage is null) throw new ArgumentNullException(nameof(sourceMessage));
         if (sourceDescriptor is null) throw new ArgumentNullException(nameof(sourceDescriptor));
