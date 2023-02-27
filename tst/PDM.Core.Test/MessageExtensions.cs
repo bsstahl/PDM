@@ -1,7 +1,6 @@
-﻿using Google.Protobuf;
+﻿namespace PDM.Core.Test;
 
-namespace PDM.Core.Test;
-
+[ExcludeFromCodeCoverage]
 public static class MessageExtensions
 {
     public static byte[] ToByteArray(this IMessage message)

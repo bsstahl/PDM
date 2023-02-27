@@ -1,7 +1,6 @@
-using Google.Protobuf.WellKnownTypes;
-
 namespace PDM.Core.Test;
 
+[ExcludeFromCodeCoverage]
 public class ByteExtensions_Map_Should
 {
     [Fact]

@@ -1,7 +1,5 @@
 ﻿using Google.Protobuf;
 using Google.Protobuf.Reflection;
-using System.Dynamic;
-using System.Text.Json;
 
 namespace PDM;
 
@@ -23,6 +21,6 @@ public static class ByteExtensions
             targetField.Accessor.SetValue(targetProto, targetFieldValue);
         }
 
-        return Task.FromResult(targetProto.ToByteArray());
+        return Task.FromResult<byte[]>(targetProto.ToByteArray());
     }
 }

@@ -1,8 +1,6 @@
-﻿using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
+﻿namespace PDM.Core.Test;
 
-namespace PDM.Core.Test;
-
+[ExcludeFromCodeCoverage]
 public static class FloatExtensions
 {
     public static float GetRandom(this float maxValue)
