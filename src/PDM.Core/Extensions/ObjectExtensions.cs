@@ -1,14 +1,18 @@
 ﻿namespace PDM.Extensions;
 
-internal static class ObjectExtensions
+public static class ObjectExtensions
 {
-    internal static bool IsByteArray(this object? value)
+    /// <summary>
+    /// Returns True if the supplied value is assignable to a byte array
+    /// otherwise returns False. Null values return true.
+    /// </summary>
+    public static bool IsByteArray(this object? value)
         => value?.GetType().IsAssignableTo(typeof(byte[])) ?? true;
 
     /// <summary>
     /// Returns the length of a byte array or 0 if the value is not an array
     /// </summary>
-    internal static int GetByteArrayLength(this object? value)
+    public static int GetByteArrayLength(this object? value)
     {
         var result = 0;
         if (value is not null && value.IsByteArray())

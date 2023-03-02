@@ -2,11 +2,21 @@
 
 internal sealed record Varint
 {
-    readonly byte[] _rawData;
+    internal byte[] RawData { get; }
+
+    internal int WireLength => this.RawData.Length;
+
+    internal byte[] DecodedData
+        => this.RawData
+        .Select(d => Convert.ToByte(d & 127))
+        .ToArray();
+
+    internal UInt64 Value => CalculateValue(this.DecodedData);
+
 
     internal Varint(byte[] rawData)
     {
-        _rawData = rawData;
+        this.RawData = rawData;
     }
 
     internal Varint(UInt64 value)
@@ -16,21 +26,15 @@ internal sealed record Varint
 
         while (currentValue > 0)
         {
-            var currentByte = currentValue > 127 
-                ? Convert.ToByte((currentValue & 0x7F) | 0x80) 
+            var currentByte = currentValue > 127
+                ? Convert.ToByte((currentValue & 0x7F) | 0x80)
                 : Convert.ToByte(currentValue & 0x7F);
             rawData.Add(currentByte);
             currentValue >>= 7;
         }
 
-        _rawData = rawData.ToArray();
+        this.RawData = rawData.ToArray();
     }
-
-    internal byte[] RawData => _rawData;
-    internal int WireLength => _rawData.Length;
-    internal byte[] DecodedData 
-        => _rawData.Select(d => Convert.ToByte(d & 127)).ToArray();
-    internal UInt64 Value => CalculateValue(this.DecodedData);
 
     internal static Varint Parse(byte[] message)
     {

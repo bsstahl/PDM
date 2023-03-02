@@ -4,12 +4,18 @@ namespace PDM;
 
 public class ProtobufMapper
 {
-#pragma warning disable CA1822 // Mark members as static
-    public async Task<byte[]> MapAsync(byte[] sourceMessage, IEnumerable<Entities.Mapping> targetMappings)
+    readonly IEnumerable<Entities.Mapping> _targetMappings;
+
+    public ProtobufMapper(IEnumerable<Entities.Mapping> targetMappings)
+    {
+        _targetMappings = targetMappings;
+        // TODO: Validate mappings
+    }
+
+    public async Task<byte[]> MapAsync(byte[] sourceMessage)
     {
         return await sourceMessage
-            .MapAsync(targetMappings)
+            .MapAsync(_targetMappings)
             .ConfigureAwait(false);
     }
-#pragma warning restore CA1822 // Mark members as static
 }

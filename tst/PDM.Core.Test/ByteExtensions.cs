@@ -1,5 +1,6 @@
 ﻿namespace PDM.Core.Test;
 
+[ExcludeFromCodeCoverage]
 internal static class ByteExtensions
 {
     public static byte[] GetRandom(this byte[] _)

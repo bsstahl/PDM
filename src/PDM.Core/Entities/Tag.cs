@@ -15,7 +15,7 @@ internal sealed record Tag
 
     public Varint AsVarint()
     {
-        UInt64 value = Convert.ToUInt64(this.FieldNumber << 3 | (byte)this.WireType);
+        UInt64 value = Convert.ToUInt64((this.FieldNumber << 3) | (byte)this.WireType);
         return new Varint(value);
     }
 

@@ -10,9 +10,6 @@ public class MessageField
     public bool IsValid => (this.Key > 0)
         && (this.Value is not null);
 
-    public MessageField()
-    { }
-
     public MessageField(int key, Enums.WireType wireType)
         : this(key, wireType, null)
     { }

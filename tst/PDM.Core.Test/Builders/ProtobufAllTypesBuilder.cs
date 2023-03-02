@@ -1,5 +1,6 @@
 ﻿namespace PDM.Core.Test.Builders;
 
+[ExcludeFromCodeCoverage]
 internal class ProtobufAllTypesBuilder
 {
     readonly ProtoBuf.AllTypes _value = new();

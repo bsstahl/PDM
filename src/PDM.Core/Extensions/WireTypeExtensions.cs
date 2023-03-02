@@ -13,8 +13,7 @@ internal static class WireTypeExtensions
                 Enums.WireType.VarInt => value.GetType().IsValueType,
                 Enums.WireType.I64 => value.GetByteArrayLength() == 8,
                 Enums.WireType.Len => typeof(byte[]).IsAssignableFrom(value.GetType()),
-                Enums.WireType.SGroup => true,
-                Enums.WireType.EGroup => true,
+                Enums.WireType.SGroup or Enums.WireType.EGroup => true,
                 Enums.WireType.I32 => value.GetByteArrayLength() == 4,
                 _ => throw new InvalidOperationException("Unreachable code reached"),
             };
