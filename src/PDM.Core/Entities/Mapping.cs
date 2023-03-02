@@ -1,11 +1,11 @@
 ﻿namespace PDM.Entities;
 
-public class Mapping
+internal class Mapping
 {
-    public MessageField TargetField { get; set; }
-    public string Expression { get; set; } = string.Empty;
+    internal MessageField TargetField { get; set; }
+    internal string Expression { get; set; } = string.Empty;
 
-    public Mapping(MessageField targetField, string expression)
+    internal Mapping(MessageField targetField, string expression)
     {
         this.TargetField = targetField;
         this.Expression = expression;

@@ -59,14 +59,15 @@ internal static class ByteExtensions
         return (messageField, payload.WireLength);
     }
     
-    internal async static Task<byte[]> MapAsync(this byte[] sourceMessage, IEnumerable<Mapping> targetMappings)
+    internal async static Task<byte[]> MapAsync(this byte[] sourceMessage, IEnumerable<Transformation> transformations)
     {
         if (sourceMessage is null) throw new ArgumentNullException(nameof(sourceMessage));
-        if (targetMappings is null) throw new ArgumentNullException(nameof(targetMappings));
 
         var sourceFields = await sourceMessage
             .Parse()
             .ConfigureAwait(false);
+
+        var targetMappings = transformations.AsMappings(sourceFields);
 
         var source = sourceFields.AsQueryable();
 

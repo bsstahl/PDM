@@ -3,6 +3,6 @@
 option csharp_namespace = "PDM.Core.Test.ProtoBuf";
 
 message TwoFields {
-  string StringValue = 10;
-  int32 IntegerValue = 20;
+  string StringValue = 5;
+  int32 IntegerValue = 15;
 }

@@ -14,7 +14,7 @@ public class WireTypeMismatchException: Exception
         : this("A mismatch has occurred in WireType specifications")
     { }
 
-    public WireTypeMismatchException(Mapping targetMapping, object value)
+    internal WireTypeMismatchException(Mapping targetMapping, object value)
         : this($"Expected WireType {targetMapping?.TargetField?.WireType.ToString() ?? _unknown } but received a value of {value} for target field {targetMapping?.TargetField?.Key.ToString(System.Globalization.CultureInfo.CurrentCulture) ?? "unknown"}")
     {
         this.ExpectedWireType = targetMapping?.TargetField?.WireType ?? Enums.WireType.VarInt;
