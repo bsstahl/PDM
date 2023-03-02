@@ -3,9 +3,7 @@
 internal static class ObjectExtensions
 {
     internal static bool IsByteArray(this object? value)
-    {
-        return value?.GetType().IsAssignableTo(typeof(byte[])) ?? true;
-    }
+        => value?.GetType().IsAssignableTo(typeof(byte[])) ?? true;
 
     /// <summary>
     /// Returns the length of a byte array or 0 if the value is not an array
@@ -14,7 +12,10 @@ internal static class ObjectExtensions
     {
         var result = 0;
         if (value is not null && value.IsByteArray())
+        {
             result = ((byte[])value).Length;
+        }
+
         return result;
     }
 

@@ -1,8 +1,8 @@
 ﻿namespace PDM.Entities;
 
-internal record Varint
+internal sealed record Varint
 {
-    byte[] _rawData;
+    readonly byte[] _rawData;
 
     internal Varint(byte[] rawData)
     {

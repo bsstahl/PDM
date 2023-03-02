@@ -284,7 +284,7 @@ public class ProtobufMapper_MapAsync_Should
         Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
 
         var target = new ProtobufMapper();
-        await Assert.ThrowsAsync<Exceptions.WireTypeMismatchException>(() => target.MapAsync(sourceMessage, targetMapping));
+        _ = await Assert.ThrowsAsync<Exceptions.WireTypeMismatchException>(() => target.MapAsync(sourceMessage, targetMapping));
     }
 
     [Fact]
@@ -306,7 +306,7 @@ public class ProtobufMapper_MapAsync_Should
         Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
 
         var target = new ProtobufMapper();
-        await Assert.ThrowsAsync<Exceptions.WireTypeMismatchException>(() => target.MapAsync(sourceMessage, targetMapping));
+        _ = await Assert.ThrowsAsync<Exceptions.WireTypeMismatchException>(() => target.MapAsync(sourceMessage, targetMapping));
     }
 
     [Fact]
@@ -328,7 +328,7 @@ public class ProtobufMapper_MapAsync_Should
         Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
 
         var target = new ProtobufMapper();
-        await Assert.ThrowsAsync<Exceptions.WireTypeMismatchException>(() => target.MapAsync(sourceMessage, targetMapping));
+        _ = await Assert.ThrowsAsync<Exceptions.WireTypeMismatchException>(() => target.MapAsync(sourceMessage, targetMapping));
     }
 
     [Fact]
@@ -350,7 +350,7 @@ public class ProtobufMapper_MapAsync_Should
         Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
 
         var target = new ProtobufMapper();
-        await Assert.ThrowsAsync<Exceptions.WireTypeMismatchException>(() => target.MapAsync(sourceMessage, targetMapping));
+        _ = await Assert.ThrowsAsync<Exceptions.WireTypeMismatchException>(() => target.MapAsync(sourceMessage, targetMapping));
     }
 
     [Fact]
@@ -379,7 +379,7 @@ public class ProtobufMapper_MapAsync_Should
         Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
 
         var target = new ProtobufMapper();
-        await Assert.ThrowsAsync<Exceptions.WireTypeMismatchException>(() => target.MapAsync(sourceMessage, targetMapping));
+        _ = await Assert.ThrowsAsync<Exceptions.WireTypeMismatchException>(() => target.MapAsync(sourceMessage, targetMapping));
     }
 
     [Fact]
@@ -401,7 +401,7 @@ public class ProtobufMapper_MapAsync_Should
         Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
 
         var target = new ProtobufMapper();
-        await Assert.ThrowsAsync<Exceptions.WireTypeMismatchException>(() => target.MapAsync(sourceMessage, targetMapping));
+        _ = await Assert.ThrowsAsync<Exceptions.WireTypeMismatchException>(() => target.MapAsync(sourceMessage, targetMapping));
     }
 
     [Fact]
@@ -423,7 +423,7 @@ public class ProtobufMapper_MapAsync_Should
         Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
 
         var target = new ProtobufMapper();
-        await Assert.ThrowsAsync<Exceptions.WireTypeMismatchException>(() => target.MapAsync(sourceMessage, targetMapping));
+        _ = await Assert.ThrowsAsync<Exceptions.WireTypeMismatchException>(() => target.MapAsync(sourceMessage, targetMapping));
     }
 
     [Fact]
@@ -445,7 +445,7 @@ public class ProtobufMapper_MapAsync_Should
         Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
 
         var target = new ProtobufMapper();
-        await Assert.ThrowsAsync<Exceptions.WireTypeMismatchException>(() => target.MapAsync(sourceMessage, targetMapping));
+        _ = await Assert.ThrowsAsync<Exceptions.WireTypeMismatchException>(() => target.MapAsync(sourceMessage, targetMapping));
     }
 
     [Fact]
@@ -467,7 +467,7 @@ public class ProtobufMapper_MapAsync_Should
         Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
 
         var target = new ProtobufMapper();
-        await Assert.ThrowsAsync<Exceptions.WireTypeMismatchException>(() => target.MapAsync(sourceMessage, targetMapping));
+        _ = await Assert.ThrowsAsync<Exceptions.WireTypeMismatchException>(() => target.MapAsync(sourceMessage, targetMapping));
     }
 
     [Fact]
@@ -496,7 +496,7 @@ public class ProtobufMapper_MapAsync_Should
         Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
 
         var target = new ProtobufMapper();
-        await Assert.ThrowsAsync<Exceptions.WireTypeMismatchException>(() => target.MapAsync(sourceMessage, targetMapping));
+        _ = await Assert.ThrowsAsync<Exceptions.WireTypeMismatchException>(() => target.MapAsync(sourceMessage, targetMapping));
     }
 
 }

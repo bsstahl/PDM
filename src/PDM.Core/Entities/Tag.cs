@@ -2,7 +2,7 @@
 
 namespace PDM.Entities;
 
-internal record Tag
+internal sealed record Tag
 {
     public Tag(int fieldNumber, WireType wireType)
     {

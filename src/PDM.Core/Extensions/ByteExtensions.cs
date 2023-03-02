@@ -19,9 +19,9 @@ internal static class ByteExtensions
             switch (tag.WireType)
             {
                 case Enums.WireType.VarInt:
-                    var varintPayload = Varint.Parse(message[i..]);
-                    i += varintPayload.WireLength;
-                    result.Add(new MessageField(tag.FieldNumber, tag.WireType, varintPayload.Value));
+                    var (varintField, wireLength) = message[i..].ParseVarint(tag);
+                    i += wireLength;
+                    result.Add(varintField);
                     break;
                 case Enums.WireType.I64:
                     var i64Payload = message[i..(i + 8)];
@@ -37,7 +37,6 @@ internal static class ByteExtensions
                     result.Add(new MessageField(tag.FieldNumber, tag.WireType, lenPayload));
                     break;
                 case Enums.WireType.SGroup:
-                    break;
                 case Enums.WireType.EGroup:
                     break;
                 case Enums.WireType.I32:
@@ -53,6 +52,13 @@ internal static class ByteExtensions
         return Task.FromResult(result.AsEnumerable());
     }
 
+    internal static (MessageField, int) ParseVarint(this byte[] remainingBytes, Tag tag)
+    {
+        var payload = Varint.Parse(remainingBytes);
+        var messageField = new MessageField(tag.FieldNumber, tag.WireType, payload.Value);
+        return (messageField, payload.WireLength);
+    }
+    
     internal async static Task<byte[]> MapAsync(this byte[] sourceMessage, IEnumerable<Mapping> targetMappings)
     {
         if (sourceMessage is null) throw new ArgumentNullException(nameof(sourceMessage));

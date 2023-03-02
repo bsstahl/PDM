@@ -2,7 +2,7 @@
 
 internal class ProtobufAllTypesBuilder
 {
-    ProtoBuf.AllTypes _value = new();
+    readonly ProtoBuf.AllTypes _value = new();
 
     public ProtoBuf.AllTypes Build() => _value;
 

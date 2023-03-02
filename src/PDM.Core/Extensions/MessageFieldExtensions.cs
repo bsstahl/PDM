@@ -18,11 +18,11 @@ internal static class MessageFieldExtensions
                 {
                     case Enums.WireType.VarInt:
                         // messageField.IsValid so it has a Value
-                        var varintValue = Convert.ToUInt64(messageField.Value);
+                        var varintValue = Convert.ToUInt64(messageField.Value, System.Globalization.CultureInfo.InvariantCulture);
                         var rawData = new Varint(varintValue).RawData;
                         if (rawData.Length > 0)
                         {
-                            result.AddRange((tag.AsVarint()).RawData);
+                            result.AddRange(tag.AsVarint().RawData);
                             result.AddRange(rawData);
                         }
                         break;
@@ -30,7 +30,7 @@ internal static class MessageFieldExtensions
                         // messageField.IsValid so it has a Value
                         if (typeof(byte[]).IsAssignableFrom(messageField.Value!.GetType()))
                         {
-                            result.AddRange((tag.AsVarint()).RawData);
+                            result.AddRange(tag.AsVarint().RawData);
                             result.AddRange((byte[])messageField.Value!);
                         }
                         break;
@@ -40,7 +40,7 @@ internal static class MessageFieldExtensions
                         if (lenValue.Length > 0)
                         {
                             var lenLength = new Varint(Convert.ToUInt64(lenValue.Length));
-                            result.AddRange((tag.AsVarint()).RawData);
+                            result.AddRange(tag.AsVarint().RawData);
                             result.AddRange(lenLength.RawData);
                             result.AddRange(lenValue);
                         }
@@ -52,7 +52,7 @@ internal static class MessageFieldExtensions
                         // messageField.IsValid so it has a Value
                         if (typeof(byte[]).IsAssignableFrom(messageField.Value!.GetType()))
                         {
-                            result.AddRange((tag.AsVarint()).RawData);
+                            result.AddRange(tag.AsVarint().RawData);
                             result.AddRange((byte[])messageField.Value!);
                         }
                         break;

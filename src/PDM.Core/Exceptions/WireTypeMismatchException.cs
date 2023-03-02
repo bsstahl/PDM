@@ -9,7 +9,7 @@ public class WireTypeMismatchException: Exception
     public Enums.WireType ExpectedWireType { get; set; }
     public int FieldNumber { get; set; }
     public bool IsSourceField { get; set; }
-    public object SuppliedValue { get; set; }
+    public object? SuppliedValue { get; set; }
 
     public WireTypeMismatchException()
         : this("A mismatch has occurred in WireType specifications")
