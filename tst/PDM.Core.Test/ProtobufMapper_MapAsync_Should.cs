@@ -15,14 +15,14 @@ public class ProtobufMapper_MapAsync_Should
             .CreateLogger();
     }
 
-
     [Fact]
     public async Task DoSomeWeirdThingsUnderKnownConditions()
     {
         // This test doesn't test anything. It documents that there
         // is some weirdness in the mapping of data-types due to
         // the fact that we only know the specified target wire-type
-        // not the actual one.
+        // not the actual one. If the wire-format sizes match, the data
+        // will transformed, with potentially odd results.
         //
         // Examples:
         // 	   A Len value (i.e. string) of length 8 will go into a I64 field
@@ -33,9 +33,9 @@ public class ProtobufMapper_MapAsync_Should
         var sourceData = new Builders.ProtobufAllTypesBuilder()
             .UseRandomValues()
             .StringValue("Peculiar") // Field 3000
-            .BytesValue(new byte[] { 68, 117, 100, 101 }) // Field 3100
+            .BytesValue(new byte[] { (byte)'D', (byte)'u', (byte)'d', (byte)'e' }) // Field 3100
             .Fixed64Value(8241984707611551056) // Field 2000
-            .Fixed32Value(1701082436) // Field 4000
+            .Fixed32Value(1801675095) // Field 4000
             .Build();
 
         var targetMapping = new MappingBuilder()
@@ -53,10 +53,10 @@ public class ProtobufMapper_MapAsync_Should
         Log.Verbose("TargetMessage: {TargetMessage}", Convert.ToBase64String(actual));
 
         var actualData = ProtoBuf.WeirdnessDemo.Parser.ParseFrom(actual);
-        Log.Information("Source Field {sourceFieldNumber} was {sourceValue} and was mapped to {targetFieldNumber} and {targetValue}", 3000, sourceData.StringValue, 5000, actualData.StringStoredAsFixed64);
-        Log.Information("Source Field {sourceFieldNumber} was {sourceValue} and was mapped to {targetFieldNumber} and {targetValue}", 3100, sourceData.BytesValue, 5100, actualData.BytesStoredAsFixed32);
-        Log.Information("Source Field {sourceFieldNumber} was {sourceValue} and was mapped to {targetFieldNumber} and {targetValue}", 2000, sourceData.Fixed64Value, 5200, actualData.Fixed64StoredAsString);
-        Log.Information("Source Field {sourceFieldNumber} was {sourceValue} and was mapped to {targetFieldNumber} and {targetValue}", 4000, sourceData.Fixed32Value, 5300, actualData.Fixed32StoredAsString);
+        Log.Information("Source Field {sourceFieldNumber} of type {clrType} was {sourceValue} and was mapped to {targetFieldNumber} as {targetValue}", 3000, "String", sourceData.StringValue, 5000, actualData.StringStoredAsFixed64);
+        Log.Information("Source Field {sourceFieldNumber} of type {clrType} was {sourceValue} and was mapped to {targetFieldNumber} as {targetValue}", 3100, "Byte[]", sourceData.BytesValue, 5100, actualData.BytesStoredAsFixed32);
+        Log.Information("Source Field {sourceFieldNumber} of type {clrType} was {sourceValue} and was mapped to {targetFieldNumber} as {targetValue}", 2000, "Int64", sourceData.Fixed64Value, 5200, actualData.Fixed64StoredAsString);
+        Log.Information("Source Field {sourceFieldNumber} of type {clrType} was {sourceValue} and was mapped to {targetFieldNumber} as {targetValue}", 4000, "Int32", sourceData.Fixed32Value, 5300, actualData.Fixed32StoredAsString);
     }
 
     [Fact]
