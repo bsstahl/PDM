@@ -75,13 +75,9 @@ internal static class ByteExtensions
         foreach (var targetMapping in targetMappings)
         {
             var targetValue = source
-                .SingleOrDefault(targetMapping.Expression)?
+                .Single(targetMapping.Expression)
                 .Value;
 
-            //if (!targetMapping.TargetField.WireType.IsValid((object?)targetValue))
-            //    throw new Exceptions.WireTypeMismatchException(targetMapping, targetValue);
-            // else 
-            
             if (targetValue is not null)
                 targetFields.Add(new MessageField(targetMapping.TargetField.Key, targetMapping.TargetField.WireType, targetValue));
         }

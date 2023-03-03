@@ -1,4 +1,6 @@
-﻿using PDM.Entities;
+﻿using PDM.Constants;
+using PDM.Entities;
+using PDM.Enums;
 using System.Globalization;
 
 namespace PDM.Extensions;
@@ -7,43 +9,50 @@ internal static class TransformationExtensions
 {
     private static readonly CultureInfo _formatProvider = CultureInfo.InvariantCulture;
 
-    internal static IEnumerable<Entities.Mapping> AsMappings(this IEnumerable<Transformation>? transformations, IEnumerable<MessageField>? messageFields)
+    internal static bool IsReplaceField(this Transformation t, string subType)
+    {
+        var rf = t.TransformationType == TransformationType.ReplaceField;
+        var st = t.SubType == subType;
+        return rf && st;
+    }
+
+    internal static IEnumerable<Entities.Mapping> AsMappings(this IEnumerable<Transformation> transformations, IEnumerable<MessageField> messageFields)
     {
         var mappings = new List<Entities.Mapping>();
 
-        foreach (var messageField in messageFields ?? Array.Empty<MessageField>())
-        {
-            var fieldNumber = messageField.Key;
-            var targetField = new MessageField(fieldNumber, messageField.WireType);
-            mappings.Add(new Mapping(targetField, fieldNumber.MapExpression()));
-        }
+        mappings.Include(messageFields, transformations);
 
-        foreach (var transform in transformations ?? Array.Empty<Transformation>())
+        foreach (var transform in transformations)
         {
+            var transformTypeName = Enums.TransformationType.ReplaceField.ToString().ToLower(_formatProvider);
             switch (transform.TransformationType)
             {
                 case Enums.TransformationType.ReplaceField:
-                    switch (transform.SubType.ToLower(_formatProvider))
+                    var subTypeName = transform.SubType.ToLower(_formatProvider);
+                    switch (subTypeName)
                     {
-                        case "blacklist":
+                        case TransformationSubtype.Blacklist:
                             var key = Convert.ToInt32(transform.Value, _formatProvider);
                             mappings.RemoveField(key);
                             break;
-                        case "renames":
+                        case TransformationSubtype.Renames:
                             var fieldPairs = transform.Value.ParseFieldPairs(_formatProvider);
                             foreach (var (sourceKey, targetKey) in fieldPairs)
                             {
                                 mappings.RemoveField(targetKey);
-                                var source = messageFields?.SingleOrDefault(f => f.Key == sourceKey);
+                                var source = messageFields.SingleOrDefault(f => f.Key == sourceKey);
                                 if (source is not null)
                                 {
                                     var targetField = new MessageField(targetKey, source.WireType);
-                                    mappings.Add(new Mapping(targetField, sourceKey.MapExpression()));
+                                    _ = mappings.IncludeField(targetField, sourceKey.MapExpression());
                                 }
                             }
                             break;
+                        case TransformationSubtype.Include:
+                            // Ignore here -- handled above
+                            break;
                         default:
-                            throw new NotImplementedException();
+                            throw new NotImplementedException($"Handler for \"transforms.{transformTypeName}.{subTypeName}\" not yet implemented.");
                     }
                     break;
                 default:

@@ -10,15 +10,23 @@ internal static class StringExtensions
         var fieldPairs = value.Split(',');
         foreach (var fieldPair in fieldPairs)
         {
-            var pair = fieldPair.Split(':');
-            if (pair.Length == 2)
-            {
-                if (int.TryParse(pair[0], NumberStyles.Integer, formatProvider, out var sourceKey)
-                    && int.TryParse(pair[1], NumberStyles.Integer, formatProvider, out var targetKey))
-                {
-                    results.Add((sourceKey, targetKey));
-                }
-            }
+            results.Add(fieldPair
+                .ParseFieldPair(formatProvider));
+        }
+
+        return results;
+    }
+
+    private static (int, int) ParseFieldPair(this string fieldPair, CultureInfo formatProvider)
+    {
+        (int, int) results = (0, 0);
+
+        var pair = fieldPair.Split(':');
+        if (pair.Length == 2)
+        {
+            _ = int.TryParse(pair[0], NumberStyles.Integer, formatProvider, out var sourceKey);
+            _ = int.TryParse(pair[1], NumberStyles.Integer, formatProvider, out var targetKey);
+            results = (sourceKey, targetKey);
         }
 
         return results;

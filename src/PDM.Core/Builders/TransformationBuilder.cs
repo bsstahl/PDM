@@ -1,4 +1,5 @@
-﻿using PDM.Entities;
+﻿using PDM.Constants;
+using PDM.Entities;
 using PDM.Enums;
 using System.Globalization;
 
@@ -25,7 +26,7 @@ public class TransformationBuilder
     public TransformationBuilder BlacklistField(int fieldNumber)
     {
         return this
-            .ReplaceField("blacklist", fieldNumber.ToString(_formatProvider));
+            .ReplaceField(TransformationSubtype.Blacklist, fieldNumber.ToString(_formatProvider));
     }
 
     public TransformationBuilder RenameField(int sourceFieldNumber, int targetFieldNumber)
@@ -33,12 +34,27 @@ public class TransformationBuilder
         var source = sourceFieldNumber.ToString(_formatProvider);
         var target = targetFieldNumber.ToString(_formatProvider);
         return this
-            .ReplaceField("renames", $"{source}:{target}");
+            .ReplaceField(TransformationSubtype.Renames, $"{source}:{target}");
     }
 
     public TransformationBuilder RenameFields(string value)
     {
         return this
-            .ReplaceField("renames", value);
+            .ReplaceField(TransformationSubtype.Renames, value);
+    }
+
+    public TransformationBuilder IncludeField(int fieldNumber)
+    {
+        return this.IncludeFields(new int[] { fieldNumber });
+    }
+
+    public TransformationBuilder IncludeFields(IEnumerable<int> fieldNumbers)
+    {
+        return this.IncludeFields(string.Join(',', fieldNumbers));
+    }
+
+    public TransformationBuilder IncludeFields(string fieldNumbersList)
+    {
+        return this.ReplaceField(TransformationSubtype.Include, fieldNumbersList);
     }
 }
