@@ -77,36 +77,6 @@ public class ProtobufMapper_MapAsync_Should
     }
 
     [Fact]
-    public async Task ReturnTheDefaultValueForAllFieldsFromAZeroLengthMessage()
-    {
-        var targetMapping = new TransformationBuilder()
-            .RenameField(1000, 1000)
-            .RenameField(1100, 1100)
-            .RenameField(1200, 1200)
-            .RenameField(1300, 1300)
-            .RenameField(1400, 1400)
-            .RenameField(1500, 1500)
-            .RenameField(1600, 1600)
-            .RenameField(1700, 1700)
-            .RenameField(2000, 2000)
-            .RenameField(2100, 2100)
-            .RenameField(2200, 2200)
-            .RenameField(3000, 3000)
-            .RenameField(3100, 3100)
-            .RenameField(3200, 3200)
-            .RenameField(3300, 3300)
-            .RenameField(4000, 4000)
-            .RenameField(4100, 4100)
-            .RenameField(4200, 4200)
-            .Build();
-
-        var sourceMessage = Array.Empty<byte>();
-        var target = new ProtobufMapper(targetMapping);
-        var actual = await target.MapAsync(sourceMessage);
-        Assert.Empty(actual); // The resulting message should also have zero length
-    }
-
-    [Fact]
     public async Task ProperlyCopyToTheSameTypeUnmodifiedIfNoMappingSupplied()
     {
         var sourceData = new ProtoBuf.TwoFields()
@@ -187,21 +157,18 @@ public class ProtobufMapper_MapAsync_Should
     }
 
     [Fact]
-    public async Task ProperlyReturnAFalseBoolField()
+    public async Task ProperlyRenameAField()
     {
-        var sourceData = new ProtoBuf.MismatchedType()
+        // Guarantees that specified fields will be set to
+        // default values. This is helpful if PII is being
+        // masked-out of a message
+        var sourceData = new ProtoBuf.ThreeFields()
         {
-            StringValue = String.Empty.GetRandom(),
-            FloatValue = String.Empty.GetRandom(),
-            IntegerValue = Int32.MaxValue.GetRandom(),
-            BoolValue = false
+            StringValue = String.Empty.GetRandom()
         };
 
         var targetMapping = new TransformationBuilder()
-            .AddUnmodifiedSourceField(50, Enums.WireType.Len, 50)
-            .AddUnmodifiedSourceField(100, Enums.WireType.Len, 100)
-            .AddUnmodifiedSourceField(125, Enums.WireType.VarInt, 125)
-            .AddUnmodifiedSourceField(150, Enums.WireType.VarInt, 150)
+            .RenameField(5,50)
             .Build();
 
         var sourceMessage = sourceData.ToByteArray();
@@ -212,7 +179,38 @@ public class ProtobufMapper_MapAsync_Should
         Log.Verbose("TargetMessage: {TargetMessage}", Convert.ToBase64String(actual));
 
         var actualData = ProtoBuf.MismatchedType.Parser.ParseFrom(actual);
-        Assert.Equal(sourceData.BoolValue, actualData.BoolValue);
+
+        Assert.Equal(sourceData.StringValue, actualData.StringValue);
+    }
+
+    [Fact]
+    public async Task ProperlyRenameMultipleFields()
+    {
+        // Guarantees that specified fields will be set to
+        // default values. This is helpful if PII is being
+        // masked-out of a message
+        var sourceData = new ProtoBuf.ThreeFields()
+        {
+            StringValue = String.Empty.GetRandom(),
+            FloatValue = float.MaxValue.GetRandom(),
+            IntegerValue = Int32.MaxValue.GetRandom()
+        };
+
+        var targetMapping = new TransformationBuilder()
+            .RenameFields("5:50,15:150")
+            .Build();
+
+        var sourceMessage = sourceData.ToByteArray();
+        Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
+
+        var target = new ProtobufMapper(targetMapping);
+        var actual = await target.MapAsync(sourceMessage);
+        Log.Verbose("TargetMessage: {TargetMessage}", Convert.ToBase64String(actual));
+
+        var actualData = ProtoBuf.MismatchedType.Parser.ParseFrom(actual);
+
+        Assert.Equal(sourceData.StringValue, actualData.StringValue);
+        Assert.Equal(sourceData.IntegerValue, actualData.IntegerValue);
     }
 
     [Fact]

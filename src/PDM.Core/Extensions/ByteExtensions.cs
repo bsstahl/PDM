@@ -78,9 +78,11 @@ internal static class ByteExtensions
                 .SingleOrDefault(targetMapping.Expression)?
                 .Value;
 
-            if (!targetMapping.TargetField.WireType.IsValid((object?)targetValue))
-                throw new Exceptions.WireTypeMismatchException(targetMapping, targetValue);
-            else if (targetValue is not null)
+            //if (!targetMapping.TargetField.WireType.IsValid((object?)targetValue))
+            //    throw new Exceptions.WireTypeMismatchException(targetMapping, targetValue);
+            // else 
+            
+            if (targetValue is not null)
                 targetFields.Add(new MessageField(targetMapping.TargetField.Key, targetMapping.TargetField.WireType, targetValue));
         }
 

@@ -15,8 +15,7 @@ internal static class TransformationExtensions
         {
             var fieldNumber = messageField.Key;
             var targetField = new MessageField(fieldNumber, messageField.WireType);
-            string expression = $"s => (s.Key == {fieldNumber})";
-            mappings.Add(new Mapping(targetField, expression));
+            mappings.Add(new Mapping(targetField, fieldNumber.MapExpression()));
         }
 
         foreach (var transform in transformations ?? Array.Empty<Transformation>())
@@ -32,10 +31,15 @@ internal static class TransformationExtensions
                             break;
                         case "renames":
                             var fieldPairs = transform.Value.ParseFieldPairs(_formatProvider);
-                            foreach (var pair in fieldPairs)
+                            foreach (var (sourceKey, targetKey) in fieldPairs)
                             {
-                                // TODO: Implement
-                                throw new NotImplementedException();
+                                mappings.RemoveField(targetKey);
+                                var source = messageFields?.SingleOrDefault(f => f.Key == sourceKey);
+                                if (source is not null)
+                                {
+                                    var targetField = new MessageField(targetKey, source.WireType);
+                                    mappings.Add(new Mapping(targetField, sourceKey.MapExpression()));
+                                }
                             }
                             break;
                         default:

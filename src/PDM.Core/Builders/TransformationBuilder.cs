@@ -35,4 +35,10 @@ public class TransformationBuilder
         return this
             .ReplaceField("renames", $"{source}:{target}");
     }
+
+    public TransformationBuilder RenameFields(string value)
+    {
+        return this
+            .ReplaceField("renames", value);
+    }
 }
