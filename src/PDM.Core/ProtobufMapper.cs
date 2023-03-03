@@ -4,18 +4,18 @@ namespace PDM;
 
 public class ProtobufMapper
 {
-    readonly IEnumerable<Entities.Mapping> _targetMappings;
+    readonly IEnumerable<Entities.Transformation> _transformations;
 
-    public ProtobufMapper(IEnumerable<Entities.Mapping> targetMappings)
+    public ProtobufMapper(IEnumerable<Entities.Transformation>? transformations)
     {
-        _targetMappings = targetMappings;
-        // TODO: Validate mappings
+        _transformations = transformations ?? Array.Empty<Entities.Transformation>();
+        // TODO: Validate any transformations
     }
 
     public async Task<byte[]> MapAsync(byte[] sourceMessage)
     {
         return await sourceMessage
-            .MapAsync(_targetMappings)
+            .MapAsync(_transformations)
             .ConfigureAwait(false);
     }
 }
