@@ -77,6 +77,127 @@ public class ProtobufMapper_MapAsync_Should
     }
 
     [Fact]
+    public async Task ThrowANotImplementedExceptionIfAnUnknownReplaceFieldSubtypeIsSpecified()
+    {
+        var sourceData = new ProtoBuf.TwoFields()
+        {
+            IntegerValue = Int32.MaxValue.GetRandom(),
+            StringValue = String.Empty.GetRandom()
+        };
+
+        byte[] sourceMessage = Array.Empty<byte>();
+        var targetMapping = new List<Entities.Transformation>()
+        {
+            { new Entities.Transformation() 
+                {
+                    TransformationType = Enums.TransformationType.ReplaceField,
+                    SubType = "TotallyFakeSubtype",
+                    Value = "This doesn't matter at all"
+                }
+            }
+        };
+
+        var target = new ProtobufMapper(targetMapping);
+        var ex = await Assert.ThrowsAsync<NotImplementedException>(() => target.MapAsync(sourceMessage!));
+    }
+
+    [Fact]
+    public async Task NotFailIfAnIncludeExpressionIsUnresolvable()
+    {
+        var sourceData = new ProtoBuf.TwoFields()
+        {
+            IntegerValue = Int32.MaxValue.GetRandom(),
+            StringValue = String.Empty.GetRandom()
+        };
+
+        var sourceMessage = sourceData.ToByteArray();
+
+        var targetMapping = new TransformationBuilder()
+            .IncludeField(9999)
+            .Build();
+
+        var target = new ProtobufMapper(targetMapping);
+        var actual = await target.MapAsync(sourceMessage!);
+
+        Assert.Empty(actual);
+    }
+
+    [Fact]
+    public async Task NotFailIfABlacklistExpressionIsUnresolvable()
+    {
+        var sourceData = new ProtoBuf.TwoFields()
+        {
+            IntegerValue = Int32.MaxValue.GetRandom(),
+            StringValue = String.Empty.GetRandom()
+        };
+
+        var sourceMessage = sourceData.ToByteArray();
+        Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
+
+        var targetMapping = new TransformationBuilder()
+            .BlacklistField(9999)
+            .Build();
+
+        var target = new ProtobufMapper(targetMapping);
+        var actual = await target.MapAsync(sourceMessage!);
+        Log.Verbose("TargetMessage: {TargetMessage}", Convert.ToBase64String(actual));
+
+        var actualData = ProtoBuf.TwoFields.Parser.ParseFrom(actual);
+
+        Assert.Equal(sourceData.IntegerValue, actualData.IntegerValue);
+        Assert.Equal(sourceData.StringValue, actualData.StringValue);
+    }
+
+    [Fact]
+    public async Task RemoveTheTargetFieldsIfTheSourceOfARenameExpressionIsUnresolvable()
+    {
+        var sourceData = new ProtoBuf.TwoFields()
+        {
+            IntegerValue = Int32.MaxValue.GetRandom(),
+            StringValue = String.Empty.GetRandom()
+        };
+
+        var sourceMessage = sourceData.ToByteArray();
+
+        // Alpha characters cannot be translated to field #s
+        var targetMapping = new TransformationBuilder()
+            .RenameFields("a:5,b:15")
+            .Build();
+
+        var target = new ProtobufMapper(targetMapping);
+        var actual = await target.MapAsync(sourceMessage!);
+
+        Assert.Empty(actual);
+    }
+
+    [Fact]
+    public async Task NotRemoveTheTargetFieldsIfTheTargetOfARenameExpressionIsUnresolvable()
+    {
+        var sourceData = new ProtoBuf.TwoFields()
+        {
+            IntegerValue = Int32.MaxValue.GetRandom(),
+            StringValue = String.Empty.GetRandom()
+        };
+
+        var sourceMessage = sourceData.ToByteArray();
+        Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
+
+        // Alpha characters cannot be translated to field #s
+        var targetMapping = new TransformationBuilder()
+            .RenameFields("5:a,15:b")
+            .Build();
+
+        var target = new ProtobufMapper(targetMapping);
+        var actual = await target.MapAsync(sourceMessage!);
+        Log.Verbose("TargetMessage: {TargetMessage}", Convert.ToBase64String(actual));
+
+        var actualData = ProtoBuf.TwoFields.Parser.ParseFrom(actual);
+
+        Assert.Equal(sourceData.IntegerValue, actualData.IntegerValue);
+        Assert.Equal(sourceData.StringValue, actualData.StringValue);
+    }
+
+    [Fact]
     public async Task ProperlyCopyToTheSameTypeUnmodifiedIfNoMappingSupplied()
     {
         var sourceData = new ProtoBuf.TwoFields()
@@ -214,6 +335,34 @@ public class ProtobufMapper_MapAsync_Should
     }
 
     [Fact]
+    public async Task IncludeValuesOnlyForFieldsSpecifiedInTheIncludeList()
+    {
+        var sourceData = new ProtoBuf.ThreeFields()
+        {
+            IntegerValue = Int32.MaxValue.GetRandom(),
+            FloatValue = float.MaxValue.GetRandom(),
+            StringValue = String.Empty.GetRandom()
+        };
+
+        var targetMapping = new TransformationBuilder()
+            .IncludeField(10)
+            .Build();
+
+        var sourceMessage = sourceData.ToByteArray();
+        Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
+
+        var target = new ProtobufMapper(targetMapping);
+        var actual = await target.MapAsync(sourceMessage);
+        Log.Verbose("TargetMessage: {TargetMessage}", Convert.ToBase64String(actual));
+
+        var actualData = ProtoBuf.ThreeFields.Parser.ParseFrom(actual);
+
+        Assert.Equal(0, actualData.IntegerValue);
+        Assert.Equal(String.Empty, actualData.StringValue);
+        Assert.Equal(sourceData.FloatValue, actualData.FloatValue);
+    }
+
+    [Fact]
     public async Task PropertyInsertAField()
     {
         var sourceData = new ProtoBuf.OneField()
@@ -280,239 +429,5 @@ public class ProtobufMapper_MapAsync_Should
         Assert.Equal(sourceData.SFixed32Value, actualData.SFixed32Value);
         Assert.Equal(sourceData.FloatValue, actualData.FloatValue);
     }
-
-    //[Fact]
-    //public async Task ThrowIfTheSourceWireFormatDoesNotMatch_I64ToVarint()
-    //{
-    //    // Try to put the Fixed64Value (I64) from the source message
-    //    // Into the Int32Value (Varint) of the target message
-    //    // Specifying the Varint wire format
-
-    //    var sourceData = new Builders.ProtobufAllTypesBuilder()
-    //        .UseRandomValues()
-    //        .Build();
-
-    //    var targetMapping = new TransformationBuilder()
-    //        .AddUnmodifiedSourceField(1000, Enums.WireType.VarInt, 2000)
-    //        .Build();
-
-    //    var sourceMessage = sourceData.ToByteArray();
-    //    Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
-
-    //    var target = new ProtobufMapper(targetMapping);
-    //    _ = await Assert.ThrowsAsync<Exceptions.WireTypeMismatchException>(() => target.MapAsync(sourceMessage));
-    //}
-
-    //[Fact]
-    //public async Task ThrowIfTheSourceWireFormatDoesNotMatch_LenToVarint()
-    //{
-    //    // Try to put the StringValue (Len) from the source message
-    //    // Into the Int32Value (Varint) of the target message
-    //    // Specifying the Varint wire format
-
-    //    var sourceData = new Builders.ProtobufAllTypesBuilder()
-    //        .UseRandomValues()
-    //        .Build();
-
-    //    var targetMapping = new TransformationBuilder()
-    //        .AddUnmodifiedSourceField(1000, Enums.WireType.VarInt, 3000)
-    //        .Build();
-
-    //    var sourceMessage = sourceData.ToByteArray();
-    //    Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
-
-    //    var target = new ProtobufMapper(targetMapping);
-    //    _ = await Assert.ThrowsAsync<Exceptions.WireTypeMismatchException>(() => target.MapAsync(sourceMessage));
-    //}
-
-    //[Fact]
-    //public async Task ThrowIfTheSourceWireFormatDoesNotMatch_I32ToVarint()
-    //{
-    //    // Try to put the FloatValue (I32) from the source message
-    //    // Into the Int32Value (Varint) of the target message
-    //    // Specifying the Varint wire format
-
-    //    var sourceData = new Builders.ProtobufAllTypesBuilder()
-    //        .UseRandomValues()
-    //        .Build();
-
-    //    var targetMapping = new TransformationBuilder()
-    //        .AddUnmodifiedSourceField(1000, Enums.WireType.VarInt, 4000)
-    //        .Build();
-
-    //    var sourceMessage = sourceData.ToByteArray();
-    //    Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
-
-    //    var target = new ProtobufMapper(targetMapping);
-    //    _ = await Assert.ThrowsAsync<Exceptions.WireTypeMismatchException>(() => target.MapAsync(sourceMessage));
-    //}
-
-    //[Fact]
-    //public async Task ThrowIfTheSourceWireFormatDoesNotMatch_VarintToI64()
-    //{
-    //    // Try to put the Int32Value (VarInt) from the source message
-    //    // Into the Fixed64Value (I64) of the target message
-    //    // Specifying the I64 wire format
-
-    //    var sourceData = new Builders.ProtobufAllTypesBuilder()
-    //        .UseRandomValues()
-    //        .Build();
-
-    //    var targetMapping = new TransformationBuilder()
-    //        .AddUnmodifiedSourceField(2000, Enums.WireType.I64, 1000)
-    //        .Build();
-
-    //    var sourceMessage = sourceData.ToByteArray();
-    //    Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
-
-    //    var target = new ProtobufMapper(targetMapping);
-    //    _ = await Assert.ThrowsAsync<Exceptions.WireTypeMismatchException>(() => target.MapAsync(sourceMessage));
-    //}
-
-    //[Fact]
-    //public async Task ThrowIfTheSourceWireFormatDoesNotMatch_LenToI64()
-    //{
-    //    // Try to put the StringValue (Len) from the source message
-    //    // Into the Fixed64Value (I64) of the target message
-    //    // Specifying the I64 wire format
-
-    //    int stringLength;
-    //    do
-    //    {
-    //        stringLength = 30.GetRandom(1);
-    //    } while (stringLength == 8); // Test will fail with 8 characters
-
-    //    var sourceData = new Builders.ProtobufAllTypesBuilder()
-    //        .UseRandomValues()
-    //        .StringValue(string.Empty.GetRandom(stringLength))
-    //        .Build();
-
-    //    var targetMapping = new TransformationBuilder()
-    //        .AddUnmodifiedSourceField(2000, Enums.WireType.I64, 3000)
-    //        .Build();
-
-    //    var sourceMessage = sourceData.ToByteArray();
-    //    Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
-
-    //    var target = new ProtobufMapper(targetMapping);
-    //    _ = await Assert.ThrowsAsync<Exceptions.WireTypeMismatchException>(() => target.MapAsync(sourceMessage));
-    //}
-
-    //[Fact]
-    //public async Task ThrowIfTheSourceWireFormatDoesNotMatch_I32ToI64()
-    //{
-    //    // Try to put the FloatValue (I32) from the source message
-    //    // Into the Fixed64Value (I64) of the target message
-    //    // Specifying the I64 wire format
-
-    //    var sourceData = new Builders.ProtobufAllTypesBuilder()
-    //        .UseRandomValues()
-    //        .Build();
-
-    //    var targetMapping = new TransformationBuilder()
-    //        .AddUnmodifiedSourceField(2000, Enums.WireType.I64, 4000)
-    //        .Build();
-
-    //    var sourceMessage = sourceData.ToByteArray();
-    //    Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
-
-    //    var target = new ProtobufMapper(targetMapping);
-    //    _ = await Assert.ThrowsAsync<Exceptions.WireTypeMismatchException>(() => target.MapAsync(sourceMessage));
-    //}
-
-    //[Fact]
-    //public async Task ThrowIfTheSourceWireFormatDoesNotMatch_VarintToLen()
-    //{
-    //    // Try to put the Int32Value (VarInt) from the source message
-    //    // Into the string (Len) of the target message
-    //    // Specifying the Len wire format
-
-    //    var sourceData = new Builders.ProtobufAllTypesBuilder()
-    //        .UseRandomValues()
-    //        .Build();
-
-    //    var targetMapping = new TransformationBuilder()
-    //        .AddUnmodifiedSourceField(3000, Enums.WireType.Len, 1000)
-    //        .Build();
-
-    //    var sourceMessage = sourceData.ToByteArray();
-    //    Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
-
-    //    var target = new ProtobufMapper(targetMapping);
-    //    _ = await Assert.ThrowsAsync<Exceptions.WireTypeMismatchException>(() => target.MapAsync(sourceMessage));
-    //}
-
-    //[Fact]
-    //public async Task ThrowIfTheSourceWireFormatDoesNotMatch_VarintToI32()
-    //{
-    //    // Try to put the Int32Value (Varint) from the source message
-    //    // Into the Fixed32Value (I32) of the target message
-    //    // Specifying the I32 wire format
-
-    //    var sourceData = new Builders.ProtobufAllTypesBuilder()
-    //        .UseRandomValues()
-    //        .Build();
-
-    //    var targetMapping = new TransformationBuilder()
-    //        .AddUnmodifiedSourceField(4000, Enums.WireType.I32, 1000)
-    //        .Build();
-
-    //    var sourceMessage = sourceData.ToByteArray();
-    //    Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
-
-    //    var target = new ProtobufMapper(targetMapping);
-    //    _ = await Assert.ThrowsAsync<Exceptions.WireTypeMismatchException>(() => target.MapAsync(sourceMessage));
-    //}
-
-    //[Fact]
-    //public async Task ThrowIfTheSourceWireFormatDoesNotMatch_I64toI32()
-    //{
-    //    // Try to put the Fixed64Value (I64) from the source message
-    //    // Into the Fixed32Value (I32) of the target message
-    //    // Specifying the I32 wire format
-
-    //    var sourceData = new Builders.ProtobufAllTypesBuilder()
-    //        .UseRandomValues()
-    //        .Build();
-
-    //    var targetMapping = new TransformationBuilder()
-    //        .AddUnmodifiedSourceField(4000, Enums.WireType.I32, 2000)
-    //        .Build();
-
-    //    var sourceMessage = sourceData.ToByteArray();
-    //    Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
-
-    //    var target = new ProtobufMapper(targetMapping);
-    //    _ = await Assert.ThrowsAsync<Exceptions.WireTypeMismatchException>(() => target.MapAsync(sourceMessage));
-    //}
-
-    //[Fact]
-    //public async Task ThrowIfTheSourceWireFormatDoesNotMatch_LenToI32()
-    //{
-    //    // Try to put the StringValue (Len) from the source message
-    //    // Into the Fixed32Value (I32) of the target message
-    //    // Specifying the I32 wire format
-
-    //    int stringLength;
-    //    do
-    //    {
-    //        stringLength = 30.GetRandom(1);
-    //    } while (stringLength == 4); // Test will fail with 4 characters
-
-    //    var sourceData = new Builders.ProtobufAllTypesBuilder()
-    //        .UseRandomValues()
-    //        .StringValue(string.Empty.GetRandom(stringLength))
-    //        .Build();
-
-    //    var targetMapping = new TransformationBuilder()
-    //        .AddUnmodifiedSourceField(4000, Enums.WireType.I32, 3000)
-    //        .Build();
-
-    //    var sourceMessage = sourceData.ToByteArray();
-    //    Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
-
-    //    var target = new ProtobufMapper(targetMapping);
-    //    _ = await Assert.ThrowsAsync<Exceptions.WireTypeMismatchException>(() => target.MapAsync(sourceMessage));
-    //}
 
 }
