@@ -1,0 +1,7 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "PDM.Core.Test.ProtoBuf";
+
+message OneField {
+  int32 IntegerValue = 15;
+}

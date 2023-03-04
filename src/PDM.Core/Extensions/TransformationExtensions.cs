@@ -1,5 +1,6 @@
 ﻿using PDM.Entities;
 using System.Globalization;
+using System.Text;
 
 namespace PDM.Extensions;
 
@@ -46,6 +47,20 @@ internal static class TransformationExtensions
                             throw new NotImplementedException();
                     }
                     break;
+
+                case Enums.TransformationType.InsertField:
+                    var tokens = transform.Value.Split(':');
+
+                    if (tokens.Length != 2)
+                    {
+                        throw new InvalidOperationException("Transformation configuration is not valid");
+                    }
+
+                    var targetMessageKey = Convert.ToInt32(tokens[0], _formatProvider);
+                    var value = Encoding.UTF8.GetString(Convert.FromBase64String(tokens[1]));
+                    mappings.InsertField(targetMessageKey, value);
+                    break;
+
                 default:
                     throw new InvalidOperationException("Unreachable code reached");
             }

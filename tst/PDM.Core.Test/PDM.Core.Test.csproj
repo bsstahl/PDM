@@ -18,6 +18,9 @@
     <Protobuf Include="ProtoBuf\AllTypes.proto" GrpcServices="Client">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Protobuf>
+    <Protobuf Include="ProtoBuf\OneField.proto" GrpcServices="Client">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Protobuf>
     <Protobuf Include="ProtoBuf\TwoFields.proto" GrpcServices="Client">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Protobuf>

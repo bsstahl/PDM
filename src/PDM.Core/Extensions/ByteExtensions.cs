@@ -73,7 +73,19 @@ internal static class ByteExtensions
 
         var targetFields = new List<MessageField>();
         foreach (var targetMapping in targetMappings)
-        {
+        {            
+            if (string.IsNullOrEmpty(targetMapping.Expression))
+            {
+                // for transform types that do not come from the
+                // source message (e.g. InsertField, just add
+                // the target value to the message
+                targetFields.Add(new MessageField(
+                    targetMapping.TargetField.Key,
+                    targetMapping.TargetField.WireType,
+                    targetMapping.TargetField.Value));
+                continue;
+            }
+
             var targetValue = source
                 .SingleOrDefault(targetMapping.Expression)?
                 .Value;

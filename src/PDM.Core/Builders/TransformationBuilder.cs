@@ -1,6 +1,8 @@
 ﻿using PDM.Entities;
 using PDM.Enums;
+using System.Buffers.Text;
 using System.Globalization;
+using System.Text;
 
 namespace PDM.Builders;
 
@@ -40,5 +42,18 @@ public class TransformationBuilder
     {
         return this
             .ReplaceField("renames", value);
+    }
+
+    public TransformationBuilder InsertField(int targetFieldNumber, string value)
+    {
+        var target = targetFieldNumber.ToString(_formatProvider);
+        var valueBase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(value));
+
+        _transformations.Add(new Transformation()
+        {
+            TransformationType = TransformationType.InsertField,
+            Value = $"{target}:{valueBase64}"
+        });
+        return this;
     }
 }

@@ -214,6 +214,34 @@ public class ProtobufMapper_MapAsync_Should
     }
 
     [Fact]
+    public async Task PropertyInsertAField()
+    {
+        var sourceData = new ProtoBuf.OneField()
+        {
+            IntegerValue = Int32.MaxValue.GetRandom()
+        };
+
+        var targetKey = 5;
+        var targetValue = String.Empty.GetRandom();
+
+        var targetMapping = new TransformationBuilder()
+            .InsertField(targetKey, targetValue)
+            .Build();
+
+        var sourceMessage = sourceData.ToByteArray();
+        Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
+
+        var target = new ProtobufMapper(targetMapping);
+        var actual = await target.MapAsync(sourceMessage);
+        Log.Verbose("TargetMessage: {TargetMessage}", Convert.ToBase64String(actual));
+
+        var actualData = ProtoBuf.TwoFields.Parser.ParseFrom(actual);
+
+        Assert.Equal(sourceData.IntegerValue, actualData.IntegerValue);
+        Assert.Equal(targetValue, actualData.StringValue);
+    }
+
+    [Fact]
     public async Task ProperlyCopyAllFieldsToATargetOfTheSameType()
     {
         var sourceData = new Builders.ProtobufAllTypesBuilder()

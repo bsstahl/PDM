@@ -2,6 +2,8 @@
 
  public enum TransformationType
 {
-    ReplaceField = 0
+    ReplaceField = 0,
+
+    InsertField,
 }
 
