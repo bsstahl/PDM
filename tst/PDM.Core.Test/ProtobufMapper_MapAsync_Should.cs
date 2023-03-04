@@ -320,6 +320,7 @@ public class ProtobufMapper_MapAsync_Should
         var targetMapping = new TransformationBuilder()
             .RenameFields("5:50,15:150")
             .Build();
+        Log.Verbose("Mapping: {Mapping}", targetMapping.Serialize());
 
         var sourceMessage = sourceData.ToByteArray();
         Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
@@ -410,8 +411,7 @@ public class ProtobufMapper_MapAsync_Should
         var targetMapping = new TransformationBuilder()
             .InsertStaticField(15, Enums.WireType.VarInt, expected)
             .Build();
-        var mappingJson = System.Text.Json.JsonSerializer.Serialize(targetMapping);
-        Log.Verbose("Mapping: {Mapping}", mappingJson);
+        Log.Verbose("Mapping: {Mapping}", targetMapping.Serialize());
 
         var sourceData = new ProtoBuf.TwoFields()
         {
@@ -428,6 +428,38 @@ public class ProtobufMapper_MapAsync_Should
         var actualData = ProtoBuf.TwoFields.Parser.ParseFrom(actual);
 
         Assert.Equal(sourceData.StringValue, actualData.StringValue);
+        Assert.Equal(expected, actualData.IntegerValue);
+    }
+
+    [Fact]
+    public async Task ProperlyUtilizeMultipleTransformationTypes()
+    {
+        var expected = Int32.MaxValue.GetRandom();
+
+        var targetMapping = new TransformationBuilder()
+            .IncludeField(0) // Clears out default mappings
+            .RenameField(3000, 5) // Include field 5 mapped from 3000
+            .RenameField(4200, 10) // Include field 10 mapped from 4200
+            .InsertStaticField(15, Enums.WireType.VarInt, expected) // Include a constant value for field 15
+            .Build();
+        Log.Verbose("Mapping: {Mapping}", targetMapping.Serialize());
+
+        var sourceData = new Builders.ProtobufAllTypesBuilder()
+            .UseRandomValues()
+            .Build();
+
+        var sourceMessage = sourceData.ToByteArray();
+        Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
+
+        var target = new ProtobufMapper(targetMapping);
+        var actual = await target.MapAsync(sourceMessage);
+        Log.Verbose("TargetMessage: {TargetMessage}", Convert.ToBase64String(actual));
+
+        var actualData = ProtoBuf.ThreeFields.Parser.ParseFrom(actual);
+
+        Assert.True(actual.Length < 23);
+        Assert.Equal(sourceData.StringValue, actualData.StringValue);
+        Assert.Equal(sourceData.FloatValue, actualData.FloatValue);
         Assert.Equal(expected, actualData.IntegerValue);
     }
 }
