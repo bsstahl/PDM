@@ -402,4 +402,32 @@ public class ProtobufMapper_MapAsync_Should
         Assert.Equal(sourceData.FloatValue, actualData.FloatValue);
     }
 
+    [Fact]
+    public async Task ProperlyInsertAStaticValue_Varint()
+    {
+        var expected = Int32.MaxValue.GetRandom();
+
+        var targetMapping = new TransformationBuilder()
+            .InsertStaticField(15, Enums.WireType.VarInt, expected)
+            .Build();
+        var mappingJson = System.Text.Json.JsonSerializer.Serialize(targetMapping);
+        Log.Verbose("Mapping: {Mapping}", mappingJson);
+
+        var sourceData = new ProtoBuf.TwoFields()
+        {
+            StringValue = String.Empty.GetRandom()
+        };
+
+        var sourceMessage = sourceData.ToByteArray();
+        Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
+
+        var target = new ProtobufMapper(targetMapping);
+        var actual = await target.MapAsync(sourceMessage);
+        Log.Verbose("TargetMessage: {TargetMessage}", Convert.ToBase64String(actual));
+
+        var actualData = ProtoBuf.TwoFields.Parser.ParseFrom(actual);
+
+        Assert.Equal(sourceData.StringValue, actualData.StringValue);
+        Assert.Equal(expected, actualData.IntegerValue);
+    }
 }

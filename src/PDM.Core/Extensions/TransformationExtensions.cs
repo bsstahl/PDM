@@ -25,10 +25,22 @@ internal static class TransformationExtensions
         foreach (var transform in transformations)
         {
             var transformTypeName = Enums.TransformationType.ReplaceField.ToString().ToLower(_formatProvider);
+            var subTypeName = transform.SubType.ToLower(_formatProvider);
             switch (transform.TransformationType)
             {
+                case Enums.TransformationType.InsertField:
+                    switch (subTypeName)
+                    {
+                        case TransformationSubtype.Static:
+                            var tlv = transform.Value.ParseTLV(_formatProvider);
+                            mappings.RemoveField(tlv.Key);
+                            _ = mappings.IncludeLiteral(tlv);
+                            break;
+                        default:
+                            throw new NotImplementedException($"Handler for \"transforms.{transformTypeName}.{subTypeName}\" not yet implemented.");
+                    }
+                    break;
                 case Enums.TransformationType.ReplaceField:
-                    var subTypeName = transform.SubType.ToLower(_formatProvider);
                     switch (subTypeName)
                     {
                         case TransformationSubtype.Blacklist:

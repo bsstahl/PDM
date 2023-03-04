@@ -60,11 +60,27 @@ internal static class MappingExtensions
 
     internal static Mapping IncludeField(this IList<Mapping> mappings, MessageField messageField, string expression)
     {
-        var fieldNumber = messageField.Key;
-        var targetField = new MessageField(fieldNumber, messageField.WireType);
-        var mapping = new Mapping(targetField, expression);
+        var mappingExpression = new MappingExpression(ExpressionType.Linq, expression);
+        return mappings.IncludeField(messageField, mappingExpression);
+    }
+
+    internal static Mapping IncludeField(this IList<Mapping> mappings, MessageField messageField, MappingExpression mappingExpression)
+    {
+        var mapping = new Mapping(messageField, mappingExpression);
         mappings.Add(mapping);
         return mapping;
+    }
+
+    internal static Mapping IncludeLiteral(this IList<Mapping> mappings, int key, WireType wireType, string expression)
+    {
+        var targetField = new MessageField(key, wireType);
+        var mappingExpression = new MappingExpression(ExpressionType.Literal, expression);
+        return mappings.IncludeField(targetField, mappingExpression);
+    }
+
+    internal static Mapping IncludeLiteral(this IList<Mapping> mappings, TagLengthValue tlv)
+    {
+        return mappings.IncludeLiteral(tlv.Key, tlv.WireType, tlv.Value);
     }
 
     internal static void RemoveField(this List<Mapping> result, int key)
@@ -82,57 +98,60 @@ internal static class MappingExtensions
         {
             if (messageField.IsValid)
             {
-                var tag = new Tag(messageField.Key, messageField.WireType);
+                var wireType = messageField.WireType;
+                var tag = new Tag(messageField.Key, wireType);
+                result.AddRange(tag.AsVarint().RawData);
 
-                switch (tag.WireType)
-                {
-                    case Enums.WireType.VarInt:
-                        // messageField.IsValid so it has a Value
-                        var varintValue = Convert.ToUInt64(messageField.Value, System.Globalization.CultureInfo.InvariantCulture);
-                        var rawData = new Varint(varintValue).RawData;
-                        if (rawData.Length > 0)
-                        {
-                            result.AddRange(tag.AsVarint().RawData);
-                            result.AddRange(rawData);
-                        }
-                        break;
-                    case Enums.WireType.I64:
-                        // messageField.IsValid so it has a Value
-                        if (typeof(byte[]).IsAssignableFrom(messageField.Value!.GetType()))
-                        {
-                            result.AddRange(tag.AsVarint().RawData);
-                            result.AddRange((byte[])messageField.Value!);
-                        }
-                        break;
-                    case Enums.WireType.Len:
-                        // messageField.IsValid so it has a Value
-                        var lenValue = (byte[])messageField.Value!;
-                        if (lenValue.Length > 0)
-                        {
-                            var lenLength = new Varint(Convert.ToUInt64(lenValue.Length));
-                            result.AddRange(tag.AsVarint().RawData);
-                            result.AddRange(lenLength.RawData);
-                            result.AddRange(lenValue);
-                        }
-                        break;
-                    case Enums.WireType.SGroup:
-                    case Enums.WireType.EGroup:
-                        break;
-                    case Enums.WireType.I32:
-                        // messageField.IsValid so it has a Value
-                        if (typeof(byte[]).IsAssignableFrom(messageField.Value!.GetType()))
-                        {
-                            result.AddRange(tag.AsVarint().RawData);
-                            result.AddRange((byte[])messageField.Value!);
-                        }
-                        break;
-                    default:
-                        throw new InvalidOperationException("Unreachable code reached");
-                }
+                // messageField.IsValid so it has a Value
+                result.AddRange(messageField.Value!.AsWiretypeValue(wireType));
             }
         }
 
         return result.ToArray();
     }
 
+    internal static IEnumerable<byte> AsWiretypeValue(this object value, WireType wireType)
+    {
+        var result = new List<Byte>();
+
+        switch (wireType)
+        {
+            case Enums.WireType.VarInt:
+                var varintValue = Convert.ToUInt64(value, System.Globalization.CultureInfo.InvariantCulture);
+                var rawData = new Varint(varintValue).RawData;
+                if (rawData.Length > 0)
+                {
+                    result.AddRange(rawData);
+                }
+                break;
+            case Enums.WireType.I64:
+                if (typeof(byte[]).IsAssignableFrom(value.GetType()))
+                {
+                    result.AddRange((byte[])value!);
+                }
+                break;
+            case Enums.WireType.Len:
+                var lenValue = (byte[])value!;
+                if (lenValue.Length > 0)
+                {
+                    var lenLength = new Varint(Convert.ToUInt64(lenValue.Length));
+                    result.AddRange(lenLength.RawData);
+                    result.AddRange(lenValue);
+                }
+                break;
+            case Enums.WireType.SGroup:
+            case Enums.WireType.EGroup:
+                break;
+            case Enums.WireType.I32:
+                if (typeof(byte[]).IsAssignableFrom(value!.GetType()))
+                {
+                    result.AddRange((byte[])value!);
+                }
+                break;
+            default:
+                throw new InvalidOperationException("Unreachable code reached");
+        }
+
+        return result;
+    }
 }

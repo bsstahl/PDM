@@ -3,12 +3,23 @@
 internal class Mapping
 {
     internal MessageField TargetField { get; set; }
-    internal string Expression { get; set; } = string.Empty;
+    internal MappingExpression Expression { get; set; }
 
-    internal Mapping(MessageField targetField, string expression)
+    internal Mapping(MessageField targetField, MappingExpression expression)
     {
         this.TargetField = targetField;
         this.Expression = expression;
     }
+
+    internal Mapping(MessageField targetField, string linqExpression)
+    {
+        TargetField = targetField;
+        Expression = new MappingExpression()
+        {
+            ExpressionType = Enums.ExpressionType.Linq,
+            Value = linqExpression
+        };
+    }
+
 }
 

@@ -58,7 +58,7 @@ internal static class ByteExtensions
         var messageField = new MessageField(tag.FieldNumber, tag.WireType, payload.Value);
         return (messageField, payload.WireLength);
     }
-    
+
     internal async static Task<byte[]> MapAsync(this byte[] sourceMessage, IEnumerable<Transformation> transformations)
     {
         if (sourceMessage is null) throw new ArgumentNullException(nameof(sourceMessage));
@@ -74,9 +74,20 @@ internal static class ByteExtensions
         var targetFields = new List<MessageField>();
         foreach (var targetMapping in targetMappings)
         {
-            var targetValue = source
-                .Single(targetMapping.Expression)
-                .Value;
+            dynamic targetValue;
+            switch (targetMapping.Expression.ExpressionType)
+            {
+                case Enums.ExpressionType.Linq:
+                    targetValue = source
+                        .Single(targetMapping.Expression.Value)
+                        .Value;
+                    break;
+                case Enums.ExpressionType.Literal:
+                    targetValue = targetMapping.Expression.Value;
+                    break;
+                default:
+                    throw new InvalidOperationException("Unreachable code reached");
+            }
 
             if (targetValue is not null)
                 targetFields.Add(new MessageField(targetMapping.TargetField.Key, targetMapping.TargetField.WireType, targetValue));
