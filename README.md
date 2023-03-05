@@ -81,4 +81,4 @@ Contributions are welcome! If you have an idea for a new feature or find a bug, 
 Before submitting a pull request, please ensure that your code passes the existing unit tests and that any new code is adequately tested. To run the tests locally, run:
 
 ## License
-PDM is licensed under the GNU Affero General Public License v3.0. See [LICENSE](.\LICENSE) for more information.
+PDM is licensed under the GNU Affero General Public License v3.0. See [LICENSE](https://github.com/bsstahl/PDM/blob/main/LICENSE) for more information.
