@@ -1,5 +1,8 @@
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using PDM.Builders;
 using Serilog;
+using System.Diagnostics;
 using Xunit.Abstractions;
 
 namespace PDM.Core.Test;
@@ -7,12 +10,22 @@ namespace PDM.Core.Test;
 [ExcludeFromCodeCoverage]
 public class ProtobufMapper_MapAsync_Should
 {
+    private readonly IServiceProvider _serviceProvider;
+    private readonly ILogger<ProtobufMapper> _mapperLogger;
+
     public ProtobufMapper_MapAsync_Should(ITestOutputHelper output)
     {
         Log.Logger = new LoggerConfiguration()
             .WriteTo.Xunit(output)
             .MinimumLevel.Verbose()
             .CreateLogger();
+
+        _serviceProvider = new ServiceCollection()
+            .AddLogging(l => l.AddSerilog())
+            .BuildServiceProvider();
+
+        _mapperLogger = _serviceProvider
+            .GetRequiredService<ILogger<ProtobufMapper>>();
     }
 
     //[Fact]
@@ -60,6 +73,16 @@ public class ProtobufMapper_MapAsync_Should
     //}
 
     [Fact]
+    public async Task NotFailIfNoLoggerIsSupplied()
+    {
+        _ = Trace.Listeners.Add(new SerilogTraceListener(Log.Logger));
+        var sourceMessage = Array.Empty<byte>();
+        var target = new ProtobufMapper(null!, null);
+        var actual = await target.MapAsync(sourceMessage);
+        Assert.Empty(actual);
+    }
+
+    [Fact]
     public async Task ThrowIfNoSourceMessageSupplied()
     {
         var sourceData = new ProtoBuf.TwoFields()
@@ -72,7 +95,7 @@ public class ProtobufMapper_MapAsync_Should
         var targetMapping = new TransformationBuilder()
             .Build();
 
-        var target = new ProtobufMapper(targetMapping);
+        var target = new ProtobufMapper(_mapperLogger, targetMapping);
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(() => target.MapAsync(sourceMessage!));
     }
 
@@ -98,7 +121,7 @@ public class ProtobufMapper_MapAsync_Should
         };
         Log.Verbose("Mapping: {Mapping}", targetMapping.Serialize());
 
-        var target = new ProtobufMapper(targetMapping);
+        var target = new ProtobufMapper(_mapperLogger, targetMapping);
         var ex = await Assert.ThrowsAsync<NotImplementedException>(() => target.MapAsync(sourceMessage!));
     }
 
@@ -117,7 +140,7 @@ public class ProtobufMapper_MapAsync_Should
             .IncludeField(9999)
             .Build();
 
-        var target = new ProtobufMapper(targetMapping);
+        var target = new ProtobufMapper(_mapperLogger, targetMapping);
         var actual = await target.MapAsync(sourceMessage!);
 
         Assert.Empty(actual);
@@ -140,7 +163,7 @@ public class ProtobufMapper_MapAsync_Should
         var sourceMessage = sourceData.ToByteArray();
         Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
 
-        var target = new ProtobufMapper(targetMapping);
+        var target = new ProtobufMapper(_mapperLogger, targetMapping);
         var actual = await target.MapAsync(sourceMessage!);
         Log.Verbose("TargetMessage: {TargetMessage}", Convert.ToBase64String(actual));
 
@@ -166,7 +189,7 @@ public class ProtobufMapper_MapAsync_Should
             .RenameFields("a:5,b:15")
             .Build();
 
-        var target = new ProtobufMapper(targetMapping);
+        var target = new ProtobufMapper(_mapperLogger, targetMapping);
         var actual = await target.MapAsync(sourceMessage!);
 
         Assert.Empty(actual);
@@ -189,7 +212,7 @@ public class ProtobufMapper_MapAsync_Should
             .RenameFields("5:a,15:b")
             .Build();
 
-        var target = new ProtobufMapper(targetMapping);
+        var target = new ProtobufMapper(_mapperLogger, targetMapping);
         var actual = await target.MapAsync(sourceMessage!);
         Log.Verbose("TargetMessage: {TargetMessage}", Convert.ToBase64String(actual));
 
@@ -211,7 +234,7 @@ public class ProtobufMapper_MapAsync_Should
         var sourceMessage = sourceData.ToByteArray();
         Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
 
-        var target = new ProtobufMapper(null);
+        var target = new ProtobufMapper(_mapperLogger, null);
         var actual = await target.MapAsync(sourceMessage);
         Log.Verbose("TargetMessage: {TargetMessage}", Convert.ToBase64String(actual));
 
@@ -238,7 +261,7 @@ public class ProtobufMapper_MapAsync_Should
         var sourceMessage = sourceData.ToByteArray();
         Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
 
-        var target = new ProtobufMapper(targetMapping);
+        var target = new ProtobufMapper(_mapperLogger, targetMapping);
         var actual = await target.MapAsync(sourceMessage);
         Log.Verbose("TargetMessage: {TargetMessage}", Convert.ToBase64String(actual));
 
@@ -268,7 +291,7 @@ public class ProtobufMapper_MapAsync_Should
         var sourceMessage = sourceData.ToByteArray();
         Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
 
-        var target = new ProtobufMapper(targetMapping);
+        var target = new ProtobufMapper(_mapperLogger, targetMapping);
         var actual = await target.MapAsync(sourceMessage);
         Log.Verbose("TargetMessage: {TargetMessage}", Convert.ToBase64String(actual));
 
@@ -294,7 +317,7 @@ public class ProtobufMapper_MapAsync_Should
         var sourceMessage = sourceData.ToByteArray();
         Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
 
-        var target = new ProtobufMapper(targetMapping);
+        var target = new ProtobufMapper(_mapperLogger, targetMapping);
         var actual = await target.MapAsync(sourceMessage);
         Log.Verbose("TargetMessage: {TargetMessage}", Convert.ToBase64String(actual));
 
@@ -321,7 +344,7 @@ public class ProtobufMapper_MapAsync_Should
         var sourceMessage = sourceData.ToByteArray();
         Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
 
-        var target = new ProtobufMapper(targetMapping);
+        var target = new ProtobufMapper(_mapperLogger, targetMapping);
         var actual = await target.MapAsync(sourceMessage);
         Log.Verbose("TargetMessage: {TargetMessage}", Convert.ToBase64String(actual));
 
@@ -348,7 +371,7 @@ public class ProtobufMapper_MapAsync_Should
         var sourceMessage = sourceData.ToByteArray();
         Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
 
-        var target = new ProtobufMapper(targetMapping);
+        var target = new ProtobufMapper(_mapperLogger, targetMapping);
         var actual = await target.MapAsync(sourceMessage);
         Log.Verbose("TargetMessage: {TargetMessage}", Convert.ToBase64String(actual));
 
@@ -369,7 +392,7 @@ public class ProtobufMapper_MapAsync_Should
         var sourceMessage = sourceData.ToByteArray();
         Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
 
-        var target = new ProtobufMapper(null);
+        var target = new ProtobufMapper(_mapperLogger, null);
         var actual = await target.MapAsync(sourceMessage);
         Log.Verbose("TargetMessage: {TargetMessage}", Convert.ToBase64String(actual));
 
@@ -417,7 +440,7 @@ public class ProtobufMapper_MapAsync_Should
         var sourceMessage = sourceData.ToByteArray();
         Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
 
-        var target = new ProtobufMapper(targetMapping);
+        var target = new ProtobufMapper(_mapperLogger, targetMapping);
         var actual = await target.MapAsync(sourceMessage);
         Log.Verbose("TargetMessage: {TargetMessage}", Convert.ToBase64String(actual));
 
@@ -447,7 +470,7 @@ public class ProtobufMapper_MapAsync_Should
         var sourceMessage = sourceData.ToByteArray();
         Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
 
-        var target = new ProtobufMapper(targetMapping);
+        var target = new ProtobufMapper(_mapperLogger, targetMapping);
         var actual = await target.MapAsync(sourceMessage);
         Log.Verbose("TargetMessage: {TargetMessage}", Convert.ToBase64String(actual));
 

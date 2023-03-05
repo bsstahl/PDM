@@ -11,6 +11,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Google.Protobuf" Version="3.22.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
 		<PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.25" />
 	</ItemGroup>
 
