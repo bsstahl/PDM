@@ -54,7 +54,7 @@ message ThreeFields {
     string StringValue = 5;
     float FloatValue = 10;
     int32 IntegerValue = 15;
-	}
+}
 ```
 
 ### Target Message
@@ -63,7 +63,7 @@ message ThreeFields {
 message TwoFields {
     string StringValue = 5;
     int32 IntegerValue = 15;
-	 }
+}
 ```
 
 If no transformations are supplied, all fields are copied directly to the output. Thus, if no 
@@ -73,7 +73,7 @@ the `ReplaceField.blacklist` transform to remove the unwanted field from the out
 still copying the other 2 fields directly to the target.
 
 Target mappings can be supplied by configuration allowing the same codebase to be 
-reconfigured and used for various transformations as needed.
+reconfigured and used for various transformations as needed. Code sample forthcoming.
 
 ## Contributing
 Contributions are welcome! If you have an idea for a new feature or find a bug, please open an issue. If you'd like to contribute code, please fork the repository and submit a pull request.
