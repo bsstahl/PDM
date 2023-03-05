@@ -19,6 +19,8 @@ dotnet add package PDM
 ## Usage
 Here's a basic example of how to use PDM:
 
+### Sample Code
+
 ```csharp
 public byte[] Transform(byte[] sourceMessage)
 {
@@ -27,22 +29,6 @@ public byte[] Transform(byte[] sourceMessage)
 	// ProtoBuf wire format into a TwoFields type message which
 	// is returned in ProtoBuf wire format.
 
-	// Source Message ProtoBuf:
-	// message ThreeFields {
-	//	  string StringValue = 5;
-	//	  float FloatValue = 10;
-	//	  int32 IntegerValue = 15;
-	// }
-
-	// Target Message ProtoBuf:
-	// message TwoFields {
-	//	  string StringValue = 5;
-	//	  int32 IntegerValue = 15;
-	// }
-
-	// By default, all fields are transformed directly
-	// thus, if no changes are needed and the message is to
-	// be simply copied, no Transformations are required.
 	var targetMapping = new List<PDM.Entities.Transformation>()
 		{
 			{ new PDM.Entities.Transformation() // Remove field 10 from the output
@@ -58,6 +44,36 @@ public byte[] Transform(byte[] sourceMessage)
 	return await mapper.MapAsync(sourceMessage);
 }
 ```
+
+This code is based on the following ProtoBuf file definitions:
+
+### Source Message
+
+```protobuf
+message ThreeFields {
+    string StringValue = 5;
+    float FloatValue = 10;
+    int32 IntegerValue = 15;
+	}
+```
+
+### Target Message
+
+```protobuf
+message TwoFields {
+    string StringValue = 5;
+    int32 IntegerValue = 15;
+	 }
+```
+
+If no transformations are supplied, all fields are copied directly to the output. Thus, if no 
+changes are needed and the source message is to be simply copied to the target, no Transformations 
+are required. In this example the target message only requires 2 of the 3 fields, so we use 
+the `ReplaceField.blacklist` transform to remove the unwanted field from the output while 
+still copying the other 2 fields directly to the target.
+
+Target mappings can be supplied by configuration allowing the same codebase to be 
+reconfigured and used for various transformations as needed.
 
 ## Contributing
 Contributions are welcome! If you have an idea for a new feature or find a bug, please open an issue. If you'd like to contribute code, please fork the repository and submit a pull request.
