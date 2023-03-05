@@ -3,13 +3,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PDM.Core", "src\PDM.Core\PDM.Core.csproj", "{76C2AB7D-12E6-40D6-A87E-71FF2A8F23D7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PDM.Core", "src\PDM.Core\PDM.Core.csproj", "{76C2AB7D-12E6-40D6-A87E-71FF2A8F23D7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PDM.Core.Test", "tst\PDM.Core.Test\PDM.Core.Test.csproj", "{AF787EE4-BC92-421B-A90D-0E960E506FCD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PDM.Core.Test", "tst\PDM.Core.Test\PDM.Core.Test.csproj", "{AF787EE4-BC92-421B-A90D-0E960E506FCD}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3CF05946-8522-4872-A299-93E2C498FE15}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
+		LICENSE = LICENSE
 		README.md = README.md
 	EndProjectSection
 EndProject

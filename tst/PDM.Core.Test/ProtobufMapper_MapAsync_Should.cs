@@ -96,6 +96,7 @@ public class ProtobufMapper_MapAsync_Should
                 }
             }
         };
+        Log.Verbose("Mapping: {Mapping}", targetMapping.Serialize());
 
         var target = new ProtobufMapper(targetMapping);
         var ex = await Assert.ThrowsAsync<NotImplementedException>(() => target.MapAsync(sourceMessage!));
@@ -131,12 +132,13 @@ public class ProtobufMapper_MapAsync_Should
             StringValue = String.Empty.GetRandom()
         };
 
-        var sourceMessage = sourceData.ToByteArray();
-        Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
-
         var targetMapping = new TransformationBuilder()
             .BlacklistField(9999)
             .Build();
+        Log.Verbose("Mapping: {Mapping}", targetMapping.Serialize());
+
+        var sourceMessage = sourceData.ToByteArray();
+        Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
 
         var target = new ProtobufMapper(targetMapping);
         var actual = await target.MapAsync(sourceMessage!);
@@ -280,9 +282,6 @@ public class ProtobufMapper_MapAsync_Should
     [Fact]
     public async Task ProperlyRenameAField()
     {
-        // Guarantees that specified fields will be set to
-        // default values. This is helpful if PII is being
-        // masked-out of a message
         var sourceData = new ProtoBuf.ThreeFields()
         {
             StringValue = String.Empty.GetRandom()
@@ -307,9 +306,6 @@ public class ProtobufMapper_MapAsync_Should
     [Fact]
     public async Task ProperlyRenameMultipleFields()
     {
-        // Guarantees that specified fields will be set to
-        // default values. This is helpful if PII is being
-        // masked-out of a message
         var sourceData = new ProtoBuf.ThreeFields()
         {
             StringValue = String.Empty.GetRandom(),
