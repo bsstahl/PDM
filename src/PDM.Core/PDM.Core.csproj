@@ -1,15 +1,34 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
+		<Authors>Barry S. Stahl</Authors>
+		<Company>Protobuf Data Mapper</Company>
+		<Copyright>Copyright 2023</Copyright>
+		<Description>A library for mapping and transforming one Protobuf message into another</Description>
+		<RepositoryUrl>https://github.com/bsstahl/PDM</RepositoryUrl>
+		<ProjectGuid>{76C2AB7D-12E6-40D6-A87E-71FF2A8F23D7}</ProjectGuid>
+		<PackageId>ProtobufDataMapper</PackageId>
+		<PackageTags>Abstractions ProtoBuf Transform</PackageTags>
+		<PackageLicenseExpression>AGPL-3.0-only</PackageLicenseExpression>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<VersionPrefix>0.0.2</VersionPrefix>
+		<Platforms>AnyCPU</Platforms>
 		<TargetFramework>net6.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<LangVersion>latest</LangVersion>
 		<AnalysisLevel>latest-all</AnalysisLevel>
+		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
 		<RootNamespace>PDM</RootNamespace>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<VersionSuffix>dev</VersionSuffix>
+		<DefineConstants>DEBUG;TRACE</DefineConstants>
+	</PropertyGroup>
+
 	<ItemGroup>
+		<None Include="..\..\README.md" Pack="true" PackagePath="\" />
 		<PackageReference Include="Google.Protobuf" Version="3.22.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="6.0.0" />
