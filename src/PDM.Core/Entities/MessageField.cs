@@ -1,9 +1,15 @@
-﻿namespace PDM.Entities;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
+
+namespace PDM.Entities;
 
 public class MessageField
 {
     public int Key { get; set; }
+
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public Enums.WireType WireType { get; set; }
+    
     public object? Value { get; set; }
 
 
@@ -19,5 +25,10 @@ public class MessageField
         this.Key = key;
         this.WireType = wireType;
         this.Value = value;
+    }
+
+    public override string ToString()
+    {
+        return JsonSerializer.Serialize(this);
     }
 }

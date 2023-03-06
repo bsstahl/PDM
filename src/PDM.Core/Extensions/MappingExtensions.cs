@@ -1,15 +1,14 @@
-﻿using PDM.Constants;
+﻿using Microsoft.Extensions.Logging;
+using System.Globalization;
+using PDM.Constants;
 using PDM.Entities;
 using PDM.Enums;
-using System.Globalization;
 
 namespace PDM.Extensions;
 
 internal static class MappingExtensions
 {
-    private static readonly CultureInfo _formatProvider = CultureInfo.InvariantCulture;
-
-    internal static void Include(this IList<Mapping> mappings, IEnumerable<MessageField> messageFields, IEnumerable<Transformation> transformations)
+    internal static void Include(this IList<Mapping> mappings, ILogger logger, IEnumerable<MessageField> messageFields, IEnumerable<Transformation> transformations)
     {
         var includeTransforms = transformations
             .Where(t => t.IsReplaceField(TransformationSubtype.Include));
@@ -34,7 +33,7 @@ internal static class MappingExtensions
                     // TODO: Handle multiple instances of the same fieldNumber
 
                     // TODO: Log a warning if the field isn't found
-                    var messageField = messageFields.FirstOrDefault(f => f.Key.ToString(_formatProvider) == includeField);
+                    var messageField = messageFields.FirstOrDefault(f => f.Key.ToString(CultureInfo.CurrentCulture) == includeField);
                     if (messageField is not null)
                     {
                         _ = mappings.IncludeField(messageField);
@@ -83,15 +82,18 @@ internal static class MappingExtensions
         return mappings.IncludeLiteral(tlv.Key, tlv.WireType, tlv.Value);
     }
 
-    internal static void RemoveField(this List<Mapping> result, int key)
+    internal static Mapping? RemoveField(this List<Mapping> result, int key)
     {
         var item = result.SingleOrDefault(f => f.TargetField.Key == key);
         if (item is not null)
             _ = result.Remove(item);
+        return item;
     }
 
-    internal static byte[] ToByteArray(this IEnumerable<MessageField> messageFields)
+    internal static byte[] ToByteArray(this IEnumerable<MessageField> messageFields, ILogger logger)
     {
+        logger.LogMethodEntry(nameof(MappingExtensions), nameof(ToByteArray));
+
         var result = new List<byte>();
 
         foreach (var messageField in messageFields)
@@ -103,10 +105,17 @@ internal static class MappingExtensions
                 result.AddRange(tag.AsVarint().RawData);
 
                 // messageField.IsValid so it has a Value
-                result.AddRange(messageField.Value!.AsWiretypeValue(wireType));
+                var wireTypeValue = messageField.Value!.AsWiretypeValue(wireType);
+                result.AddRange(wireTypeValue);
+                logger.LogMessageFieldExported(messageField, wireTypeValue);
+            }
+            else
+            {
+                logger.LogInvalidMessageField(messageField);
             }
         }
 
+        logger.LogMethodExit(nameof(MappingExtensions), nameof(ToByteArray));
         return result.ToArray();
     }
 

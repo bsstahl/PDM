@@ -1,4 +1,6 @@
-﻿namespace PDM.Entities;
+﻿using System.Text.Json;
+
+namespace PDM.Entities;
 
 internal sealed record Varint
 {
@@ -11,7 +13,7 @@ internal sealed record Varint
         .Select(d => Convert.ToByte(d & 127))
         .ToArray();
 
-    internal UInt64 Value => CalculateValue(this.DecodedData);
+    public UInt64 Value => CalculateValue(this.DecodedData);
 
 
     internal Varint(byte[] rawData)
@@ -54,6 +56,11 @@ internal sealed record Varint
         for (int i = decodedBytes.Length - 1; i >= 0; i--)
             total = (total << 7) | decodedBytes[i];
         return total;
+    }
+
+    public override string ToString()
+    {
+        return this.Value.ToString();
     }
 }
 

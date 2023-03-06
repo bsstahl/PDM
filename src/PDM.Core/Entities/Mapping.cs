@@ -1,9 +1,11 @@
-﻿namespace PDM.Entities;
+﻿using System.Text.Json;
+
+namespace PDM.Entities;
 
 internal class Mapping
-{
-    internal MessageField TargetField { get; set; }
-    internal MappingExpression Expression { get; set; }
+{   
+    public MessageField TargetField { get; set; }
+    public MappingExpression Expression { get; set; }
 
     internal Mapping(MessageField targetField, MappingExpression expression)
     {
@@ -11,15 +13,9 @@ internal class Mapping
         this.Expression = expression;
     }
 
-    internal Mapping(MessageField targetField, string linqExpression)
+    public override string ToString()
     {
-        TargetField = targetField;
-        Expression = new MappingExpression()
-        {
-            ExpressionType = Enums.ExpressionType.Linq,
-            Value = linqExpression
-        };
+        return JsonSerializer.Serialize(this);
     }
-
 }
 

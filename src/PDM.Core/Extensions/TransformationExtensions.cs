@@ -1,4 +1,5 @@
-﻿using PDM.Constants;
+﻿using Microsoft.Extensions.Logging;
+using PDM.Constants;
 using PDM.Entities;
 using PDM.Enums;
 using System.Globalization;
@@ -7,8 +8,6 @@ namespace PDM.Extensions;
 
 internal static class TransformationExtensions
 {
-    private static readonly CultureInfo _formatProvider = CultureInfo.InvariantCulture;
-
     internal static bool IsReplaceField(this Transformation t, string subType)
     {
         var rf = t.TransformationType == TransformationType.ReplaceField;
@@ -16,25 +15,36 @@ internal static class TransformationExtensions
         return rf && st;
     }
 
-    internal static IEnumerable<Entities.Mapping> AsMappings(this IEnumerable<Transformation> transformations, IEnumerable<MessageField> messageFields)
+    internal static IEnumerable<Entities.Mapping> AsMappings(this IEnumerable<Transformation> transformations, ILogger logger, IEnumerable<MessageField> messageFields)
     {
+        logger.LogMethodEntry(nameof(TransformationExtensions), nameof(AsMappings));
+
         var mappings = new List<Entities.Mapping>();
 
-        mappings.Include(messageFields, transformations);
+        mappings.Include(logger, messageFields, transformations);
 
         foreach (var transform in transformations)
         {
-            var transformTypeName = Enums.TransformationType.ReplaceField.ToString().ToLower(_formatProvider);
-            var subTypeName = transform.SubType.ToLower(_formatProvider);
+            var transformTypeName = transform
+                .TransformationType
+                .ToString()
+                .ToLower(CultureInfo.CurrentCulture);
+
+            var subTypeName = transform.SubType.ToLower(CultureInfo.CurrentCulture);
+
+            logger.LogBuildingMapping(transform);
+
             switch (transform.TransformationType)
             {
                 case Enums.TransformationType.InsertField:
                     switch (subTypeName)
                     {
                         case TransformationSubtype.Static:
-                            var tlv = transform.Value.ParseTLV(_formatProvider);
-                            mappings.RemoveField(tlv.Key);
-                            _ = mappings.IncludeLiteral(tlv);
+                            var tlv = transform.Value.ParseTLV(CultureInfo.InvariantCulture);
+                            var replacedField = mappings.RemoveField(tlv.Key);
+                            var addedField = mappings.IncludeLiteral(tlv);
+                            logger.LogMappingRemovalCompleted(tlv.Key, replacedField);
+                            logger.LogMappingBuilt(addedField);
                             break;
                         default:
                             throw new NotImplementedException($"Handler for \"transforms.{transformTypeName}.{subTypeName}\" not yet implemented.");
@@ -44,11 +54,12 @@ internal static class TransformationExtensions
                     switch (subTypeName)
                     {
                         case TransformationSubtype.Blacklist:
-                            var key = Convert.ToInt32(transform.Value, _formatProvider);
-                            mappings.RemoveField(key);
+                            var key = Convert.ToInt32(transform.Value, CultureInfo.InvariantCulture);
+                            var removedMapping = mappings.RemoveField(key);
+                            logger.LogMappingRemovalCompleted(key, removedMapping);
                             break;
                         case TransformationSubtype.Renames:
-                            var fieldPairs = transform.Value.ParseFieldPairs(_formatProvider);
+                            var fieldPairs = transform.Value.ParseFieldPairs(CultureInfo.InvariantCulture);
                             foreach (var (sourceKey, targetKey) in fieldPairs)
                             {
                                 mappings.RemoveField(targetKey);
@@ -56,7 +67,8 @@ internal static class TransformationExtensions
                                 if (source is not null)
                                 {
                                     var targetField = new MessageField(targetKey, source.WireType);
-                                    _ = mappings.IncludeField(targetField, sourceKey.MapExpression());
+                                    var renamesMapping = mappings.IncludeField(targetField, sourceKey.MapExpression());
+                                    logger.LogMappingBuilt(renamesMapping);
                                 }
                             }
                             break;
@@ -72,6 +84,7 @@ internal static class TransformationExtensions
             }
         }
 
+        logger.LogMethodExit(nameof(TransformationExtensions), nameof(AsMappings));
         return mappings;
     }
 

@@ -1,4 +1,6 @@
 ﻿using PDM.Enums;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace PDM.Entities;
 
@@ -11,6 +13,8 @@ internal sealed record Tag
     }
 
     public int FieldNumber { get; set; }
+
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public WireType WireType { get; set; }
 
     public Varint AsVarint()
@@ -25,5 +29,10 @@ internal sealed record Tag
         var wireType = (WireType)Convert.ToByte(vintValue & 7);
         var fieldNumber = Convert.ToInt32(vintValue >> 3);
         return new Tag(fieldNumber, wireType);
+    }
+
+    public override string ToString()
+    {
+        return JsonSerializer.Serialize(this);
     }
 }
