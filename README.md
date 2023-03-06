@@ -73,7 +73,62 @@ the `ReplaceField.blacklist` transform to remove the unwanted field from the out
 still copying the other 2 fields directly to the target.
 
 Target mappings can be supplied by configuration allowing the same codebase to be 
-reconfigured and used for various transformations as needed. Code sample forthcoming.
+reconfigured and used for various transformations as needed.
+
+### Json Configuration
+
+```json
+
+{{
+	""Transformations"": [
+		{{
+			""TransformationType"": ""InsertField"",
+			""SubType"": ""include"",
+			""Value"": ""0""
+		}},
+
+		{{
+			""TransformationType"": ""ReplaceField"",
+			""SubType"": ""renames"",
+			""Value"": ""3000:5""
+		}},
+
+		{{
+			""TransformationType"": ""ReplaceField"",
+			""SubType"": ""renames"",
+			""Value"": ""4200:10""
+		}},
+
+		{{
+			""TransformationType"": ""InsertField"",
+			""SubType"": ""static"",
+			""Value"": ""15:VarInt:173559425""
+		}},
+	]
+}}
+```
+
+In your application code, you can dynamically transform protobuf messages by injecting an `IConfiguration` instance,
+and then building a `ProtobufMapper` with the specified configurations.
+
+```csharp
+public class MyTransformer
+{
+	private readonly ProtobufMapper mapper;
+
+	public MyTransformer(IConfiguration configuration)
+	{
+		var transformations = configuration?.BuildTransformations("Transformations") ?? throw new ArgumentNullException(configuration);
+		this.mapper = new ProtobufMapper(transformations);
+	}
+
+	public async Task<byte[]> TransformMessage(byte[] sourceMessageBytes)
+	{
+		var resultMessageBytes = await this.mapper.MapAsync(sourceMessageBytes);
+		return resultMessageBytes;
+	}
+}
+```
 
 ## Contributing
 Contributions are welcome! If you have an idea for a new feature or find a bug, please open an issue. If you'd like to contribute code, please fork the repository and submit a pull request.
