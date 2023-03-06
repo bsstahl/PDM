@@ -78,34 +78,33 @@ reconfigured and used for various transformations as needed.
 ### Json Configuration
 
 ```json
+{
+	"Transformations": [
+		{
+			"TransformationType": "InsertField",
+			"SubType": "include",
+			"Value": "0"
+		},
 
-{{
-	""Transformations"": [
-		{{
-			""TransformationType"": ""InsertField"",
-			""SubType"": ""include"",
-			""Value"": ""0""
-		}},
+		{
+			"TransformationType": "ReplaceField",
+			"SubType": "renames",
+			"Value": "3000:5"
+		},
 
-		{{
-			""TransformationType"": ""ReplaceField"",
-			""SubType"": ""renames"",
-			""Value"": ""3000:5""
-		}},
+		{
+			"TransformationType": "ReplaceField",
+			"SubType": "renames",
+			"Value": "4200:10"
+		},
 
-		{{
-			""TransformationType"": ""ReplaceField"",
-			""SubType"": ""renames"",
-			""Value"": ""4200:10""
-		}},
-
-		{{
-			""TransformationType"": ""InsertField"",
-			""SubType"": ""static"",
-			""Value"": ""15:VarInt:173559425""
-		}},
+		{
+			"TransformationType": "InsertField",
+			"SubType": "static",
+			"Value": "15:VarInt:173559425"
+		},
 	]
-}}
+}
 ```
 
 In your application code, you can dynamically transform protobuf messages by injecting an `IConfiguration` instance,
