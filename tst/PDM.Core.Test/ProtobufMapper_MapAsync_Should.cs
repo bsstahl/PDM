@@ -8,6 +8,7 @@ using Xunit.Abstractions;
 namespace PDM.Core.Test;
 
 [ExcludeFromCodeCoverage]
+[Collection("MapperTests")]
 public class ProtobufMapper_MapAsync_Should
 {
     private readonly IServiceProvider _serviceProvider;
@@ -59,11 +60,9 @@ public class ProtobufMapper_MapAsync_Should
     //        .Build();
 
     //    var sourceMessage = sourceData.ToByteArray();
-    //    Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
 
     //    var target = new ProtobufMapper(targetMapping);
     //    var actual = await target.MapAsync(sourceMessage);
-    //    Log.Verbose("TargetMessage: {TargetMessage}", Convert.ToBase64String(actual));
 
     //    var actualData = ProtoBuf.WeirdnessDemo.Parser.ParseFrom(actual);
     //    Log.Information("Source Field {sourceFieldNumber} of type {clrType} was {sourceValue} and was mapped to {targetFieldNumber} as {targetValue}", 3000, "String", sourceData.StringValue, 5000, actualData.StringStoredAsFixed64);
@@ -76,10 +75,9 @@ public class ProtobufMapper_MapAsync_Should
     public async Task NotFailIfNoLoggerIsSupplied()
     {
         _ = Trace.Listeners.Add(new SerilogTraceListener(Log.Logger));
-        var sourceMessage = Array.Empty<byte>();
+        var sourceMessage = Convert.FromBase64String("KghmZThhYjAyYVXdOEHIeKTOuuQE");
         var target = new ProtobufMapper(null!, null);
         var actual = await target.MapAsync(sourceMessage);
-        Assert.Empty(actual);
     }
 
     [Fact]
@@ -119,7 +117,6 @@ public class ProtobufMapper_MapAsync_Should
                 }
             }
         };
-        Log.Verbose("Mapping: {Mapping}", targetMapping.Serialize());
 
         var target = new ProtobufMapper(_mapperLogger, targetMapping);
         var ex = await Assert.ThrowsAsync<NotImplementedException>(() => target.MapAsync(sourceMessage!));
@@ -158,14 +155,11 @@ public class ProtobufMapper_MapAsync_Should
         var targetMapping = new TransformationBuilder()
             .BlacklistField(9999)
             .Build();
-        Log.Verbose("Mapping: {Mapping}", targetMapping.Serialize());
 
         var sourceMessage = sourceData.ToByteArray();
-        Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
 
         var target = new ProtobufMapper(_mapperLogger, targetMapping);
         var actual = await target.MapAsync(sourceMessage!);
-        Log.Verbose("TargetMessage: {TargetMessage}", Convert.ToBase64String(actual));
 
         var actualData = ProtoBuf.TwoFields.Parser.ParseFrom(actual);
 
@@ -205,7 +199,6 @@ public class ProtobufMapper_MapAsync_Should
         };
 
         var sourceMessage = sourceData.ToByteArray();
-        Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
 
         // Alpha characters cannot be translated to field #s
         var targetMapping = new TransformationBuilder()
@@ -214,7 +207,6 @@ public class ProtobufMapper_MapAsync_Should
 
         var target = new ProtobufMapper(_mapperLogger, targetMapping);
         var actual = await target.MapAsync(sourceMessage!);
-        Log.Verbose("TargetMessage: {TargetMessage}", Convert.ToBase64String(actual));
 
         var actualData = ProtoBuf.TwoFields.Parser.ParseFrom(actual);
 
@@ -232,11 +224,9 @@ public class ProtobufMapper_MapAsync_Should
         };
 
         var sourceMessage = sourceData.ToByteArray();
-        Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
 
         var target = new ProtobufMapper(_mapperLogger, null);
         var actual = await target.MapAsync(sourceMessage);
-        Log.Verbose("TargetMessage: {TargetMessage}", Convert.ToBase64String(actual));
 
         var actualData = ProtoBuf.TwoFields.Parser.ParseFrom(actual);
 
@@ -259,11 +249,9 @@ public class ProtobufMapper_MapAsync_Should
             .Build();
 
         var sourceMessage = sourceData.ToByteArray();
-        Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
 
         var target = new ProtobufMapper(_mapperLogger, targetMapping);
         var actual = await target.MapAsync(sourceMessage);
-        Log.Verbose("TargetMessage: {TargetMessage}", Convert.ToBase64String(actual));
 
         var actualData = ProtoBuf.TwoFields.Parser.ParseFrom(actual);
 
@@ -289,11 +277,9 @@ public class ProtobufMapper_MapAsync_Should
             .Build();
 
         var sourceMessage = sourceData.ToByteArray();
-        Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
 
         var target = new ProtobufMapper(_mapperLogger, targetMapping);
         var actual = await target.MapAsync(sourceMessage);
-        Log.Verbose("TargetMessage: {TargetMessage}", Convert.ToBase64String(actual));
 
         var actualData = ProtoBuf.ThreeFields.Parser.ParseFrom(actual);
 
@@ -315,11 +301,9 @@ public class ProtobufMapper_MapAsync_Should
             .Build();
 
         var sourceMessage = sourceData.ToByteArray();
-        Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
 
         var target = new ProtobufMapper(_mapperLogger, targetMapping);
         var actual = await target.MapAsync(sourceMessage);
-        Log.Verbose("TargetMessage: {TargetMessage}", Convert.ToBase64String(actual));
 
         var actualData = ProtoBuf.MismatchedType.Parser.ParseFrom(actual);
 
@@ -339,14 +323,11 @@ public class ProtobufMapper_MapAsync_Should
         var targetMapping = new TransformationBuilder()
             .RenameFields("5:50,15:150")
             .Build();
-        Log.Verbose("Mapping: {Mapping}", targetMapping.Serialize());
 
         var sourceMessage = sourceData.ToByteArray();
-        Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
 
         var target = new ProtobufMapper(_mapperLogger, targetMapping);
         var actual = await target.MapAsync(sourceMessage);
-        Log.Verbose("TargetMessage: {TargetMessage}", Convert.ToBase64String(actual));
 
         var actualData = ProtoBuf.MismatchedType.Parser.ParseFrom(actual);
 
@@ -369,11 +350,9 @@ public class ProtobufMapper_MapAsync_Should
             .Build();
 
         var sourceMessage = sourceData.ToByteArray();
-        Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
 
         var target = new ProtobufMapper(_mapperLogger, targetMapping);
         var actual = await target.MapAsync(sourceMessage);
-        Log.Verbose("TargetMessage: {TargetMessage}", Convert.ToBase64String(actual));
 
         var actualData = ProtoBuf.ThreeFields.Parser.ParseFrom(actual);
 
@@ -390,11 +369,9 @@ public class ProtobufMapper_MapAsync_Should
             .Build();
 
         var sourceMessage = sourceData.ToByteArray();
-        Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
 
         var target = new ProtobufMapper(_mapperLogger, null);
         var actual = await target.MapAsync(sourceMessage);
-        Log.Verbose("TargetMessage: {TargetMessage}", Convert.ToBase64String(actual));
 
         var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);
         Assert.Equal(sourceData.Int32Value, actualData.Int32Value);
@@ -430,7 +407,6 @@ public class ProtobufMapper_MapAsync_Should
         var targetMapping = new TransformationBuilder()
             .InsertStaticField(15, Enums.WireType.VarInt, expected)
             .Build();
-        Log.Verbose("Mapping: {Mapping}", targetMapping.Serialize());
 
         var sourceData = new ProtoBuf.TwoFields()
         {
@@ -438,11 +414,9 @@ public class ProtobufMapper_MapAsync_Should
         };
 
         var sourceMessage = sourceData.ToByteArray();
-        Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
 
         var target = new ProtobufMapper(_mapperLogger, targetMapping);
         var actual = await target.MapAsync(sourceMessage);
-        Log.Verbose("TargetMessage: {TargetMessage}", Convert.ToBase64String(actual));
 
         var actualData = ProtoBuf.TwoFields.Parser.ParseFrom(actual);
 
@@ -461,18 +435,15 @@ public class ProtobufMapper_MapAsync_Should
             .RenameField(4200, 10) // Include field 10 mapped from 4200
             .InsertStaticField(15, Enums.WireType.VarInt, expected) // Include a constant value for field 15
             .Build();
-        Log.Verbose("Mapping: {Mapping}", targetMapping.Serialize());
 
         var sourceData = new Builders.ProtobufAllTypesBuilder()
             .UseRandomValues()
             .Build();
 
         var sourceMessage = sourceData.ToByteArray();
-        Log.Verbose("SourceMessage: {SourceMessage}", Convert.ToBase64String(sourceMessage));
 
         var target = new ProtobufMapper(_mapperLogger, targetMapping);
         var actual = await target.MapAsync(sourceMessage);
-        Log.Verbose("TargetMessage: {TargetMessage}", Convert.ToBase64String(actual));
 
         var actualData = ProtoBuf.ThreeFields.Parser.ParseFrom(actual);
 

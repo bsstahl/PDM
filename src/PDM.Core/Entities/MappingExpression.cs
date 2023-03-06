@@ -1,8 +1,13 @@
-﻿namespace PDM.Entities;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
+
+namespace PDM.Entities;
 
 internal class MappingExpression
 {
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public Enums.ExpressionType ExpressionType { get; set; }
+
     public string Value { get; set; } = string.Empty;
 
     public MappingExpression()
@@ -12,6 +17,11 @@ internal class MappingExpression
     {
         this.ExpressionType = expressionType;
         this.Value = value;
+    }
+
+    public override string ToString()
+    {
+        return JsonSerializer.Serialize(this);
     }
 }
 

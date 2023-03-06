@@ -57,13 +57,6 @@ internal static class StringExtensions
         return (sourceKey, targetKey);
     }
 
-    internal static (int, string) ParseKeyValuePair(this string pair, CultureInfo formatProvider)
-    {
-        var kvPair = pair.ParsePair();
-        _ = int.TryParse(kvPair.Item1, NumberStyles.Integer, formatProvider, out var key);
-        return (key, kvPair.Item2);
-    }
-
     internal static (string, string) ParsePair(this string pair)
     {
         (string, string) results = (String.Empty, String.Empty);

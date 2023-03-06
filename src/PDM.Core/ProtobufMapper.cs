@@ -13,8 +13,14 @@ public class ProtobufMapper
         _logger = logger ?? new DefaultLogger();
         _logger.LogMethodEntry(nameof(ProtobufMapper), "Ctor");
 
+        if (logger is null)
+            _logger.NoLoggerProvided();
+
         _transformations = transformations ?? Array.Empty<Entities.Transformation>();
         // TODO: Validate any transformations
+
+        var transformationJson = System.Text.Json.JsonSerializer.Serialize(_transformations);
+        _logger.LogLargeData("Transformations", transformationJson);
 
         _logger.LogMethodExit(nameof(ProtobufMapper), "Ctor");
     }
@@ -23,19 +29,22 @@ public class ProtobufMapper
     {
         _logger.LogMethodEntry(nameof(ProtobufMapper), nameof(MapAsync));
 
-#pragma warning disable CA1848 // TODO: Use the LoggerMessage delegates
-        _logger.LogDebug("Source Message Received: {SourceMessage}", Convert.ToBase64String(sourceMessage));
-#pragma warning restore CA1848 // Use the LoggerMessage delegates
+        if (sourceMessage is null)
+        {
+            string fieldName = nameof(sourceMessage);
+            _logger.LogRequiredFieldMissing(fieldName);
+            throw new ArgumentNullException(fieldName);
+        }
+
+        _logger.LogLargeData("Source Message", Convert.ToBase64String(sourceMessage));
 
         var result = await sourceMessage
             .MapAsync(_logger, _transformations)
             .ConfigureAwait(false);
 
-#pragma warning disable CA1848 // TODO: Use the LoggerMessage delegates
-        _logger.LogDebug("Target Message Produced: {TargetMessage}", Convert.ToBase64String(result));
-#pragma warning restore CA1848 // Use the LoggerMessage delegates
-
+        _logger.LogLargeData("Target Message", Convert.ToBase64String(result));
         _logger.LogMethodExit(nameof(ProtobufMapper), nameof(MapAsync));
+
         return result;
     }
 }

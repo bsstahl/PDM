@@ -2,6 +2,7 @@
 
 namespace PDM.Core.Test;
 
+[ExcludeFromCodeCoverage]
 internal class SerilogTraceListener : TraceListener
 {
     readonly Serilog.ILogger _logger;
@@ -13,7 +14,7 @@ internal class SerilogTraceListener : TraceListener
 
     public override void Write(string? message)
     {
-        _logger.Information("Logged to Trace: '{message}'", message);
+        _logger.Information("Logged to Trace: {message}", message);
     }
 
     public override void WriteLine(string? message)

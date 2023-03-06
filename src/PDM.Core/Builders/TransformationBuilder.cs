@@ -1,14 +1,12 @@
 ﻿using PDM.Constants;
 using PDM.Entities;
 using PDM.Enums;
-using PDM.Extensions;
 using System.Globalization;
 
 namespace PDM.Builders;
 
 public class TransformationBuilder
 {
-    private readonly CultureInfo _formatProvider = CultureInfo.InvariantCulture;
     private readonly List<Transformation> _transformations = new();
 
     public IEnumerable<Transformation> Build() => _transformations;
@@ -35,13 +33,13 @@ public class TransformationBuilder
     public TransformationBuilder BlacklistField(int fieldNumber)
     {
         return this
-            .ReplaceField(TransformationSubtype.Blacklist, fieldNumber.ToString(_formatProvider));
+            .ReplaceField(TransformationSubtype.Blacklist, fieldNumber.ToString(CultureInfo.InvariantCulture));
     }
 
     public TransformationBuilder RenameField(int sourceFieldNumber, int targetFieldNumber)
     {
-        var source = sourceFieldNumber.ToString(_formatProvider);
-        var target = targetFieldNumber.ToString(_formatProvider);
+        var source = sourceFieldNumber.ToString(CultureInfo.InvariantCulture);
+        var target = targetFieldNumber.ToString(CultureInfo.InvariantCulture);
         return this
             .ReplaceField(TransformationSubtype.Renames, $"{source}:{target}");
     }

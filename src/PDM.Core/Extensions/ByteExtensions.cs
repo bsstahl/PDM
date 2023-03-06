@@ -6,8 +6,10 @@ namespace PDM.Extensions;
 
 internal static class ByteExtensions
 {
-    internal static Task<IEnumerable<MessageField>> Parse(this byte[] message)
+    internal static Task<IEnumerable<MessageField>> Parse(this byte[] message, ILogger logger)
     {
+        logger.LogMethodEntry(nameof(ByteExtensions), nameof(Parse));
+
         var result = new List<MessageField>();
 
         var i = 0;
@@ -16,6 +18,8 @@ internal static class ByteExtensions
             var vint = Varint.Parse(message[i..]);
             var tag = Tag.Parse(vint);
             i += vint.WireLength;
+
+            logger.LogParsingField(tag);
 
             switch (tag.WireType)
             {
@@ -50,6 +54,9 @@ internal static class ByteExtensions
             }
         }
 
+        logger.LogParseMessageResult(result);
+
+        logger.LogMethodExit(nameof(ByteExtensions), nameof(Parse));
         return Task.FromResult(result.AsEnumerable());
     }
 
@@ -62,20 +69,12 @@ internal static class ByteExtensions
 
     internal async static Task<byte[]> MapAsync(this byte[] sourceMessage, ILogger logger, IEnumerable<Transformation> transformations)
     {
-        if (sourceMessage is null)
-        {
-            string fieldName = nameof(sourceMessage);
-#pragma warning disable CA1848 // TODO: Use the LoggerMessage delegates
-            logger.LogError("{FieldName} is required to perform a mapping", fieldName);
-#pragma warning restore CA1848 // Use the LoggerMessage delegates
-            throw new ArgumentNullException(fieldName);
-        }
-
         var sourceFields = await sourceMessage
-            .Parse()
+            .Parse(logger)
             .ConfigureAwait(false);
 
-        var targetMappings = transformations.AsMappings(sourceFields);
+        var targetMappings = transformations
+            .AsMappings(logger, sourceFields);
 
         var source = sourceFields.AsQueryable();
 
@@ -87,14 +86,22 @@ internal static class ByteExtensions
                 Enums.ExpressionType.Linq => source
                         .Single(targetMapping.Expression.Value)
                         .Value,
-                Enums.ExpressionType.Literal => targetMapping.Expression.Value,
+
+                Enums.ExpressionType.Literal => targetMapping
+                    .Expression
+                    .Value,
+
                 _ => throw new InvalidOperationException("Unreachable code reached")
             };
 
             if (targetValue is not null)
-                targetFields.Add(new MessageField(targetMapping.TargetField.Key, targetMapping.TargetField.WireType, targetValue));
+            {
+                var targetField = new MessageField(targetMapping.TargetField.Key, targetMapping.TargetField.WireType, targetValue);
+                targetFields.Add(targetField);
+                logger.LogFieldMappingProcessed(targetField);
+            }
         }
 
-        return targetFields.ToByteArray();
+        return targetFields.ToByteArray(logger);
     }
 }
