@@ -5,7 +5,7 @@ on:
   workflow_dispatch: # Allow running the workflow manually from the GitHub UI
   push:
     branches:
-      - 'nuget'       # Change to 'main' when ready
+      - 'main'       # Trigger on changes to main
   pull_request:
     branches:
       - '*'          # Run the workflow for all pull requests
