@@ -7,13 +7,13 @@ It was initially hallucinated by ChatGPT as a Python library, but this implement
 You can install PDM via NuGet:
 
 ```powershell
-Install-Package PDM
+Install-Package ProtobufDataMapper
 ```
 
 Or via .NET CLI:
 
 ```bash
-dotnet add package PDM
+dotnet add package ProtobufDataMapper
 ```
 
 ## Usage
