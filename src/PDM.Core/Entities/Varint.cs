@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+﻿using System.Globalization;
 
 namespace PDM.Entities;
 
@@ -60,7 +60,7 @@ internal sealed record Varint
 
     public override string ToString()
     {
-        return this.Value.ToString();
+        return this.Value.ToString(CultureInfo.CurrentCulture);
     }
 }
 

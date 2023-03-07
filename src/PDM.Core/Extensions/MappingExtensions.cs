@@ -10,10 +10,7 @@ internal static class MappingExtensions
 {
     internal static void Include(this IList<Mapping> mappings, ILogger logger, IEnumerable<MessageField> messageFields, IEnumerable<Transformation> transformations)
     {
-        var includeTransforms = transformations
-            .Where(t => t.IsReplaceField(TransformationSubtype.Include));
-
-        if (!includeTransforms.Any())
+        if (!transformations.HasReplaceField(TransformationSubtype.Include))
         {
             // If there is no "replacefield.include" add all
             // existing fields by default
@@ -25,7 +22,7 @@ internal static class MappingExtensions
             // the fields specified in the include list
 
             // TODO: Answer the Question: Is it ok to have multiple includes?
-            foreach (var includeTransform in includeTransforms)
+            foreach (var includeTransform in transformations)
             {
                 var includeFields = includeTransform.Value.Split(',');
                 foreach (var includeField in includeFields)

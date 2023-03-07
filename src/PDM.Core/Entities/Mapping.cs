@@ -2,7 +2,7 @@
 
 namespace PDM.Entities;
 
-internal class Mapping
+internal sealed class Mapping
 {   
     public MessageField TargetField { get; set; }
     public MappingExpression Expression { get; set; }

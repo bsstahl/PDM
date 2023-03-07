@@ -8,6 +8,9 @@ namespace PDM.Extensions;
 
 internal static class TransformationExtensions
 {
+    internal static bool HasReplaceField(this IEnumerable<Transformation> transformations, string subType)
+        => transformations.Any(t => t.IsReplaceField(subType));
+
     internal static bool IsReplaceField(this Transformation t, string subType)
     {
         var rf = t.TransformationType == TransformationType.ReplaceField;
