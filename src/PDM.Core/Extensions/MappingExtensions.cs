@@ -153,6 +153,10 @@ internal static class MappingExtensions
                 {
                     result.AddRange((byte[])value!);
                 }
+                else if (typeof(string).IsAssignableFrom(value.GetType()))
+                {
+                    result.AddRange(Convert.FromHexString((string)value));
+                }
                 break;
             default:
                 throw new InvalidOperationException("Unreachable code reached");

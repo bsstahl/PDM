@@ -1,4 +1,5 @@
 ﻿using PDM.Entities;
+using PDM.Extensions;
 using System.Globalization;
 
 namespace PDM.Extensions;
@@ -6,17 +7,15 @@ namespace PDM.Extensions;
 internal static class StringExtensions
 {
     internal static string ToLiteralExpression(this string value, Enums.WireType wireType)
-    {
-        return wireType switch
+        => wireType switch
         {
             Enums.WireType.VarInt => value,
             Enums.WireType.I64 => throw new NotImplementedException(),
             Enums.WireType.Len => $"s => new object {{ Value=\"{value}\" }}",
             Enums.WireType.SGroup | Enums.WireType.EGroup => value,
-            Enums.WireType.I32 => throw new NotImplementedException(),
+            Enums.WireType.I32 => Convert.ToHexString(value.ParseI32()),
             _ => throw new InvalidOperationException("Unreachable code reached")
         };
-    }
 
     internal static TagLengthValue ParseTLV(this string value, CultureInfo formatProvider)
     {
@@ -35,7 +34,7 @@ internal static class StringExtensions
 
         return results;
     }
-    
+
     internal static IEnumerable<(int, int)> ParseFieldPairs(this string value, CultureInfo formatProvider)
     {
         var results = new List<(int, int)>();
@@ -68,5 +67,14 @@ internal static class StringExtensions
         }
 
         return results;
+    }
+
+    internal static byte[] ParseI32(this string value)
+    {
+        var num = float.Parse(value, CultureInfo.InvariantCulture);
+        var b = BitConverter.IsLittleEndian
+            ? BitConverter.GetBytes(num)
+            : BitConverter.GetBytes(num).Reverse();
+        return b.ToArray();
     }
 }
