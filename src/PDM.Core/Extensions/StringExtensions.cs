@@ -10,11 +10,11 @@ internal static class StringExtensions
     internal static string ToLiteralExpression(this string value, Enums.WireType wireType)
         => wireType switch
         {
-            Enums.WireType.VarInt => value.ParseVarint().ToString(CultureInfo.InvariantCulture),
+            Enums.WireType.VarInt => value,
             Enums.WireType.I64 => throw new NotImplementedException(),
             Enums.WireType.Len => $"s => new object {{ Value=\"{value}\" }}",
             Enums.WireType.SGroup | Enums.WireType.EGroup => value,
-            Enums.WireType.I32 => Convert.ToBase64String(value.ParseI32()),
+            Enums.WireType.I32 => Convert.ToHexString(value.ParseI32()),
             _ => throw new InvalidOperationException("Unreachable code reached")
         };
 

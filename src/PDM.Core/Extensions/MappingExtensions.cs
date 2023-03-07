@@ -166,7 +166,7 @@ internal static class MappingExtensions
                 }
                 else if (typeof(string).IsAssignableFrom(value.GetType()))
                 {
-                    result.AddRange(Convert.FromBase64String((string)value));
+                    result.AddRange(Convert.FromHexString((string)value));
                 }
                 break;
             default:

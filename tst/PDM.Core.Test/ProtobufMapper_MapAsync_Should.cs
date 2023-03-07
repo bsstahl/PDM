@@ -400,32 +400,79 @@ public class ProtobufMapper_MapAsync_Should
     }
 
     [Fact]
-    public async Task ProperlyUtilizeMultipleTransformationTypes()
+    public async Task ProperlyInsertAStaticValue_VarintAsInt32()
     {
         var expected = Int32.MaxValue.GetRandom();
 
         var targetMapping = new TransformationBuilder()
-            .IncludeField(0) // Clears out default mappings
-            .RenameField(3000, 5) // Include field 5 mapped from 3000
-            .RenameField(4200, 10) // Include field 10 mapped from 4200
-            .InsertStaticField(15, Enums.WireType.VarInt, expected) // Include a constant value for field 15
+            .InsertStaticField(1000, Enums.WireType.VarInt, expected)
             .Build();
 
-        var sourceData = new Builders.ProtobufAllTypesBuilder()
-            .UseRandomValues()
-            .Build();
-
-        var sourceMessage = sourceData.ToByteArray();
+        var sourceMessage = Array.Empty<byte>();
 
         var target = new ProtobufMapper(_mapperLogger, targetMapping);
         var actual = await target.MapAsync(sourceMessage);
 
-        var actualData = ProtoBuf.ThreeFields.Parser.ParseFrom(actual);
+        var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);
 
-        Assert.True(actual.Length < 23);
-        Assert.Equal(sourceData.StringValue, actualData.StringValue);
-        Assert.Equal(sourceData.FloatValue, actualData.FloatValue);
-        Assert.Equal(expected, actualData.IntegerValue);
+        Assert.Equal(expected, actualData.Int32Value);
+    }
+
+    [Fact]
+    public async Task ProperlyInsertAStaticValue_I32AsFixed32()
+    {
+        var expected = Convert.ToUInt32(Math.Abs(int.MaxValue.GetRandom()));
+
+        var targetMapping = new TransformationBuilder()
+            .InsertStaticField(4000, Enums.WireType.I32, expected)
+            .Build();
+
+        var sourceMessage = Array.Empty<Byte>();
+
+        var target = new ProtobufMapper(_mapperLogger, targetMapping);
+        var actual = await target.MapAsync(sourceMessage);
+
+        var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);
+
+        Assert.Equal(expected, actualData.Fixed32Value);
+    }
+
+    [Fact]
+    public async Task ProperlyInsertAStaticValue_I32AsSFixed32()
+    {
+        var expected = int.MaxValue.GetRandom();
+
+        var targetMapping = new TransformationBuilder()
+            .InsertStaticField(4100, Enums.WireType.I32, expected)
+            .Build();
+
+        var sourceMessage = Array.Empty<Byte>();
+
+        var target = new ProtobufMapper(_mapperLogger, targetMapping);
+        var actual = await target.MapAsync(sourceMessage);
+
+        var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);
+
+        Assert.Equal(expected, actualData.SFixed32Value);
+    }
+
+    [Fact]
+    public async Task ProperlyInsertAStaticValue_I32AsFloat()
+    {
+        var expected = float.MaxValue.GetRandom();
+
+        var targetMapping = new TransformationBuilder()
+            .InsertStaticField(4200, Enums.WireType.I32, expected)
+            .Build();
+
+        var sourceMessage = Array.Empty<Byte>();
+
+        var target = new ProtobufMapper(_mapperLogger, targetMapping);
+        var actual = await target.MapAsync(sourceMessage);
+
+        var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);
+
+        Assert.Equal(expected, actualData.FloatValue);
     }
 
     [Fact]
