@@ -75,10 +75,57 @@ public class TransformationBuilder
             : this.AddTransformation(TransformationType.InsertField, transformationSubType, $"{fieldNumber}:{wireType}:{value}");
     }
 
-    public TransformationBuilder InsertStaticField(int fieldNumber, WireType wireType, object value)
+    public TransformationBuilder InsertStaticField(int fieldNumber, WireType wireType, string value)
     {
         return this
             .InsertField(TransformationSubtype.Static, fieldNumber, wireType, value);
     }
 
+    public TransformationBuilder InsertStaticField(int fieldNumber, WireType wireType, int value)
+    {
+        return this
+            .InsertStaticField(fieldNumber, wireType, value.ToString(CultureInfo.InvariantCulture));
+    }
+
+    public TransformationBuilder InsertStaticField(int fieldNumber, WireType wireType, uint value)
+    {
+        return this
+            .InsertStaticField(fieldNumber, wireType, value.ToString(CultureInfo.InvariantCulture));
+    }
+
+    public TransformationBuilder InsertStaticField(int fieldNumber, WireType wireType, bool value)
+    {
+        return this
+            .InsertStaticField(fieldNumber, wireType, value.ToString(CultureInfo.InvariantCulture));
+    }
+
+    public TransformationBuilder InsertStaticField(int fieldNumber, WireType wireType, long value)
+    {
+        return this
+            .InsertStaticField(fieldNumber, wireType, value.ToString(CultureInfo.InvariantCulture));
+    }
+
+    internal TransformationBuilder InsertStaticField(int fieldNumber, WireType wireType, ulong value)
+    {
+        return this
+            .InsertStaticField(fieldNumber, wireType, value.ToString(CultureInfo.InvariantCulture));
+    }
+
+    public TransformationBuilder InsertStaticField(int fieldNumber, WireType wireType, float value)
+    {
+        return this
+            .InsertStaticField(fieldNumber, wireType, value.ToString(CultureInfo.InvariantCulture));
+    }
+
+    public TransformationBuilder InsertStaticField(int fieldNumber, WireType wireType, double value)
+    {
+        return this
+            .InsertStaticField(fieldNumber, wireType, value.ToString(CultureInfo.InvariantCulture));
+    }
+
+    public TransformationBuilder InsertStaticField(int fieldNumber, WireType wireType, byte[] value)
+    {
+        return this
+            .InsertStaticField(fieldNumber, wireType, Convert.ToHexString(value));
+    }
 }

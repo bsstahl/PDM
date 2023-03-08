@@ -3,6 +3,7 @@ using System.Globalization;
 using PDM.Constants;
 using PDM.Entities;
 using PDM.Enums;
+using Google.Protobuf.WellKnownTypes;
 
 namespace PDM.Extensions;
 
@@ -123,8 +124,18 @@ internal static class MappingExtensions
         switch (wireType)
         {
             case Enums.WireType.VarInt:
-                var varintValue = Convert.ToUInt64(value, System.Globalization.CultureInfo.InvariantCulture);
-                var rawData = new Varint(varintValue).RawData;
+                byte[] rawData;
+                if (value is null)
+                    rawData = Array.Empty<byte>();
+                else if (typeof(byte[]).IsAssignableFrom(value.GetType()))
+                    rawData = (byte[])value;
+                //else if (long.TryParse(value.ToString(), NumberStyles.Integer, CultureInfo.InvariantCulture, out var longValue))
+                //    rawData = new Varint(longValue).RawData;
+                else if (ulong.TryParse(value.ToString(), NumberStyles.Integer, CultureInfo.InvariantCulture, out var ulongValue))
+                    rawData = new Varint(ulongValue).RawData;
+                else
+                    rawData = Convert.FromBase64String(value.ToString() ?? string.Empty);
+
                 if (rawData.Length > 0)
                 {
                     result.AddRange(rawData);
@@ -155,7 +166,7 @@ internal static class MappingExtensions
                 }
                 else if (typeof(string).IsAssignableFrom(value.GetType()))
                 {
-                    result.AddRange(Convert.FromHexString((string)value));
+                    result.AddRange(Convert.FromBase64String((string)value));
                 }
                 break;
             default:
