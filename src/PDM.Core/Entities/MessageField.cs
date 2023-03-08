@@ -13,7 +13,7 @@ public class MessageField
     public object? Value { get; set; }
 
 
-    public bool IsValid => (this.Key > 0)
+    internal bool IsValid => (this.Key > 0)
         && (this.Value is not null);
 
     public MessageField(int key, Enums.WireType wireType)

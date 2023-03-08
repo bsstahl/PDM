@@ -21,19 +21,22 @@ internal sealed record Varint
         this.RawData = rawData;
     }
 
-    internal Varint(UInt64 value)
+    internal Varint(ulong value)
     {
         var rawData = new List<byte>();
         var currentValue = value;
 
-        while (currentValue > 0)
-        {
-            var currentByte = currentValue > 127
-                ? Convert.ToByte((currentValue & 0x7F) | 0x80)
-                : Convert.ToByte(currentValue & 0x7F);
-            rawData.Add(currentByte);
-            currentValue >>= 7;
-        }
+        if (currentValue == 0)
+            rawData.Add(0);
+        else
+            while (currentValue > 0)
+            {
+                var currentByte = currentValue > 127
+                    ? Convert.ToByte((currentValue & 0x7F) | 0x80)
+                    : Convert.ToByte(currentValue & 0x7F);
+                rawData.Add(currentByte);
+                currentValue >>= 7;
+            }
 
         this.RawData = rawData.ToArray();
     }
