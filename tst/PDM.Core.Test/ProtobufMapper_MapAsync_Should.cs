@@ -500,4 +500,5 @@ public class ProtobufMapper_MapAsync_Should
         Assert.Equal(sourceData.EmbeddedMessageValue.EmbeddedInt32Value, actualData.IntegerValue);
         Assert.Equal(sourceData.EmbeddedMessageValue.EmbeddedStringValue, actualData.StringValue);
     }
+
 }
