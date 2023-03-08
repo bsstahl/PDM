@@ -1,6 +1,6 @@
 ﻿namespace PDM.Entities;
 
-internal class TransformationConfigurations : List<Transformation>
+internal sealed class TransformationConfigurations : List<Transformation>
 {
 }
 

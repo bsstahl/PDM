@@ -2,7 +2,7 @@
 
 namespace PDM.Constants;
 
-internal class LogEventId
+internal static class LogEventId
 {
     internal static EventId NoLoggerProvided => new(0, nameof(NoLoggerProvided));
 

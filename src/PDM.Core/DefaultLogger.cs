@@ -2,7 +2,7 @@
 
 namespace PDM;
 
-internal class DefaultLogger : ILogger
+internal sealed class DefaultLogger : ILogger
 {
     public DefaultLogger()
     {

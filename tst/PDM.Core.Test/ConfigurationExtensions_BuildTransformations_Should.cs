@@ -5,6 +5,7 @@ using PDM.Extensions;
 
 namespace PDM.Core.Test;
 
+[ExcludeFromCodeCoverage]
 public class ConfigurationExtensions_BuildTransformations_Should
 {
 	[Fact]

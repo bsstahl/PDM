@@ -18,6 +18,8 @@
 		<Nullable>enable</Nullable>
 		<LangVersion>latest</LangVersion>
 		<AnalysisLevel>latest-all</AnalysisLevel>
+		<EnableNETAnalyzers>true</EnableNETAnalyzers>
+		<AnalysisMode>AllEnabledByDefault</AnalysisMode>
 		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
 		<RootNamespace>PDM</RootNamespace>
 	</PropertyGroup>
