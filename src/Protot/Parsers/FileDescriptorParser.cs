@@ -1,7 +1,6 @@
-using System.Diagnostics;
-using Protot.Entities;
 using Protot.Exceptions;
 using Protot.Extensions;
+using System.Diagnostics;
 
 namespace Protot;
 
@@ -10,6 +9,7 @@ public class FileDescriptorParser
     private string _protoContent;
     private const string tempProtoFileName = "temp.Proto";
     private const string tempProtoDescFileName = "temp";
+
     public FileDescriptorParser(string protoContent)
     {
         if (string.IsNullOrWhiteSpace(protoContent))
@@ -20,27 +20,33 @@ public class FileDescriptorParser
         this._protoContent = protoContent;
     }
 
-    public async Task Parse()
-    { 
-        await File.WriteAllTextAsync(GetTempProtoFilePath(), this._protoContent);
-        
-        if (!File.Exists(GetTempProtoFilePath()))
+    public async Task<string> ParseAsync()
+    {
+        var tempProtoFilePath = GetTempProtoFilePath();
+        var tempProtoDirectory = Path.GetDirectoryName(tempProtoFilePath);
+
+        await File.WriteAllTextAsync(tempProtoFilePath, this._protoContent);
+
+        if (!File.Exists(tempProtoFilePath))
         {
             throw new FileNotFoundException("Unable to find Temp ProtoFile");
         }
 
         var protocPath = GetProtocPath();
+        var arguments = string.Format(
+            @"--proto_path=""{0}"" --descriptor_set_out=""{1}"" ""{2}""",
+            tempProtoDirectory,
+            tempProtoDescFileName,
+            tempProtoFileName);
 
-        ProcessStartInfo protocProcess = new ProcessStartInfo(
-            protocPath,
-            string.Format(@"""--descriptor_set_out={0}"" ""--proto_path={1}"" ",
-                GetTempProtoDescriptorPath,
-                FileExtensions.GetTempProtoFileFolder()))
+        var protocProcess = new ProcessStartInfo(protocPath, arguments)
         {
             UseShellExecute = false,
             CreateNoWindow = true,
             WindowStyle = ProcessWindowStyle.Hidden,
-            WorkingDirectory = Environment.CurrentDirectory
+            WorkingDirectory = tempProtoDirectory,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
         };
 
         Console.WriteLine(protocProcess.FileName + " " + protocProcess.Arguments, "protoc");
@@ -57,30 +63,34 @@ public class FileDescriptorParser
         if (process.ExitCode == 0)
         {
             Console.WriteLine("protoc succeeded: " + output);
+            return output.Trim();
         }
         else
         {
             Console.WriteLine("protoc failed: " + error);
+            return error.Trim();
         }
     }
+
     private static string GetTempProtoFilePath()
     {
         string tempFolderPath = FileExtensions.GetTempProtoFileFolder();
-        if(!Directory.Exists(tempFolderPath))
+        if (!Directory.Exists(tempFolderPath))
         {
             Directory.CreateDirectory(tempFolderPath);
         }
-        return $"{tempFolderPath}/{tempProtoFileName}";
+        return Path.Combine(tempFolderPath, tempProtoFileName);
     }
-    
+
     private static string GetTempProtoDescriptorPath()
     {
-        return $"{FileExtensions.GetTempProtoFileFolder()}/{tempProtoDescFileName}";
+        return Path.Combine(FileExtensions.GetTempProtoFileFolder(), tempProtoDescFileName);
     }
-    
-    private static string  GetProtocPath()
+
+    private static string GetProtocPath()
     {
         string protocPath = FileExtensions.GetProtocPath();
+
         if (File.Exists(protocPath))
         {
             return protocPath;

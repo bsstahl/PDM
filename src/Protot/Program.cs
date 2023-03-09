@@ -2,9 +2,11 @@
 using Protot;
 using Serilog;
 
-string? GetProtoFolder()
+string GetProtoFolder()
 {
-    return $"{Directory.GetParent(Directory.GetCurrentDirectory())?.Parent?.Parent?.FullName}/Protobuf";
+    return Path.Combine(        
+        Directory.GetParent(Directory.GetCurrentDirectory())?.Parent?.Parent?.FullName ?? string.Empty,
+        "Protobuf");
 }
 
 Log.Logger = new LoggerConfiguration()
@@ -13,12 +15,14 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
 
 var filePath = GetProtoFolder();
-// Not working give permission denied
-//await new FileDescriptorParser(await File.ReadAllTextAsync($"{filePath}/AllTypes.proto")).Parse();
+
+var fileContent = await File.ReadAllTextAsync(Path.Combine(filePath, "AllTypes.proto"));
+var parser = new FileDescriptorParser(fileContent);
+var fileDescriptor = await parser.ParseAsync();
 
 // Working as this is not using protoc
-var fileDescriptor  =await new ProtoBufFileParser(await File.ReadAllTextAsync($"{filePath}/AllTypes.proto"))
- .Parse();
+//var fileDescriptor  =await new ProtoBufFileParser(await File.ReadAllTextAsync(Path.Combine(filePath, "AllTypes.proto")))
+// .Parse();
 
 Log.Information(JsonSerializer.Serialize(fileDescriptor));
 
