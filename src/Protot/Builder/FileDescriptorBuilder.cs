@@ -24,16 +24,17 @@ internal class FileDescriptorBuilder
         {
             return this;
         }
-        if (expression.Right.EqualValue(ProtoIdentifiers.Proto2))
-        {
-            _fileDescriptor.ProtoType = ProtoType.Proto2;
-        }
-
         if (expression.Right.EqualValue(ProtoIdentifiers.Proto3))
         {
             _fileDescriptor.ProtoType = ProtoType.Proto3;
+            return this;
         }
-
+        if (expression.Right.EqualValue(ProtoIdentifiers.Proto2))
+        {
+            _fileDescriptor.ProtoType = ProtoType.Proto2;
+            return this;
+        }
+        _fileDescriptor.ProtoType = ProtoType.Proto2;
         return this;
     }
     
@@ -112,7 +113,6 @@ internal class FileDescriptorBuilder
                 field.WireType = wireType;
             }
         }
-
         return this;
     }
 }

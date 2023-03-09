@@ -52,9 +52,8 @@ public sealed class ProtoBufFileParser
     {
         List<FileSection> sections = new List<FileSection>();
         string formattedText = await this.CleanAndFormat();
-        string? line;
         using var reader = new StringReader(formattedText);
-        while ((line = await reader.ReadLineAsync()) != null)
+        while (await reader.ReadLineAsync() is { } line)
         {
             if (string.IsNullOrWhiteSpace(line)) continue;
             line = line.Trim();
@@ -117,7 +116,7 @@ public sealed class ProtoBufFileParser
             }
 
             int index = 0;
-            foreach (var character in line.Trim().TakeWhile(character => character != '/'))
+            foreach (var character in line.Trim().TakeWhile(character => character is not ('/' or '*')))
             {
                 if (index == 0 && character == ' ')
                 {
