@@ -4,6 +4,7 @@ using PDM.Constants;
 using PDM.Entities;
 using PDM.Enums;
 using Google.Protobuf.WellKnownTypes;
+using System.ComponentModel;
 
 namespace PDM.Extensions;
 
@@ -77,7 +78,8 @@ internal static class MappingExtensions
 
     internal static Mapping IncludeLiteral(this IList<Mapping> mappings, TagLengthValue tlv)
     {
-        return mappings.IncludeLiteral(tlv.Key, tlv.WireType, tlv.Value);
+        return mappings
+            .IncludeLiteral(tlv.Key, tlv.WireType, tlv.Value);
     }
 
     internal static Mapping? RemoveField(this List<Mapping> result, int key)
@@ -129,12 +131,12 @@ internal static class MappingExtensions
                     rawData = Array.Empty<byte>();
                 else if (typeof(byte[]).IsAssignableFrom(value.GetType()))
                     rawData = (byte[])value;
-                //else if (long.TryParse(value.ToString(), NumberStyles.Integer, CultureInfo.InvariantCulture, out var longValue))
-                //    rawData = new Varint(longValue).RawData;
+                else if (long.TryParse(value.ToString(), NumberStyles.Integer, CultureInfo.InvariantCulture, out var longValue))
+                    rawData = new Varint(longValue).RawData;
                 else if (ulong.TryParse(value.ToString(), NumberStyles.Integer, CultureInfo.InvariantCulture, out var ulongValue))
                     rawData = new Varint(ulongValue).RawData;
                 else
-                    rawData = Convert.FromBase64String(value.ToString() ?? string.Empty);
+                    rawData = Convert.FromHexString(value.ToString() ?? string.Empty);
 
                 if (rawData.Length > 0)
                 {
@@ -142,13 +144,32 @@ internal static class MappingExtensions
                 }
                 break;
             case Enums.WireType.I64:
-                if (typeof(byte[]).IsAssignableFrom(value.GetType()))
+                if (typeof(byte[]).IsAssignableFrom(value!.GetType()))
                 {
                     result.AddRange((byte[])value!);
                 }
+                else if (typeof(string).IsAssignableFrom(value.GetType()))
+                {
+                    var bytes = Convert.FromHexString((string)value);
+                    result.AddRange(bytes);
+                }
+                else
+                    throw new NotImplementedException($"Type conversion for {value.GetType().Name} to {wireType} not implemented");
                 break;
             case Enums.WireType.Len:
-                var lenValue = (byte[])value!;
+                byte[] lenValue;
+                if (typeof(string).IsAssignableFrom(value.GetType()))
+                {
+                    string stringValue = (string)value;
+                    lenValue = stringValue.IsValidHexString()
+                        ? Convert.FromHexString(stringValue)
+                        : System.Text.Encoding.UTF8.GetBytes(stringValue);
+                }
+                else
+                {
+                    lenValue = (byte[])value!;
+                }
+
                 if (lenValue.Length > 0)
                 {
                     var lenLength = new Varint(Convert.ToUInt64(lenValue.Length));
@@ -166,8 +187,10 @@ internal static class MappingExtensions
                 }
                 else if (typeof(string).IsAssignableFrom(value.GetType()))
                 {
-                    result.AddRange(Convert.FromBase64String((string)value));
+                    result.AddRange(Convert.FromHexString((string)value));
                 }
+                else
+                    throw new NotImplementedException($"Type conversion for {value.GetType().Name} to {wireType} not implemented");
                 break;
             default:
                 throw new InvalidOperationException("Unreachable code reached");
