@@ -452,4 +452,30 @@ public class ProtobufMapper_MapAsync_Should
         Assert.Equal(sourceData.FloatValue, actualData.FloatValue);
         Assert.Equal(expected, actualData.IntegerValue);
     }
+
+    [Fact]
+    public async Task ProperlyMapsFromEmbeddedMessageField()
+    {
+        var expected = Int32.MaxValue.GetRandom();
+
+        var targetMapping = new TransformationBuilder()
+            .IncludeField(0) // Clears out default mappings
+            .RenameField("3200.10000", 15) // Include field 15 mapped from embedded message
+            .RenameField("3200.10100", 5) // Include field 5 mapped from embedded message
+            .Build();
+
+        var sourceData = new Builders.ProtobufAllTypesBuilder()
+            .UseRandomValues()
+            .Build();
+
+        var sourceMessage = sourceData.ToByteArray();
+
+        var target = new ProtobufMapper(_mapperLogger, targetMapping);
+        var actual = await target.MapAsync(sourceMessage);
+
+        var actualData = ProtoBuf.TwoFields.Parser.ParseFrom(actual);
+
+        Assert.Equal(sourceData.EmbeddedMessageValue.EmbeddedInt32Value, actualData.IntegerValue);
+        Assert.Equal(sourceData.EmbeddedMessageValue.EmbeddedStringValue, actualData.StringValue);
+    }
 }

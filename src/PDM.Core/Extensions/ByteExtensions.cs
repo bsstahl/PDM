@@ -6,9 +6,9 @@ namespace PDM.Extensions;
 
 internal static class ByteExtensions
 {
-    internal static Task<IEnumerable<MessageField>> Parse(this byte[] message, ILogger logger)
+    internal static Task<IEnumerable<MessageField>> ParseAsync(this byte[] message, ILogger logger)
     {
-        logger.LogMethodEntry(nameof(ByteExtensions), nameof(Parse));
+        logger.LogMethodEntry(nameof(ByteExtensions), nameof(ParseAsync));
 
         var result = new List<MessageField>();
 
@@ -56,7 +56,7 @@ internal static class ByteExtensions
 
         logger.LogParseMessageResult(result);
 
-        logger.LogMethodExit(nameof(ByteExtensions), nameof(Parse));
+        logger.LogMethodExit(nameof(ByteExtensions), nameof(ParseAsync));
         return Task.FromResult(result.AsEnumerable());
     }
 
@@ -70,26 +70,27 @@ internal static class ByteExtensions
     internal async static Task<byte[]> MapAsync(this byte[] sourceMessage, ILogger logger, IEnumerable<Transformation> transformations)
     {
         var sourceFields = await sourceMessage
-            .Parse(logger)
+            .ParseAsync(logger)
             .ConfigureAwait(false);
 
-        var targetMappings = transformations
-            .AsMappings(logger, sourceFields);
+        var targetMappings = await transformations
+            .AsMappingsAsync(logger, sourceFields)
+            .ConfigureAwait(false);
 
         var source = sourceFields.AsQueryable();
 
         var targetFields = new List<MessageField>();
         foreach (var targetMapping in targetMappings)
         {
-            dynamic targetValue = targetMapping.Expression.ExpressionType switch
+            dynamic? targetValue = targetMapping.Expression.ExpressionType switch
             {
                 Enums.ExpressionType.Linq => source
                         .Single(targetMapping.Expression.Value)
                         .Value,
 
-                Enums.ExpressionType.Literal => targetMapping
-                    .Expression
-                    .Value,
+                Enums.ExpressionType.Literal => !string.IsNullOrWhiteSpace(targetMapping.Expression.Value)
+                    ? targetMapping.Expression.Value
+                    : targetMapping.TargetField?.Value,
 
                 _ => throw new InvalidOperationException("Unreachable code reached")
             };

@@ -3,6 +3,7 @@ using PDM.Constants;
 using PDM.Entities;
 using PDM.Enums;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 
 namespace PDM.Extensions;
 
@@ -18,9 +19,9 @@ internal static class TransformationExtensions
         return rf && st;
     }
 
-    internal static IEnumerable<Entities.Mapping> AsMappings(this IEnumerable<Transformation> transformations, ILogger logger, IEnumerable<MessageField> messageFields)
+    internal static async Task<IEnumerable<Entities.Mapping>> AsMappingsAsync(this IEnumerable<Transformation> transformations, ILogger logger, IEnumerable<MessageField> messageFields)
     {
-        logger.LogMethodEntry(nameof(TransformationExtensions), nameof(AsMappings));
+        logger.LogMethodEntry(nameof(TransformationExtensions), nameof(AsMappingsAsync));
 
         var mappings = new List<Entities.Mapping>();
 
@@ -63,15 +64,27 @@ internal static class TransformationExtensions
                             break;
                         case TransformationSubtype.Renames:
                             var fieldPairs = transform.Value.ParseFieldPairs(CultureInfo.InvariantCulture);
-                            foreach (var (sourceKey, targetKey) in fieldPairs)
+                            foreach (var (sourceKeys, targetKey) in fieldPairs)
                             {
                                 mappings.RemoveField(targetKey);
-                                var source = messageFields.SingleOrDefault(f => f.Key == sourceKey);
-                                if (source is not null)
+
+                                switch (sourceKeys.Length)
                                 {
-                                    var targetField = new MessageField(targetKey, source.WireType);
-                                    var renamesMapping = mappings.IncludeField(targetField, sourceKey.MapExpression());
-                                    logger.LogMappingBuilt(renamesMapping);
+                                    case 1:
+                                        var sourceKey = sourceKeys[0];
+                                        var source = messageFields.SingleOrDefault(f => f.Key == sourceKey);
+                                        var targetField = new MessageField(targetKey, source.WireType);
+                                        var renamesMapping = mappings.IncludeField(targetField, sourceKey.MapExpression());
+                                        logger.LogMappingBuilt(renamesMapping);
+                                        break;
+
+                                    case > 1:
+                                        await mappings.MapEmbeddedRenameAsync(
+                                            sourceKeys,
+                                            messageFields,
+                                            targetKey,
+                                            logger).ConfigureAwait(false);
+                                        break;
                                 }
                             }
                             break;
@@ -87,8 +100,46 @@ internal static class TransformationExtensions
             }
         }
 
-        logger.LogMethodExit(nameof(TransformationExtensions), nameof(AsMappings));
+        logger.LogMethodExit(nameof(TransformationExtensions), nameof(AsMappingsAsync));
         return mappings;
+    }
+
+    internal static async Task MapEmbeddedRenameAsync(
+        this IList<Mapping> mappings,
+        int[] sourceKeys,
+        IEnumerable<MessageField> sourceFields,
+        int targetKey,
+        ILogger logger)
+    {
+        for (var i = 0; i < sourceKeys.Length - 1; i++)
+        {
+            var sourceField = sourceFields?.FirstOrDefault(x => x.Key == sourceKeys[i]);
+            var sourceFieldBytes = sourceField is not null && sourceField.Value.IsByteArray()
+                ? sourceField.Value as byte[]
+                : null;
+
+            var parseEmbeddedMessageTask = sourceFieldBytes?.ParseAsync(logger);
+            if (parseEmbeddedMessageTask is not null)
+            {
+                var parsedEmbeddedMessage = await parseEmbeddedMessageTask.ConfigureAwait(false);
+                sourceFields = parsedEmbeddedMessage?.ToArray();
+            }
+        }
+
+        var sourceKey = sourceKeys?.LastOrDefault();
+
+        if (sourceKey.HasValue
+            && sourceFields?.FirstOrDefault(x => x.Key == sourceKey) is MessageField source)
+        {
+            var targetField = new MessageField(targetKey, source.WireType)
+            {
+                Value = source.Value
+            };
+            var targetExpression = new MappingExpression(ExpressionType.Literal, string.Empty);
+            var mapping = new Mapping(targetField, targetExpression);
+            mappings.Add(mapping);
+            logger.LogMappingBuilt(mapping);
+        }
     }
 
 }

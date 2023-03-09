@@ -1,5 +1,6 @@
 ﻿using PDM.Entities;
 using System.Globalization;
+using System.Runtime.InteropServices;
 
 namespace PDM.Extensions;
 
@@ -36,9 +37,9 @@ internal static class StringExtensions
         return results;
     }
     
-    internal static IEnumerable<(int, int)> ParseFieldPairs(this string value, CultureInfo formatProvider)
+    internal static IEnumerable<(int[], int)> ParseFieldPairs(this string value, CultureInfo formatProvider)
     {
-        var results = new List<(int, int)>();
+        var results = new List<(int[], int)>();
         var fieldPairs = value.Split(',');
         foreach (var fieldPair in fieldPairs)
         {
@@ -49,12 +50,22 @@ internal static class StringExtensions
         return results;
     }
 
-    internal static (int, int) ParseFieldPair(this string fieldPair, CultureInfo formatProvider)
+    internal static (int[], int) ParseFieldPair(this string fieldPair, CultureInfo formatProvider)
     {
-        var pair = fieldPair.ParsePair();
-        _ = int.TryParse(pair.Item1, NumberStyles.Integer, formatProvider, out var sourceKey);
-        _ = int.TryParse(pair.Item2, NumberStyles.Integer, formatProvider, out var targetKey);
-        return (sourceKey, targetKey);
+        var (item1, item2) = fieldPair.ParsePair();
+
+        var sourceKeys = item1
+            .Split('.', StringSplitOptions.RemoveEmptyEntries)
+            .Select(item => int.TryParse(item, NumberStyles.Integer, formatProvider, out var result)
+                ? result
+                : (int?)null)
+            .Where(x => x.HasValue)
+            .Select(x => x.Value)
+            .ToArray();
+
+        _ = int.TryParse(item2, NumberStyles.Integer, formatProvider, out var targetKey);
+
+        return (sourceKeys, targetKey);
     }
 
     internal static (string, string) ParsePair(this string pair)
