@@ -1,0 +1,43 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "PDM.Core.Test.ProtoBuf";
+
+message AllTypes {
+
+	// Varint types
+	int32 Int32Value = 1000;
+	int64 Int64Value = 1100;
+	uint32 UInt32Value = 1200;
+	uint64 UInt64Value = 1300;
+	sint32 SInt32Value = 1400;
+	sint64 SInt64Value = 1500;
+	bool BoolValue = 1600;
+	SampleEnum EnumValue = 1700; 
+
+	// I64 types - byte[8]
+	fixed64 Fixed64Value = 2000;
+	sfixed64 SFixed64Value = 2100;
+	double DoubleValue = 2200;
+
+	// Len types
+	string StringValue = 3000;
+	bytes BytesValue = 3100;
+	SampleEmbeddedMessage EmbeddedMessageValue = 3200;
+	repeated int32 RepeatedInt32Value = 3300;
+	
+	// I32 types - byte[4]
+	fixed32 Fixed32Value = 4000;
+	sfixed32 SFixed32Value = 4100;
+	float FloatValue = 4200;
+}
+
+enum SampleEnum {
+	SampleValue0 = 0;
+	SampleValue1 = 1;
+	SampleValue2 = 2;
+}
+
+message SampleEmbeddedMessage {
+	int32 EmbeddedInt32Value = 10000;
+	string EmbeddedStringValue = 10100;
+}
