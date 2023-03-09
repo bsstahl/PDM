@@ -14,12 +14,16 @@ public class TransformationBuilder
 
     public TransformationBuilder AddTransformation(TransformationType transformationType, string subType, string value)
     {
+        if (string.IsNullOrEmpty(value))
+            throw new ArgumentNullException(nameof(value));
+
         _transformations.Add(new Transformation()
         {
             TransformationType = transformationType,
             SubType = subType,
             Value = value
         });
+
         return this;
     }
 
@@ -73,9 +77,8 @@ public class TransformationBuilder
 
     public TransformationBuilder InsertField(string transformationSubType, int fieldNumber, WireType wireType, object value)
     {
-        return value is null
-            ? throw new ArgumentNullException(nameof(value))
-            : this.AddTransformation(TransformationType.InsertField, transformationSubType, $"{fieldNumber}:{wireType}:{value}");
+        return this
+            .AddTransformation(TransformationType.InsertField, transformationSubType, $"{fieldNumber}:{wireType}:{value}");
     }
 
     public TransformationBuilder InsertStaticField(int fieldNumber, WireType wireType, string value)

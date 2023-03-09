@@ -1,5 +1,4 @@
 ﻿using PDM.Enums;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace PDM.Entities;
@@ -31,8 +30,4 @@ internal sealed record Tag
         return new Tag(fieldNumber, wireType);
     }
 
-    public override string ToString()
-    {
-        return JsonSerializer.Serialize(this);
-    }
 }

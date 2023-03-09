@@ -17,7 +17,7 @@ internal sealed record Varint
 
 
     internal Varint(byte[] rawData) 
-        => this.RawData = rawData ?? Array.Empty<byte>();
+        => this.RawData = rawData;
 
     internal Varint(long value)
         :this((ulong)value)
@@ -63,9 +63,7 @@ internal sealed record Varint
         return total;
     }
 
-    public override string ToString()
-    {
-        return this.Value.ToString(CultureInfo.CurrentCulture);
-    }
+    //public override string ToString()
+    //    => this.Value.ToString(CultureInfo.CurrentCulture);
 }
 
