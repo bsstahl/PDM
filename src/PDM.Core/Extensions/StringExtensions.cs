@@ -92,50 +92,45 @@ internal static class StringExtensions
             g = intValue;
         else if (ulong.TryParse(value, out var ulongValue))
             g = ulongValue;
-        else if (long.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var longValue))
-            g = longValue;
-        //else if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var f))
-        //    g = f;
         else
-            throw new NotImplementedException();
+        {
+            _ = long.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var longValue);
+            g = longValue;
+        }
 
         return g;
     }
 
     internal static byte[] ParseI32(this string value)
     {
-        dynamic g;
+        object g;
         if (uint.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var x))
             g = x;
         else if (int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var y))
             g = y;
-        else if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var f))
-            g = f;
         else
-            throw new NotImplementedException();
+        {
+            _ = float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var f);
+            g = f;
+        }
 
-        byte[] b = BitConverter.GetBytes(g);
-        return BitConverter.IsLittleEndian
-            ? b
-            : b.Reverse().ToArray();
+        return g.ToLittleEndianBytes();
     }
 
     internal static byte[] ParseI64(this string value)
     {
-        dynamic g;
+        object g;
         if (ulong.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var x))
             g = x;
         else if (long.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var y))
             g = y;
-        else if (double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var f))
-            g = f;
         else
-            throw new NotImplementedException();
+        {
+            _ = double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var f);
+            g = f;
+        }
 
-        byte[] b = BitConverter.GetBytes(g);
-        return BitConverter.IsLittleEndian
-            ? b
-            : b.Reverse().ToArray();
+        return g.ToLittleEndianBytes();
     }
 
     internal static bool IsValidHexString(this string value)

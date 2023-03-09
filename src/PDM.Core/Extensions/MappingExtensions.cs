@@ -3,8 +3,6 @@ using System.Globalization;
 using PDM.Constants;
 using PDM.Entities;
 using PDM.Enums;
-using Google.Protobuf.WellKnownTypes;
-using System.ComponentModel;
 
 namespace PDM.Extensions;
 
@@ -127,16 +125,13 @@ internal static class MappingExtensions
         {
             case Enums.WireType.VarInt:
                 byte[] rawData;
-                if (value is null)
-                    rawData = Array.Empty<byte>();
-                else if (typeof(byte[]).IsAssignableFrom(value.GetType()))
-                    rawData = (byte[])value;
-                else if (long.TryParse(value.ToString(), NumberStyles.Integer, CultureInfo.InvariantCulture, out var longValue))
+                if (long.TryParse(value.ToString(), NumberStyles.Integer, CultureInfo.InvariantCulture, out var longValue))
                     rawData = new Varint(longValue).RawData;
-                else if (ulong.TryParse(value.ToString(), NumberStyles.Integer, CultureInfo.InvariantCulture, out var ulongValue))
-                    rawData = new Varint(ulongValue).RawData;
                 else
-                    rawData = Convert.FromHexString(value.ToString() ?? string.Empty);
+                {
+                    _ = ulong.TryParse(value.ToString(), NumberStyles.Integer, CultureInfo.InvariantCulture, out var ulongValue);
+                    rawData = new Varint(ulongValue).RawData;
+                }
 
                 if (rawData.Length > 0)
                 {
@@ -148,13 +143,11 @@ internal static class MappingExtensions
                 {
                     result.AddRange((byte[])value!);
                 }
-                else if (typeof(string).IsAssignableFrom(value.GetType()))
+                else
                 {
                     var bytes = Convert.FromHexString((string)value);
                     result.AddRange(bytes);
                 }
-                else
-                    throw new NotImplementedException($"Type conversion for {value.GetType().Name} to {wireType} not implemented");
                 break;
             case Enums.WireType.Len:
                 byte[] lenValue;
@@ -185,12 +178,10 @@ internal static class MappingExtensions
                 {
                     result.AddRange((byte[])value!);
                 }
-                else if (typeof(string).IsAssignableFrom(value.GetType()))
+                else
                 {
                     result.AddRange(Convert.FromHexString((string)value));
                 }
-                else
-                    throw new NotImplementedException($"Type conversion for {value.GetType().Name} to {wireType} not implemented");
                 break;
             default:
                 throw new InvalidOperationException("Unreachable code reached");
