@@ -75,7 +75,7 @@ public class ProtobufMapper_MapAsync_Should
     public async Task NotFailIfNoLoggerIsSupplied()
     {
         _ = Trace.Listeners.Add(new SerilogTraceListener(Log.Logger));
-        var sourceMessage = Convert.FromBase64String("KghmZThhYjAyYVXdOEHIeKTOuuQE");
+        var sourceMessage = Convert.FromHexString("2A08666538616230326155DD3841C878A4CEBAE404");
         var target = new ProtobufMapper(null!, null);
         var actual = await target.MapAsync(sourceMessage);
     }

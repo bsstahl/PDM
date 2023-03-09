@@ -16,10 +16,12 @@ internal sealed record Varint
     public UInt64 Value => CalculateValue(this.DecodedData);
 
 
-    internal Varint(byte[] rawData)
-    {
-        this.RawData = rawData;
-    }
+    internal Varint(byte[] rawData) 
+        => this.RawData = rawData ?? Array.Empty<byte>();
+
+    internal Varint(long value)
+        :this((ulong)value)
+    { }
 
     internal Varint(ulong value)
     {

@@ -1,5 +1,4 @@
 ﻿using PDM.Entities;
-using PDM.Extensions;
 using System.Globalization;
 using System.Runtime.InteropServices;
 
@@ -11,10 +10,10 @@ internal static class StringExtensions
         => wireType switch
         {
             Enums.WireType.VarInt => value.ParseVarint().ToString(CultureInfo.InvariantCulture),
-            Enums.WireType.I64 => throw new NotImplementedException(),
-            Enums.WireType.Len => $"s => new object {{ Value=\"{value}\" }}",
+            Enums.WireType.I64 => Convert.ToHexString(value.ParseI64()),
+            Enums.WireType.Len => value,
             Enums.WireType.SGroup | Enums.WireType.EGroup => value,
-            Enums.WireType.I32 => Convert.ToBase64String(value.ParseI32()),
+            Enums.WireType.I32 => Convert.ToHexString(value.ParseI32()),
             _ => throw new InvalidOperationException("Unreachable code reached")
         };
 
@@ -80,29 +79,25 @@ internal static class StringExtensions
         return results;
     }
 
-    internal static ulong ParseVarint(this string value)
+    internal static dynamic ParseVarint(this string value)
     {
-        ulong g;
+        dynamic g;
         if (bool.TryParse(value, out var boolValue))
             g = Convert.ToUInt64(boolValue);
+        else if (byte.TryParse(value, out var byteValue))
+            g = byteValue;
+        else if (uint.TryParse(value, out var uintValue))
+            g = uintValue;
+        else if (int.TryParse(value, out var intValue))
+            g = intValue;
         else if (ulong.TryParse(value, out var ulongValue))
             g = ulongValue;
         else if (long.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var longValue))
-            g = BitConverter.ToUInt64(BitConverter.GetBytes(longValue));
+            g = longValue;
         //else if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var f))
         //    g = f;
         else
             throw new NotImplementedException();
-
-        //byte[] b;
-        //if (g is byte)
-        //    b = new byte[] { g };
-        //else
-        //    b = BitConverter.IsLittleEndian
-        //        ? BitConverter.GetBytes(g)
-        //        : BitConverter.GetBytes(g).Reverse();
-
-        //return b;
 
         return g;
     }
@@ -119,11 +114,30 @@ internal static class StringExtensions
         else
             throw new NotImplementedException();
 
-        byte[] b = BitConverter.IsLittleEndian
-            ? BitConverter.GetBytes(g)
-            : BitConverter.GetBytes(g).Reverse();
-
-        return b;
+        byte[] b = BitConverter.GetBytes(g);
+        return BitConverter.IsLittleEndian
+            ? b
+            : b.Reverse().ToArray();
     }
 
+    internal static byte[] ParseI64(this string value)
+    {
+        dynamic g;
+        if (ulong.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var x))
+            g = x;
+        else if (long.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var y))
+            g = y;
+        else if (double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var f))
+            g = f;
+        else
+            throw new NotImplementedException();
+
+        byte[] b = BitConverter.GetBytes(g);
+        return BitConverter.IsLittleEndian
+            ? b
+            : b.Reverse().ToArray();
+    }
+
+    internal static bool IsValidHexString(this string value)
+        => value.All(h => Uri.IsHexDigit(h));
 }

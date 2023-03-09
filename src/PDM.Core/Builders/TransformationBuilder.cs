@@ -1,6 +1,7 @@
 ﻿using PDM.Constants;
 using PDM.Entities;
 using PDM.Enums;
+using PDM.Extensions;
 using System.Globalization;
 
 namespace PDM.Builders;
@@ -59,12 +60,14 @@ public class TransformationBuilder
 
     public TransformationBuilder IncludeField(int fieldNumber)
     {
-        return this.IncludeFields(new int[] { fieldNumber });
+        return this
+            .IncludeFields(new int[] { fieldNumber });
     }
 
     public TransformationBuilder IncludeFields(IEnumerable<int> fieldNumbers)
     {
-        return this.IncludeFields(string.Join(',', fieldNumbers));
+        return this
+            .IncludeFields(string.Join(',', fieldNumbers));
     }
 
     public TransformationBuilder IncludeFields(string fieldNumbersList)
@@ -94,7 +97,7 @@ public class TransformationBuilder
             .InsertStaticField(fieldNumber, wireType, value.ToString(CultureInfo.InvariantCulture));
     }
 
-    public TransformationBuilder InsertStaticField(int fieldNumber, WireType wireType, uint value)
+    internal TransformationBuilder InsertStaticField(int fieldNumber, WireType wireType, uint value)
     {
         return this
             .InsertStaticField(fieldNumber, wireType, value.ToString(CultureInfo.InvariantCulture));
@@ -134,5 +137,17 @@ public class TransformationBuilder
     {
         return this
             .InsertStaticField(fieldNumber, wireType, Convert.ToHexString(value));
+    }
+
+    public TransformationBuilder InsertStaticFieldSignedVarint(int fieldNumber, int value)
+    {
+        return this
+            .InsertStaticField(fieldNumber, WireType.VarInt, value.ZZEncode());
+    }
+
+    public TransformationBuilder InsertStaticFieldSignedVarint(int fieldNumber, long value)
+    {
+        return this
+            .InsertStaticField(fieldNumber, WireType.VarInt, value.ZZEncode());
     }
 }

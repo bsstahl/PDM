@@ -14,7 +14,8 @@ public class MessageField
 
 
     internal bool IsValid => (this.Key > 0)
-        && (this.Value is not null);
+        && (this.Value is not null)
+        && (!string.IsNullOrEmpty(this.Value.ToString()));
 
     public MessageField(int key, Enums.WireType wireType)
         : this(key, wireType, null)
