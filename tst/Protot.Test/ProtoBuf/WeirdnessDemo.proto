@@ -1,0 +1,10 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "PDM.Core.Test.ProtoBuf";
+
+message WeirdnessDemo {
+  fixed64 StringStoredAsFixed64 = 5000;
+  fixed32 BytesStoredAsFixed32 = 5100;
+  string Fixed64StoredAsString = 5200;
+  string Fixed32StoredAsString = 5300;
+}

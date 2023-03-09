@@ -4,42 +4,39 @@ namespace Protot.Extensions;
 
 internal static class ProtocExtensions
 {
-    private const string  = "fileDesc.Proto";
+    private const string TempProtoFileName = "temp.Proto";
     private const string ProtoDescriptionFile = "fileDesc";
 
     internal static string GetProtocPath()
     {
         var settings = Settings.LoadDefaultSettings(root: null);
         var globalPackagesFolder = SettingsUtility.GetGlobalPackagesFolder(settings);
-
         var grpcToolFolder = Directory.GetDirectories($"{globalPackagesFolder}grpc.tools");
-
         var latestVersion = grpcToolFolder.MaxBy(x=> x);
-        
         string platformName = RuntimeExtensions.GetOsPlatformName();
         string processorArchitecture = RuntimeExtensions.GetProcessArchitecture();
         return RuntimeExtensions.IsWindows()
             ? $"{latestVersion}/tools/{platformName}_{processorArchitecture}/protoc.exe"
             : $"{latestVersion}/tools/{platformName}_{processorArchitecture}/protoc";
     }
-
-    internal static string GetTempProtoFileFolder()
-    {
-        return $"{Directory.GetCurrentDirectory()}/Temp";
-    }
     
-    internal static string GetTempProtoFilePath()
+    internal static string GetProtoFilePath()
     {
-        string tempFolderPath = FileExtensions.GetTempProtoFileFolder();
+        string tempFolderPath = GetTempFolder();
         if(!Directory.Exists(tempFolderPath))
         {
             Directory.CreateDirectory(tempFolderPath);
         }
-        return $"{tempFolderPath}/{tempProtoFileName}";
+        return $"{tempFolderPath}/{TempProtoFileName}";
     }
     
-    internal static string GetTempProtoDescriptorPath()
+    internal static string GetFileDescriptorPath()
     {
-        return $"{GetTempProtoFileFolder()}/{FileDescProtoDescFileName}";
+        return $"{GetTempFolder()}/{ProtoDescriptionFile}";
+    }
+    
+    internal static string GetTempFolder()
+    {
+        return $"{Directory.GetCurrentDirectory()}/Temp";
     }
 }
