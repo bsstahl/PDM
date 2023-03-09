@@ -24,6 +24,7 @@ internal static class TransformationExtensions
         logger.LogMethodEntry(nameof(TransformationExtensions), nameof(AsMappingsAsync));
 
         var mappings = new List<Entities.Mapping>();
+        var parsedEmbeddedMessages = new Dictionary<int, IEnumerable<MessageField>>();
 
         mappings.Include(logger, messageFields, transformations);
 
@@ -80,6 +81,7 @@ internal static class TransformationExtensions
 
                                     case > 1:
                                         await mappings.MapEmbeddedRenameAsync(
+                                            parsedEmbeddedMessages,
                                             sourceKeys,
                                             messageFields,
                                             targetKey,
@@ -106,8 +108,9 @@ internal static class TransformationExtensions
 
     internal static async Task MapEmbeddedRenameAsync(
         this IList<Mapping> mappings,
+        IDictionary<int, IEnumerable<MessageField>> parsedEmbeddedMessages,
         int[] sourceKeys,
-        IEnumerable<MessageField> sourceFields,
+        IEnumerable<MessageField>? sourceFields,
         int targetKey,
         ILogger logger)
     {
@@ -118,12 +121,18 @@ internal static class TransformationExtensions
                 ? sourceField.Value as byte[]
                 : null;
 
-            var parseEmbeddedMessageTask = sourceFieldBytes?.ParseAsync(logger);
-            if (parseEmbeddedMessageTask is not null)
+            if (!parsedEmbeddedMessages.ContainsKey(sourceKeys[i]))
             {
-                var parsedEmbeddedMessage = await parseEmbeddedMessageTask.ConfigureAwait(false);
-                sourceFields = parsedEmbeddedMessage?.ToArray();
+                var parseEmbeddedMessageTask = sourceFieldBytes?.ParseAsync(logger);
+                if (parseEmbeddedMessageTask is not null
+                    && await parseEmbeddedMessageTask.ConfigureAwait(false)
+                    is IEnumerable<MessageField> parsedEmbeddedMessage)
+                {
+                    parsedEmbeddedMessages[sourceKeys[i]] = parsedEmbeddedMessage;
+                }
             }
+
+            parsedEmbeddedMessages.TryGetValue(sourceKeys[i], out sourceFields);
         }
 
         var sourceKey = sourceKeys?.LastOrDefault();
