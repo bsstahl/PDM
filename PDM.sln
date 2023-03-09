@@ -15,17 +15,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.github\workflows\Publish-PreRelease.yaml = .github\workflows\Publish-PreRelease.yaml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PDM.Parser", "src\PDM.Parser\PDM.Parser.csproj", "{C0C82F43-37E8-4BEF-ACBD-4D31D41A8E22}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{460F91EE-7A06-4B59-AE80-9290FED6C66D}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tst", "tst", "{7214354A-8565-48C9-95F0-C18112DA8EB3}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PDM.DefaultProviders.Test", "tst\PDM.DefaultProviders.Test\PDM.DefaultProviders.Test.csproj", "{30A85217-BD0C-4E01-A439-083CD2BD51DB}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PDM.TestUtils", "tst\PDM.TestUtils\PDM.TestUtils.csproj", "{DA1846FB-7690-4F8F-8FCE-E0C87BC77652}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PDM.Parser.Test", "tst\PDM.Parser.Test\PDM.Parser.Test.csproj", "{8B4E291F-4008-4546-8D5B-33057017D696}"
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Protot", "src\Protot\Protot.csproj", "{F3C39581-5DCA-41FB-99D4-1D9D683F1B22}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Protot.Test", "tst\Protot.Test\Protot.Test.csproj", "{B0C822A9-B60C-4358-8677-E85B33D554FC}"
@@ -60,6 +49,14 @@ Global
 		{8B4E291F-4008-4546-8D5B-33057017D696}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8B4E291F-4008-4546-8D5B-33057017D696}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8B4E291F-4008-4546-8D5B-33057017D696}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3C39581-5DCA-41FB-99D4-1D9D683F1B22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3C39581-5DCA-41FB-99D4-1D9D683F1B22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3C39581-5DCA-41FB-99D4-1D9D683F1B22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3C39581-5DCA-41FB-99D4-1D9D683F1B22}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0C822A9-B60C-4358-8677-E85B33D554FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0C822A9-B60C-4358-8677-E85B33D554FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0C822A9-B60C-4358-8677-E85B33D554FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0C822A9-B60C-4358-8677-E85B33D554FC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
