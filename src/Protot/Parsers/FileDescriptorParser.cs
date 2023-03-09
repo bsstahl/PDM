@@ -82,11 +82,6 @@ public class FileDescriptorParser
         return Path.Combine(tempFolderPath, tempProtoFileName);
     }
 
-    private static string GetTempProtoDescriptorPath()
-    {
-        return Path.Combine(FileExtensions.GetTempProtoFileFolder(), tempProtoDescFileName);
-    }
-
     private static string GetProtocPath()
     {
         string protocPath = FileExtensions.GetProtocPath();
