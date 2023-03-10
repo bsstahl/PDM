@@ -26,7 +26,7 @@ internal static class TransformationExtensions
         var mappings = new List<Entities.Mapping>();
         var parsedEmbeddedMessages = new Dictionary<int, IEnumerable<MessageField>>();
 
-        mappings.Include(logger, messageFields, transformations);
+        mappings.Include(messageFields, transformations);
 
         foreach (var transform in transformations)
         {

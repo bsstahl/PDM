@@ -8,7 +8,7 @@ namespace PDM.Extensions;
 
 internal static class MappingExtensions
 {
-    internal static void Include(this IList<Mapping> mappings, ILogger logger, IEnumerable<MessageField> messageFields, IEnumerable<Transformation> transformations)
+    internal static void Include(this IList<Mapping> mappings, IEnumerable<MessageField> messageFields, IEnumerable<Transformation> transformations)
     {
         if (!transformations.HasReplaceField(TransformationSubtype.Include))
         {
