@@ -21,7 +21,7 @@ internal static class ByteExtensions
 
             logger.LogParsingField(tag);
 
-            MessageField currentField = null;
+            MessageField? currentField = null;
             switch (tag.WireType)
             {
                 case Enums.WireType.VarInt:
