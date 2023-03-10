@@ -74,7 +74,7 @@ internal static class TransformationExtensions
                                     case 1:
                                         var sourceKey = sourceKeys[0];
                                         var source = messageFields.SingleOrDefault(f => f.Key == sourceKey);
-                                        var targetField = new MessageField(targetKey, source.WireType);
+                                        var targetField = new MessageField(targetKey, source!.WireType);
                                         var renamesMapping = mappings.IncludeField(targetField, sourceKey.MapExpression());
                                         logger.LogMappingBuilt(renamesMapping);
                                         break;

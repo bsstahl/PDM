@@ -58,7 +58,7 @@ internal static class StringExtensions
                 ? result
                 : (int?)null)
             .Where(x => x.HasValue)
-            .Select(x => x.Value)
+            .Select(x => x!.Value)
             .ToArray();
 
         _ = int.TryParse(item2, NumberStyles.Integer, formatProvider, out var targetKey);

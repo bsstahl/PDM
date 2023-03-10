@@ -90,6 +90,9 @@ internal static class ByteExtensions
         var targetFields = new List<MessageField>();
         foreach (var targetMapping in targetMappings)
         {
+            if (targetMapping.TargetField is null)
+                throw new InvalidDataException(nameof(targetMapping.TargetField));
+
             dynamic? targetValue = targetMapping.Expression.ExpressionType switch
             {
                 Enums.ExpressionType.Linq => source
@@ -98,7 +101,7 @@ internal static class ByteExtensions
 
                 Enums.ExpressionType.Literal => !string.IsNullOrWhiteSpace(targetMapping.Expression.Value)
                     ? targetMapping.Expression.Value
-                    : targetMapping.TargetField?.Value,
+                    : targetMapping.TargetField.Value,
 
                 _ => throw new InvalidOperationException("Unreachable code reached")
             };
