@@ -1,19 +1,19 @@
-﻿using System.Globalization;
+﻿namespace PDM.Entities;
 
-namespace PDM.Entities;
-
-internal sealed record Varint
+public sealed record Varint
 {
     internal byte[] RawData { get; }
 
-    internal int WireLength => this.RawData.Length;
+    public int WireLength => this.RawData.Length;
 
     internal byte[] DecodedData
         => this.RawData
         .Select(d => Convert.ToByte(d & 127))
         .ToArray();
 
+#pragma warning disable CS3003 // Type is not CLS-compliant
     public UInt64 Value => CalculateValue(this.DecodedData);
+#pragma warning restore CS3003 // Type is not CLS-compliant
 
 
     internal Varint(byte[] rawData) 
@@ -43,8 +43,11 @@ internal sealed record Varint
         this.RawData = rawData.ToArray();
     }
 
-    internal static Varint Parse(byte[] message)
+    public static Varint Parse(byte[] message)
     {
+        if (message is null || message.Length < 1)
+            throw new ArgumentNullException(nameof(message));
+
         var length = 1;
         var currentByte = message[0];
         while (currentByte > 127)
@@ -52,6 +55,7 @@ internal sealed record Varint
             currentByte = message[length];
             length++;
         }
+
         return new Varint(message[0..length]);
     }
 

@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace PDM.Entities;
 
-internal sealed record Tag
+public sealed record Tag
 {
     public Tag(int fieldNumber, WireType wireType)
     {
@@ -24,6 +24,9 @@ internal sealed record Tag
 
     public static Tag Parse(Varint vint)
     {
+        if (vint is null)
+            throw new ArgumentNullException(nameof(vint));
+
         var vintValue = vint.Value;
         var wireType = (WireType)Convert.ToByte(vintValue & 7);
         var fieldNumber = Convert.ToInt32(vintValue >> 3);

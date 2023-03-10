@@ -80,11 +80,12 @@ internal static class MappingExtensions
             .IncludeLiteral(tlv.Key, tlv.WireType, tlv.Value);
     }
 
-    internal static Mapping? RemoveField(this List<Mapping> result, int key)
+    internal static Mapping? RemoveField(this List<Mapping> result, ILogger logger, int key)
     {
         var item = result.SingleOrDefault(f => f.TargetField.Key == key);
         if (item is not null)
             _ = result.Remove(item);
+        logger.LogMappingRemovalCompleted(key, item);
         return item;
     }
 

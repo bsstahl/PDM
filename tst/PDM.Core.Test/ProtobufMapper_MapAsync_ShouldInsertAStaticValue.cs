@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using PDM.Builders;
+using PDM.Core.Test.Extensions;
+using PDM.Parser.Extensions;
 using Serilog;
 using Xunit.Abstractions;
 
@@ -14,7 +15,6 @@ public class ProtobufMapper_MapAsync_ShouldInsertAStaticValue
     const string _longBytes = "41207665727920736D616C6C20737461676520696E2061207661737420636F736D6963206172656E612068756E6472656473206F662074686F7573616E6473207374697272656420627920737461726C696768742062697473206F66206D6F76696E6720666C7566662074686520736B792063616C6C7320746F20757320707265736572766520616E64206368657269736820746861742070616C6520626C756520646F743F20536561206F66205472616E7175696C697479206E6574776F726B206F6620776F726D686F6C65732061732061207061746368206F66206C6967687420636974697A656E73206F662064697374616E742065706F6368732077697468207072657474792073746F7269657320666F722077686963682074686572652773206C6974746C6520676F6F642065766964656E636520696E636F6E73706963756F7573206D6F746573206F6620726F636B20616E64206761732E204D61646520696E2074686520696E746572696F7273206F6620636F6C6C617073696E672073746172732076616E71756973682074686520696D706F737369626C652061206D6F7465206F6620647573742073757370656E64656420696E20612073756E6265616D20766173746E657373206973206265617261626C65206F6E6C79207468726F756768206C6F76652066726F6D20776869636820776520737072696E67206E6F7420612073756E726973652062757420612067616C6178797269736520616E642062696C6C696F6E732075706F6E2062696C6C696F6E732075706F6E2062696C6C696F6E732075706F6E2062696C6C696F6E732075706F6E2062696C6C696F6E732075706F6E2062696C6C696F6E732075706F6E2062696C6C696F6E732E";
 
     private readonly IServiceProvider _serviceProvider;
-    private readonly ILogger<ProtobufMapper> _mapperLogger;
 
     public ProtobufMapper_MapAsync_ShouldInsertAStaticValue(ITestOutputHelper output)
     {
@@ -25,10 +25,9 @@ public class ProtobufMapper_MapAsync_ShouldInsertAStaticValue
 
         _serviceProvider = new ServiceCollection()
             .AddLogging(l => l.AddSerilog())
+            .UseDefaultParser()
+            .AddSingleton<ProtobufMapper>()
             .BuildServiceProvider();
-
-        _mapperLogger = _serviceProvider
-            .GetRequiredService<ILogger<ProtobufMapper>>();
     }
 
     [Theory]
@@ -45,7 +44,7 @@ public class ProtobufMapper_MapAsync_ShouldInsertAStaticValue
 
         var sourceMessage = Array.Empty<byte>();
 
-        var target = new ProtobufMapper(_mapperLogger, targetMapping);
+        var target = _serviceProvider.GetMapper(targetMapping);
         var actual = await target.MapAsync(sourceMessage);
 
         var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);
@@ -67,7 +66,7 @@ public class ProtobufMapper_MapAsync_ShouldInsertAStaticValue
 
         var sourceMessage = Array.Empty<byte>();
 
-        var target = new ProtobufMapper(_mapperLogger, targetMapping);
+        var target = _serviceProvider.GetMapper(targetMapping);
         var actual = await target.MapAsync(sourceMessage);
 
         var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);
@@ -87,7 +86,7 @@ public class ProtobufMapper_MapAsync_ShouldInsertAStaticValue
 
         var sourceMessage = Array.Empty<byte>();
 
-        var target = new ProtobufMapper(_mapperLogger, targetMapping);
+        var target = _serviceProvider.GetMapper(targetMapping);
         var actual = await target.MapAsync(sourceMessage);
 
         var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);
@@ -107,7 +106,7 @@ public class ProtobufMapper_MapAsync_ShouldInsertAStaticValue
 
         var sourceMessage = Array.Empty<byte>();
 
-        var target = new ProtobufMapper(_mapperLogger, targetMapping);
+        var target = _serviceProvider.GetMapper(targetMapping);
         var actual = await target.MapAsync(sourceMessage);
 
         var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);
@@ -129,7 +128,7 @@ public class ProtobufMapper_MapAsync_ShouldInsertAStaticValue
 
         var sourceMessage = Array.Empty<byte>();
 
-        var target = new ProtobufMapper(_mapperLogger, targetMapping);
+        var target = _serviceProvider.GetMapper(targetMapping);
         var actual = await target.MapAsync(sourceMessage);
 
         var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);
@@ -151,7 +150,7 @@ public class ProtobufMapper_MapAsync_ShouldInsertAStaticValue
 
         var sourceMessage = Array.Empty<byte>();
 
-        var target = new ProtobufMapper(_mapperLogger, targetMapping);
+        var target = _serviceProvider.GetMapper(targetMapping);
         var actual = await target.MapAsync(sourceMessage);
 
         var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);
@@ -170,7 +169,7 @@ public class ProtobufMapper_MapAsync_ShouldInsertAStaticValue
 
         var sourceMessage = Array.Empty<byte>();
 
-        var target = new ProtobufMapper(_mapperLogger, targetMapping);
+        var target = _serviceProvider.GetMapper(targetMapping);
         var actual = await target.MapAsync(sourceMessage);
 
         var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);
@@ -190,7 +189,7 @@ public class ProtobufMapper_MapAsync_ShouldInsertAStaticValue
 
         var sourceMessage = Array.Empty<byte>();
 
-        var target = new ProtobufMapper(_mapperLogger, targetMapping);
+        var target = _serviceProvider.GetMapper(targetMapping);
         var actual = await target.MapAsync(sourceMessage);
 
         var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);
@@ -210,7 +209,7 @@ public class ProtobufMapper_MapAsync_ShouldInsertAStaticValue
 
         var sourceMessage = Array.Empty<Byte>();
 
-        var target = new ProtobufMapper(_mapperLogger, targetMapping);
+        var target = _serviceProvider.GetMapper(targetMapping);
         var actual = await target.MapAsync(sourceMessage);
 
         var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);
@@ -232,7 +231,7 @@ public class ProtobufMapper_MapAsync_ShouldInsertAStaticValue
 
         var sourceMessage = Array.Empty<Byte>();
 
-        var target = new ProtobufMapper(_mapperLogger, targetMapping);
+        var target = _serviceProvider.GetMapper(targetMapping);
         var actual = await target.MapAsync(sourceMessage);
 
         var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);
@@ -254,7 +253,7 @@ public class ProtobufMapper_MapAsync_ShouldInsertAStaticValue
 
         var sourceMessage = Array.Empty<Byte>();
 
-        var target = new ProtobufMapper(_mapperLogger, targetMapping);
+        var target = _serviceProvider.GetMapper(targetMapping);
         var actual = await target.MapAsync(sourceMessage);
 
         var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);
@@ -274,7 +273,7 @@ public class ProtobufMapper_MapAsync_ShouldInsertAStaticValue
 
         var sourceMessage = Array.Empty<Byte>();
 
-        var target = new ProtobufMapper(_mapperLogger, targetMapping);
+        var target = _serviceProvider.GetMapper(targetMapping);
         var actual = await target.MapAsync(sourceMessage);
 
         var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);
@@ -296,7 +295,7 @@ public class ProtobufMapper_MapAsync_ShouldInsertAStaticValue
 
         var sourceMessage = Array.Empty<Byte>();
 
-        var target = new ProtobufMapper(_mapperLogger, targetMapping);
+        var target = _serviceProvider.GetMapper(targetMapping);
         var actual = await target.MapAsync(sourceMessage);
 
         var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);
@@ -318,7 +317,7 @@ public class ProtobufMapper_MapAsync_ShouldInsertAStaticValue
 
         var sourceMessage = Array.Empty<Byte>();
 
-        var target = new ProtobufMapper(_mapperLogger, targetMapping);
+        var target = _serviceProvider.GetMapper(targetMapping);
         var actual = await target.MapAsync(sourceMessage);
 
         var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);
@@ -338,7 +337,7 @@ public class ProtobufMapper_MapAsync_ShouldInsertAStaticValue
 
         var sourceMessage = Array.Empty<Byte>();
 
-        var target = new ProtobufMapper(_mapperLogger, targetMapping);
+        var target = _serviceProvider.GetMapper(targetMapping);
         var actual = await target.MapAsync(sourceMessage);
 
         var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);
@@ -361,7 +360,7 @@ public class ProtobufMapper_MapAsync_ShouldInsertAStaticValue
 
         var sourceMessage = Array.Empty<Byte>();
 
-        var target = new ProtobufMapper(_mapperLogger, targetMapping);
+        var target = _serviceProvider.GetMapper(targetMapping);
         var actual = await target.MapAsync(sourceMessage);
 
         var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);
@@ -383,13 +382,14 @@ public class ProtobufMapper_MapAsync_ShouldInsertAStaticValue
             EmbeddedStringValue = expectedStringValue
         };
 
+        var embeddedBytes = embeddedMessageValue.ToByteArray(); 
         var targetMapping = new TransformationBuilder()
-            .InsertStaticField(3200, Enums.WireType.Len, embeddedMessageValue.ToByteArray())
+            .InsertStaticField(3200, Enums.WireType.Len, embeddedBytes)
             .Build();
 
         var sourceMessage = Array.Empty<Byte>();
 
-        var target = new ProtobufMapper(_mapperLogger, targetMapping);
+        var target = _serviceProvider.GetMapper(targetMapping);
         var actual = await target.MapAsync(sourceMessage);
 
         var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);
@@ -413,7 +413,7 @@ public class ProtobufMapper_MapAsync_ShouldInsertAStaticValue
 
         var sourceMessage = Array.Empty<Byte>();
 
-        var target = new ProtobufMapper(_mapperLogger, targetMapping);
+        var target = _serviceProvider.GetMapper(targetMapping);
         var actual = await target.MapAsync(sourceMessage);
 
         var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);

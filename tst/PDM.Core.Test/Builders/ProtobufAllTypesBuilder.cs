@@ -1,4 +1,6 @@
-﻿namespace PDM.Core.Test.Builders;
+﻿using PDM.Core.Test.Extensions;
+
+namespace PDM.Core.Test.Builders;
 
 [ExcludeFromCodeCoverage]
 internal class ProtobufAllTypesBuilder
@@ -79,7 +81,7 @@ internal class ProtobufAllTypesBuilder
         return this;
     }
 
-    public ProtobufAllTypesBuilder BytesValue(ByteString value)
+    public ProtobufAllTypesBuilder BytesValue(Google.Protobuf.ByteString value)
     {
         _value.BytesValue = value;
         return this;
@@ -88,7 +90,7 @@ internal class ProtobufAllTypesBuilder
     public ProtobufAllTypesBuilder BytesValue(byte[] value)
     {
         return this
-            .BytesValue(ByteString.FromBase64(Convert.ToBase64String(value)));
+            .BytesValue(Google.Protobuf.ByteString.FromBase64(Convert.ToBase64String(value)));
     }
 
     public ProtobufAllTypesBuilder EmbeddedMessageValue(ProtoBuf.SampleEmbeddedMessage value)
