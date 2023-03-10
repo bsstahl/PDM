@@ -44,6 +44,13 @@ public class TransformationBuilder
             .ReplaceField(TransformationSubtype.Renames, $"{source}:{target}");
     }
 
+    public TransformationBuilder RenameField(string sourceField, int targetFieldNumber)
+    {
+        var target = targetFieldNumber.ToString(CultureInfo.InvariantCulture);
+        return this.ReplaceField(
+            TransformationSubtype.Renames, $"{sourceField}:{target}");
+    }
+
     public TransformationBuilder RenameFields(string value)
     {
         return this
