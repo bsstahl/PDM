@@ -1,0 +1,8 @@
+[*.cs]
+csharp_style_namespace_declarations = file_scoped:warning
+csharp_using_directive_placement = outside_namespace:suggestion
+csharp_style_expression_bodied_methods = when_on_single_line:warning
+csharp_style_expression_bodied_constructors = when_on_single_line:warning
+[*.{cs,vb}]
+dotnet_style_prefer_conditional_expression_over_return = true:error
+dotnet_style_explicit_tuple_names = true:suggestion

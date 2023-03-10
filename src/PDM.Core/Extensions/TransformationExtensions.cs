@@ -26,7 +26,7 @@ internal static class TransformationExtensions
         var mappings = new List<Entities.Mapping>();
         var parsedEmbeddedMessages = new Dictionary<int, IEnumerable<MessageField>>();
 
-        mappings.Include(logger, messageFields, transformations);
+        mappings.Include(messageFields, transformations);
 
         foreach (var transform in transformations)
         {
@@ -74,7 +74,7 @@ internal static class TransformationExtensions
                                     case 1:
                                         var sourceKey = sourceKeys[0];
                                         var source = messageFields.SingleOrDefault(f => f.Key == sourceKey);
-                                        var targetField = new MessageField(targetKey, source.WireType);
+                                        var targetField = new MessageField(targetKey, source!.WireType);
                                         var renamesMapping = mappings.IncludeField(targetField, sourceKey.MapExpression());
                                         logger.LogMappingBuilt(renamesMapping);
                                         break;

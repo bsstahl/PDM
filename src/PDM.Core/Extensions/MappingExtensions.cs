@@ -8,7 +8,7 @@ namespace PDM.Extensions;
 
 internal static class MappingExtensions
 {
-    internal static void Include(this IList<Mapping> mappings, ILogger logger, IEnumerable<MessageField> messageFields, IEnumerable<Transformation> transformations)
+    internal static void Include(this IList<Mapping> mappings, IEnumerable<MessageField> messageFields, IEnumerable<Transformation> transformations)
     {
         if (!transformations.HasReplaceField(TransformationSubtype.Include))
         {
@@ -76,7 +76,8 @@ internal static class MappingExtensions
 
     internal static Mapping IncludeLiteral(this IList<Mapping> mappings, TagLengthValue tlv)
     {
-        return mappings.IncludeLiteral(tlv.Key, tlv.WireType, tlv.Value);
+        return mappings
+            .IncludeLiteral(tlv.Key, tlv.WireType, tlv.Value);
     }
 
     internal static Mapping? RemoveField(this List<Mapping> result, int key)
@@ -123,21 +124,45 @@ internal static class MappingExtensions
         switch (wireType)
         {
             case Enums.WireType.VarInt:
-                var varintValue = Convert.ToUInt64(value, System.Globalization.CultureInfo.InvariantCulture);
-                var rawData = new Varint(varintValue).RawData;
+                byte[] rawData;
+                if (long.TryParse(value.ToString(), NumberStyles.Integer, CultureInfo.InvariantCulture, out var longValue))
+                    rawData = new Varint(longValue).RawData;
+                else
+                {
+                    _ = ulong.TryParse(value.ToString(), NumberStyles.Integer, CultureInfo.InvariantCulture, out var ulongValue);
+                    rawData = new Varint(ulongValue).RawData;
+                }
+
                 if (rawData.Length > 0)
                 {
                     result.AddRange(rawData);
                 }
                 break;
             case Enums.WireType.I64:
-                if (typeof(byte[]).IsAssignableFrom(value.GetType()))
+                if (typeof(byte[]).IsAssignableFrom(value!.GetType()))
                 {
                     result.AddRange((byte[])value!);
                 }
+                else
+                {
+                    var bytes = Convert.FromHexString((string)value);
+                    result.AddRange(bytes);
+                }
                 break;
             case Enums.WireType.Len:
-                var lenValue = (byte[])value!;
+                byte[] lenValue;
+                if (typeof(string).IsAssignableFrom(value.GetType()))
+                {
+                    string stringValue = (string)value;
+                    lenValue = stringValue.IsValidHexString()
+                        ? Convert.FromHexString(stringValue)
+                        : System.Text.Encoding.UTF8.GetBytes(stringValue);
+                }
+                else
+                {
+                    lenValue = (byte[])value!;
+                }
+
                 if (lenValue.Length > 0)
                 {
                     var lenLength = new Varint(Convert.ToUInt64(lenValue.Length));
@@ -152,6 +177,10 @@ internal static class MappingExtensions
                 if (typeof(byte[]).IsAssignableFrom(value!.GetType()))
                 {
                     result.AddRange((byte[])value!);
+                }
+                else
+                {
+                    result.AddRange(Convert.FromHexString((string)value));
                 }
                 break;
             default:

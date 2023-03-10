@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace PDM.Entities;
 
@@ -12,10 +11,5 @@ public class Transformation
 
     public string Value { get; set; } = string.Empty;
 
-
-    public override string ToString()
-    {
-        return JsonSerializer.Serialize(this);
-    }
 }
 
