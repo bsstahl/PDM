@@ -1,6 +1,4 @@
-﻿using PDM.Core.Test.Extensions;
-
-namespace PDM.Core.Test.Extensions;
+﻿namespace PDM.TestUtils.Extensions;
 
 [ExcludeFromCodeCoverage]
 public static class FloatExtensions

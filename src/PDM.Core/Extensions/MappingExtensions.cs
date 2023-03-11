@@ -125,15 +125,7 @@ internal static class MappingExtensions
         switch (wireType)
         {
             case Enums.WireType.VarInt:
-                byte[] rawData;
-                if (long.TryParse(value.ToString(), NumberStyles.Integer, CultureInfo.InvariantCulture, out var longValue))
-                    rawData = new Varint(longValue).RawData;
-                else
-                {
-                    _ = ulong.TryParse(value.ToString(), NumberStyles.Integer, CultureInfo.InvariantCulture, out var ulongValue);
-                    rawData = new Varint(ulongValue).RawData;
-                }
-
+                byte[] rawData = (Varint.Create(value)).RawData;
                 if (rawData.Length > 0)
                 {
                     result.AddRange(rawData);

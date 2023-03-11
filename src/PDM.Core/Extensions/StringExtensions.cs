@@ -91,11 +91,14 @@ internal static class StringExtensions
             g = intValue;
         else if (ulong.TryParse(value, out var ulongValue))
             g = ulongValue;
-        else
-        {
-            _ = long.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var longValue);
+        else if (long.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var longValue))
             g = longValue;
-        }
+        else if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var floatValue))
+            g = floatValue;
+        else if (double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var doubleValue))
+            g = doubleValue;
+        else
+            throw new NotImplementedException($"{value} cannot be parsed as a numeric");
 
         return g;
     }

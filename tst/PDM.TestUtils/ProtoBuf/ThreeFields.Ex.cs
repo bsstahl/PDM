@@ -1,4 +1,4 @@
-﻿namespace PDM.Core.Test.ProtoBuf;
+﻿namespace PDM.TestUtils.ProtoBuf;
 
 [ExcludeFromCodeCoverage]
 public partial class ThreeFields

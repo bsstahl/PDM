@@ -1,6 +1,6 @@
 ﻿syntax = "proto3";
 
-option csharp_namespace = "PDM.Core.Test.ProtoBuf";
+option csharp_namespace = "PDM.TestUtils.ProtoBuf";
 
 message WeirdnessDemo {
   fixed64 StringStoredAsFixed64 = 5000;

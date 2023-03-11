@@ -1,11 +1,12 @@
 using Microsoft.Extensions.DependencyInjection;
 using PDM.Builders;
-using PDM.Core.Test.Extensions;
+using PDM.TestUtils.ProtoBuf;
+using PDM.TestUtils.Extensions;
 using PDM.Parser.Extensions;
 using Serilog;
 using Xunit.Abstractions;
 
-namespace PDM.Core.Test;
+namespace PDM.DefaultProviders.Test;
 
 [ExcludeFromCodeCoverage]
 [Collection("MapperTests")]
@@ -47,7 +48,7 @@ public class ProtobufMapper_MapAsync_ShouldInsertAStaticValue
         var target = _serviceProvider.GetMapper(targetMapping);
         var actual = await target.MapAsync(sourceMessage);
 
-        var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);
+        var actualData = AllTypes.Parser.ParseFrom(actual);
 
         Assert.Equal(expected, actualData.Int32Value);
     }
@@ -69,7 +70,7 @@ public class ProtobufMapper_MapAsync_ShouldInsertAStaticValue
         var target = _serviceProvider.GetMapper(targetMapping);
         var actual = await target.MapAsync(sourceMessage);
 
-        var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);
+        var actualData = AllTypes.Parser.ParseFrom(actual);
 
         Assert.Equal(expected, actualData.Int64Value);
     }
@@ -89,15 +90,15 @@ public class ProtobufMapper_MapAsync_ShouldInsertAStaticValue
         var target = _serviceProvider.GetMapper(targetMapping);
         var actual = await target.MapAsync(sourceMessage);
 
-        var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);
+        var actualData = AllTypes.Parser.ParseFrom(actual);
 
         Assert.Equal(expected, actualData.UInt32Value);
     }
 
     [Theory]
-    [InlineData(Int64.MaxValue)]
+    [InlineData(UInt64.MaxValue)]
     [InlineData(1066UL)]
-    [InlineData(0L)]
+    [InlineData(0UL)]
     public async Task VarintAsUInt64(ulong expected)
     {
         var targetMapping = new TransformationBuilder()
@@ -109,7 +110,7 @@ public class ProtobufMapper_MapAsync_ShouldInsertAStaticValue
         var target = _serviceProvider.GetMapper(targetMapping);
         var actual = await target.MapAsync(sourceMessage);
 
-        var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);
+        var actualData = AllTypes.Parser.ParseFrom(actual);
 
         Assert.Equal(expected, actualData.UInt64Value);
     }
@@ -131,7 +132,7 @@ public class ProtobufMapper_MapAsync_ShouldInsertAStaticValue
         var target = _serviceProvider.GetMapper(targetMapping);
         var actual = await target.MapAsync(sourceMessage);
 
-        var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);
+        var actualData = AllTypes.Parser.ParseFrom(actual);
 
         Assert.Equal(expected, actualData.SInt32Value);
     }
@@ -153,7 +154,7 @@ public class ProtobufMapper_MapAsync_ShouldInsertAStaticValue
         var target = _serviceProvider.GetMapper(targetMapping);
         var actual = await target.MapAsync(sourceMessage);
 
-        var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);
+        var actualData = AllTypes.Parser.ParseFrom(actual);
 
         Assert.Equal(expected, actualData.SInt64Value);
     }
@@ -172,16 +173,16 @@ public class ProtobufMapper_MapAsync_ShouldInsertAStaticValue
         var target = _serviceProvider.GetMapper(targetMapping);
         var actual = await target.MapAsync(sourceMessage);
 
-        var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);
+        var actualData = AllTypes.Parser.ParseFrom(actual);
 
         Assert.Equal(expected, actualData.BoolValue);
     }
 
     [Theory]
-    [InlineData(ProtoBuf.SampleEnum.SampleValue0)]
-    [InlineData(ProtoBuf.SampleEnum.SampleValue1)]
-    [InlineData(ProtoBuf.SampleEnum.SampleValue2)]
-    public async Task VarintAsEnum(ProtoBuf.SampleEnum expected)
+    [InlineData(SampleEnum.SampleValue0)]
+    [InlineData(SampleEnum.SampleValue1)]
+    [InlineData(SampleEnum.SampleValue2)]
+    public async Task VarintAsEnum(SampleEnum expected)
     {
         var targetMapping = new TransformationBuilder()
             .InsertStaticField(1700, Enums.WireType.VarInt, ((byte)expected).ToString())
@@ -192,7 +193,7 @@ public class ProtobufMapper_MapAsync_ShouldInsertAStaticValue
         var target = _serviceProvider.GetMapper(targetMapping);
         var actual = await target.MapAsync(sourceMessage);
 
-        var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);
+        var actualData = AllTypes.Parser.ParseFrom(actual);
 
         Assert.Equal(expected, actualData.EnumValue);
     }
@@ -212,7 +213,7 @@ public class ProtobufMapper_MapAsync_ShouldInsertAStaticValue
         var target = _serviceProvider.GetMapper(targetMapping);
         var actual = await target.MapAsync(sourceMessage);
 
-        var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);
+        var actualData = AllTypes.Parser.ParseFrom(actual);
 
         Assert.Equal(expected, actualData.Fixed32Value);
     }
@@ -234,7 +235,7 @@ public class ProtobufMapper_MapAsync_ShouldInsertAStaticValue
         var target = _serviceProvider.GetMapper(targetMapping);
         var actual = await target.MapAsync(sourceMessage);
 
-        var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);
+        var actualData = AllTypes.Parser.ParseFrom(actual);
 
         Assert.Equal(expected, actualData.SFixed32Value);
     }
@@ -256,15 +257,15 @@ public class ProtobufMapper_MapAsync_ShouldInsertAStaticValue
         var target = _serviceProvider.GetMapper(targetMapping);
         var actual = await target.MapAsync(sourceMessage);
 
-        var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);
+        var actualData = AllTypes.Parser.ParseFrom(actual);
 
         Assert.Equal(expected, actualData.FloatValue);
     }
 
     [Theory]
-    [InlineData(uint.MaxValue)]
-    [InlineData(1066U)]
-    [InlineData(0U)]
+    [InlineData(ulong.MaxValue)]
+    [InlineData(1066UL)]
+    [InlineData(0UL)]
     public async Task I64AsFixed64(ulong expected)
     {
         var targetMapping = new TransformationBuilder()
@@ -276,7 +277,7 @@ public class ProtobufMapper_MapAsync_ShouldInsertAStaticValue
         var target = _serviceProvider.GetMapper(targetMapping);
         var actual = await target.MapAsync(sourceMessage);
 
-        var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);
+        var actualData = AllTypes.Parser.ParseFrom(actual);
 
         Assert.Equal(expected, actualData.Fixed64Value);
     }
@@ -298,7 +299,7 @@ public class ProtobufMapper_MapAsync_ShouldInsertAStaticValue
         var target = _serviceProvider.GetMapper(targetMapping);
         var actual = await target.MapAsync(sourceMessage);
 
-        var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);
+        var actualData = AllTypes.Parser.ParseFrom(actual);
 
         Assert.Equal(expected, actualData.SFixed64Value);
     }
@@ -320,7 +321,7 @@ public class ProtobufMapper_MapAsync_ShouldInsertAStaticValue
         var target = _serviceProvider.GetMapper(targetMapping);
         var actual = await target.MapAsync(sourceMessage);
 
-        var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);
+        var actualData = AllTypes.Parser.ParseFrom(actual);
 
         Assert.Equal(expected, actualData.DoubleValue);
     }
@@ -340,7 +341,7 @@ public class ProtobufMapper_MapAsync_ShouldInsertAStaticValue
         var target = _serviceProvider.GetMapper(targetMapping);
         var actual = await target.MapAsync(sourceMessage);
 
-        var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);
+        var actualData = AllTypes.Parser.ParseFrom(actual);
 
         Assert.Equal(expected, actualData.StringValue);
     }
@@ -363,7 +364,7 @@ public class ProtobufMapper_MapAsync_ShouldInsertAStaticValue
         var target = _serviceProvider.GetMapper(targetMapping);
         var actual = await target.MapAsync(sourceMessage);
 
-        var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);
+        var actualData = AllTypes.Parser.ParseFrom(actual);
 
         Assert.Equal(expected, actualData.BytesValue);
     }
@@ -376,7 +377,7 @@ public class ProtobufMapper_MapAsync_ShouldInsertAStaticValue
     [InlineData(100, "")]
     public async Task LenAsEmbeddedMessage(int expectedIntValue, string expectedStringValue)
     {
-        var embeddedMessageValue = new ProtoBuf.SampleEmbeddedMessage()
+        var embeddedMessageValue = new SampleEmbeddedMessage()
         {
             EmbeddedInt32Value = expectedIntValue,
             EmbeddedStringValue = expectedStringValue
@@ -392,7 +393,7 @@ public class ProtobufMapper_MapAsync_ShouldInsertAStaticValue
         var target = _serviceProvider.GetMapper(targetMapping);
         var actual = await target.MapAsync(sourceMessage);
 
-        var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);
+        var actualData = AllTypes.Parser.ParseFrom(actual);
 
         Assert.Equal(expectedIntValue, actualData.EmbeddedMessageValue.EmbeddedInt32Value);
         Assert.Equal(expectedStringValue, actualData.EmbeddedMessageValue.EmbeddedStringValue);
@@ -416,7 +417,7 @@ public class ProtobufMapper_MapAsync_ShouldInsertAStaticValue
         var target = _serviceProvider.GetMapper(targetMapping);
         var actual = await target.MapAsync(sourceMessage);
 
-        var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);
+        var actualData = AllTypes.Parser.ParseFrom(actual);
 
         Assert.Equal(expected, actualData.RepeatedInt32Value.ToArray());
     }

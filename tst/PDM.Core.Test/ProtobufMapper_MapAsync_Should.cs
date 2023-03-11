@@ -1,14 +1,12 @@
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using PDM.Builders;
-using PDM.Core.Test.Extensions;
-using PDM.Entities;
 using PDM.Interfaces;
-using PDM.Parser;
-using PDM.Parser.Extensions;
+using PDM.TestUtils.ProtoBuf;
+using PDM.TestUtils.Extensions;
 using Serilog;
 using System.Diagnostics;
 using Xunit.Abstractions;
+using Moq;
 
 namespace PDM.Core.Test;
 
@@ -27,7 +25,6 @@ public class ProtobufMapper_MapAsync_Should
 
         _serviceProvider = new ServiceCollection()
             .AddLogging(l => l.AddSerilog())
-            .UseDefaultParser()
             .BuildServiceProvider();
     }
 
@@ -36,7 +33,7 @@ public class ProtobufMapper_MapAsync_Should
     {
         _ = Trace.Listeners.Add(new SerilogTraceListener(Log.Logger));
         var sourceMessage = Convert.FromHexString("2A08666538616230326155DD3841C878A4CEBAE404");
-        var parser = _serviceProvider.GetRequiredService<IWireFormatParser>();
+        var parser = Mock.Of<IWireFormatParser>();
         var target = _serviceProvider.GetMapper(null!, parser, null);
         _ = await target.MapAsync(sourceMessage);
     }
@@ -44,7 +41,7 @@ public class ProtobufMapper_MapAsync_Should
     [Fact]
     public async Task ThrowIfNoSourceMessageSupplied()
     {
-        var sourceData = new ProtoBuf.TwoFields()
+        var sourceData = new TwoFields()
         {
             IntegerValue = Int32.MaxValue.GetRandom(),
             StringValue = String.Empty.GetRandom()
@@ -54,410 +51,10 @@ public class ProtobufMapper_MapAsync_Should
         var targetMapping = new TransformationBuilder()
             .Build();
 
-        var target = _serviceProvider.GetMapper(targetMapping);
+        var parser = Mock.Of<IWireFormatParser>();
+        var logger = _serviceProvider.GetMapperLogger();
+        var target = _serviceProvider.GetMapper(logger, parser, targetMapping);
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(() => target.MapAsync(sourceMessage!));
-    }
-
-    [Fact]
-    public async Task ThrowANotImplementedExceptionIfAnUnknownReplaceFieldSubtypeIsSpecified()
-    {
-        var sourceData = new ProtoBuf.TwoFields()
-        {
-            IntegerValue = Int32.MaxValue.GetRandom(),
-            StringValue = String.Empty.GetRandom()
-        };
-
-        byte[] sourceMessage = Array.Empty<byte>();
-        var targetMapping = new List<Entities.Transformation>()
-        {
-            { new Entities.Transformation() 
-                {
-                    TransformationType = Enums.TransformationType.ReplaceField,
-                    SubType = "TotallyFakeSubtype",
-                    Value = "This doesn't matter at all"
-                }
-            }
-        };
-
-        var target = _serviceProvider.GetMapper(targetMapping);
-        var ex = await Assert.ThrowsAsync<NotImplementedException>(() => target.MapAsync(sourceMessage!));
-    }
-
-    [Fact]
-    public async Task NotFailIfAnIncludeExpressionIsUnresolvable()
-    {
-        var sourceData = new ProtoBuf.TwoFields()
-        {
-            IntegerValue = Int32.MaxValue.GetRandom(),
-            StringValue = String.Empty.GetRandom()
-        };
-
-        var sourceMessage = sourceData.ToByteArray();
-
-        var targetMapping = new TransformationBuilder()
-            .IncludeField(9999)
-            .Build();
-
-        var target = _serviceProvider.GetMapper(targetMapping);
-        var actual = await target.MapAsync(sourceMessage!);
-
-        Assert.Empty(actual);
-    }
-
-    [Fact]
-    public async Task NotFailIfABlacklistExpressionIsUnresolvable()
-    {
-        var sourceData = new ProtoBuf.TwoFields()
-        {
-            IntegerValue = Int32.MaxValue.GetRandom(),
-            StringValue = String.Empty.GetRandom()
-        };
-
-        var targetMapping = new TransformationBuilder()
-            .BlacklistField(9999)
-            .Build();
-
-        var sourceMessage = sourceData.ToByteArray();
-
-        var target = _serviceProvider.GetMapper(targetMapping);
-        var actual = await target.MapAsync(sourceMessage!);
-
-        var actualData = ProtoBuf.TwoFields.Parser.ParseFrom(actual);
-
-        Assert.Equal(sourceData.IntegerValue, actualData.IntegerValue);
-        Assert.Equal(sourceData.StringValue, actualData.StringValue);
-    }
-
-    [Fact]
-    public async Task RemoveTheTargetFieldsIfTheSourceOfARenameExpressionIsUnresolvable()
-    {
-        var sourceData = new ProtoBuf.TwoFields()
-        {
-            IntegerValue = Int32.MaxValue.GetRandom(),
-            StringValue = String.Empty.GetRandom()
-        };
-
-        var sourceMessage = sourceData.ToByteArray();
-
-        // Alpha characters cannot be translated to field #s
-        var targetMapping = new TransformationBuilder()
-            .RenameFields("a:5,b:15")
-            .Build();
-
-        var target = _serviceProvider.GetMapper(targetMapping);
-        var actual = await target.MapAsync(sourceMessage!);
-
-        Assert.Empty(actual);
-    }
-
-    [Fact]
-    public async Task NotRemoveTheTargetFieldsIfTheTargetOfARenameExpressionIsUnresolvable()
-    {
-        var sourceData = new ProtoBuf.TwoFields()
-        {
-            IntegerValue = Int32.MaxValue.GetRandom(),
-            StringValue = String.Empty.GetRandom()
-        };
-
-        var sourceMessage = sourceData.ToByteArray();
-
-        // Alpha characters cannot be translated to field #s
-        var targetMapping = new TransformationBuilder()
-            .RenameFields("5:a,15:b")
-            .Build();
-
-        var target = _serviceProvider.GetMapper(targetMapping);
-        var actual = await target.MapAsync(sourceMessage!);
-
-        var actualData = ProtoBuf.TwoFields.Parser.ParseFrom(actual);
-
-        Assert.Equal(sourceData.IntegerValue, actualData.IntegerValue);
-        Assert.Equal(sourceData.StringValue, actualData.StringValue);
-    }
-
-    [Fact]
-    public async Task ProperlyCopyToTheSameTypeUnmodifiedIfNoMappingSupplied()
-    {
-        var sourceData = new ProtoBuf.TwoFields()
-        {
-            IntegerValue = Int32.MaxValue.GetRandom(),
-            StringValue = String.Empty.GetRandom()
-        };
-
-        var sourceMessage = sourceData.ToByteArray();
-
-        var target = _serviceProvider.GetMapper();
-        var actual = await target.MapAsync(sourceMessage);
-
-        var actualData = ProtoBuf.TwoFields.Parser.ParseFrom(actual);
-
-        Assert.Equal(sourceData.IntegerValue, actualData.IntegerValue);
-        Assert.Equal(sourceData.StringValue, actualData.StringValue);
-    }
-
-    [Fact]
-    public async Task ProperlyMapASubsetTypeToMatchingFields()
-    {
-        var sourceData = new ProtoBuf.ThreeFields()
-        {
-            IntegerValue = Int32.MaxValue.GetRandom(),
-            FloatValue = float.MaxValue.GetRandom(),
-            StringValue = String.Empty.GetRandom()
-        };
-
-        var targetMapping = new TransformationBuilder()
-            .BlacklistField(10)
-            .Build();
-
-        var sourceMessage = sourceData.ToByteArray();
-
-        var target = _serviceProvider.GetMapper(targetMapping);
-        var actual = await target.MapAsync(sourceMessage);
-
-        var actualData = ProtoBuf.TwoFields.Parser.ParseFrom(actual);
-
-        Assert.Equal(sourceData.IntegerValue, actualData.IntegerValue);
-        Assert.Equal(sourceData.StringValue, actualData.StringValue);
-    }
-
-    [Fact]
-    public async Task ProperlyBlacklistAField()
-    {
-        // Guarantees that specified fields will be set to
-        // default values. This is helpful if PII is being
-        // masked-out of a message
-        var sourceData = new ProtoBuf.ThreeFields()
-        {
-            IntegerValue = Int32.MaxValue.GetRandom(),
-            FloatValue = float.MaxValue.GetRandom(),
-            StringValue = String.Empty.GetRandom()
-        };
-
-        var targetMapping = new TransformationBuilder()
-            .BlacklistField(10)
-            .Build();
-
-        var sourceMessage = sourceData.ToByteArray();
-
-        var target = _serviceProvider.GetMapper(targetMapping);
-        var actual = await target.MapAsync(sourceMessage);
-
-        var actualData = ProtoBuf.ThreeFields.Parser.ParseFrom(actual);
-
-        Assert.Equal(sourceData.IntegerValue, actualData.IntegerValue);
-        Assert.Equal(sourceData.StringValue, actualData.StringValue);
-        Assert.Equal(0, actualData.FloatValue);
-    }
-
-    [Fact]
-    public async Task ProperlyRenameAField()
-    {
-        var sourceData = new ProtoBuf.ThreeFields()
-        {
-            StringValue = String.Empty.GetRandom()
-        };
-
-        var targetMapping = new TransformationBuilder()
-            .RenameField(5,50)
-            .Build();
-
-        var sourceMessage = sourceData.ToByteArray();
-
-        var target = _serviceProvider.GetMapper(targetMapping);
-        var actual = await target.MapAsync(sourceMessage);
-
-        var actualData = ProtoBuf.MismatchedType.Parser.ParseFrom(actual);
-
-        Assert.Equal(sourceData.StringValue, actualData.StringValue);
-    }
-
-    [Fact]
-    public async Task ProperlyRenameMultipleFields()
-    {
-        var sourceData = new ProtoBuf.ThreeFields()
-        {
-            StringValue = String.Empty.GetRandom(),
-            FloatValue = float.MaxValue.GetRandom(),
-            IntegerValue = Int32.MaxValue.GetRandom()
-        };
-
-        var targetMapping = new TransformationBuilder()
-            .RenameFields("5:50,15:150")
-            .Build();
-
-        var sourceMessage = sourceData.ToByteArray();
-
-        var target = _serviceProvider.GetMapper(targetMapping);
-        var actual = await target.MapAsync(sourceMessage);
-
-        var actualData = ProtoBuf.MismatchedType.Parser.ParseFrom(actual);
-
-        Assert.Equal(sourceData.StringValue, actualData.StringValue);
-        Assert.Equal(sourceData.IntegerValue, actualData.IntegerValue);
-    }
-
-    [Fact]
-    public async Task IncludeValuesOnlyForFieldsSpecifiedInTheIncludeList()
-    {
-        var sourceData = new ProtoBuf.ThreeFields()
-        {
-            IntegerValue = Int32.MaxValue.GetRandom(),
-            FloatValue = float.MaxValue.GetRandom(),
-            StringValue = String.Empty.GetRandom()
-        };
-
-        var targetMapping = new TransformationBuilder()
-            .IncludeField(10)
-            .Build();
-
-        var sourceMessage = sourceData.ToByteArray();
-
-        var target = _serviceProvider.GetMapper(targetMapping);
-        var actual = await target.MapAsync(sourceMessage);
-
-        var actualData = ProtoBuf.ThreeFields.Parser.ParseFrom(actual);
-
-        Assert.Equal(0, actualData.IntegerValue);
-        Assert.Equal(String.Empty, actualData.StringValue);
-        Assert.Equal(sourceData.FloatValue, actualData.FloatValue);
-    }
-
-    [Fact]
-    public async Task ProperlyCopyAllFieldsToATargetOfTheSameType()
-    {
-        var sourceData = new Builders.ProtobufAllTypesBuilder()
-            .UseRandomValues()
-            .Build();
-
-        var sourceMessage = sourceData.ToByteArray();
-
-        var target = _serviceProvider.GetMapper();
-        var actual = await target.MapAsync(sourceMessage);
-
-        var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);
-        Assert.Equal(sourceData.Int32Value, actualData.Int32Value);
-        Assert.Equal(sourceData.Int64Value, actualData.Int64Value);
-        Assert.Equal(sourceData.UInt32Value, actualData.UInt32Value);
-        Assert.Equal(sourceData.UInt64Value, actualData.UInt64Value);
-        Assert.Equal(sourceData.SInt32Value, actualData.SInt32Value);
-        Assert.Equal(sourceData.SInt64Value, actualData.SInt64Value);
-        Assert.Equal(sourceData.BoolValue, actualData.BoolValue);
-        Assert.Equal(sourceData.EnumValue, actualData.EnumValue);
-
-        Assert.Equal(sourceData.Fixed64Value, actualData.Fixed64Value);
-        Assert.Equal(sourceData.SFixed64Value, actualData.SFixed64Value);
-        Assert.Equal(sourceData.DoubleValue, actualData.DoubleValue);
-
-        Assert.Equal(sourceData.StringValue, actualData.StringValue);
-        Assert.Equal(sourceData.BytesValue, actualData.BytesValue);
-        Assert.NotNull(actualData.EmbeddedMessageValue); // Embedded Fields
-        Assert.Equal(sourceData.EmbeddedMessageValue.EmbeddedStringValue, actualData.EmbeddedMessageValue.EmbeddedStringValue);
-        Assert.Equal(sourceData.EmbeddedMessageValue.EmbeddedInt32Value, actualData.EmbeddedMessageValue.EmbeddedInt32Value);
-        Assert.Equal(sourceData.RepeatedInt32Value, actualData.RepeatedInt32Value);
-
-        Assert.Equal(sourceData.Fixed32Value, actualData.Fixed32Value);
-        Assert.Equal(sourceData.SFixed32Value, actualData.SFixed32Value);
-        Assert.Equal(sourceData.FloatValue, actualData.FloatValue);
-    }
-
-    [Fact]
-    public async Task ProperlyInsertAStaticValue_VarintAsInt32()
-    {
-        var expected = Int32.MaxValue.GetRandom();
-
-        var targetMapping = new TransformationBuilder()
-            .InsertStaticField(1000, Enums.WireType.VarInt, expected)
-            .Build();
-
-        var sourceMessage = Array.Empty<byte>();
-
-        var target = _serviceProvider.GetMapper(targetMapping);
-        var actual = await target.MapAsync(sourceMessage);
-
-        var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);
-
-        Assert.Equal(expected, actualData.Int32Value);
-    }
-
-    [Fact]
-    public async Task ProperlyInsertAStaticValue_I32AsFixed32()
-    {
-        var expected = Convert.ToUInt32(Math.Abs(int.MaxValue.GetRandom()));
-
-        var targetMapping = new TransformationBuilder()
-            .InsertStaticField(4000, Enums.WireType.I32, expected)
-            .Build();
-
-        var sourceMessage = Array.Empty<Byte>();
-
-        var target = _serviceProvider.GetMapper(targetMapping);
-        var actual = await target.MapAsync(sourceMessage);
-
-        var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);
-
-        Assert.Equal(expected, actualData.Fixed32Value);
-    }
-
-    [Fact]
-    public async Task ProperlyInsertAStaticValue_I32AsSFixed32()
-    {
-        var expected = int.MaxValue.GetRandom();
-
-        var targetMapping = new TransformationBuilder()
-            .InsertStaticField(4100, Enums.WireType.I32, expected)
-            .Build();
-
-        var sourceMessage = Array.Empty<Byte>();
-
-        var target = _serviceProvider.GetMapper(targetMapping);
-        var actual = await target.MapAsync(sourceMessage);
-
-        var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);
-
-        Assert.Equal(expected, actualData.SFixed32Value);
-    }
-
-    [Fact]
-    public async Task ProperlyInsertAStaticValue_I32AsFloat()
-    {
-        var expected = float.MaxValue.GetRandom();
-
-        var targetMapping = new TransformationBuilder()
-            .InsertStaticField(4200, Enums.WireType.I32, expected)
-            .Build();
-
-        var sourceMessage = Array.Empty<Byte>();
-
-        var target = _serviceProvider.GetMapper(targetMapping);
-        var actual = await target.MapAsync(sourceMessage);
-
-        var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);
-
-        Assert.Equal(expected, actualData.FloatValue);
-    }
-
-    [Fact]
-    public async Task ProperlyMapsFromEmbeddedMessageField()
-    {
-        var targetMapping = new TransformationBuilder()
-            .IncludeField(0) // Clears out default mappings
-            .RenameField("3200.10000", 15) // Include field 15 mapped from embedded message
-            .RenameField("3200.10100", 5) // Include field 5 mapped from embedded message
-            .Build();
-
-        var sourceData = new Builders.ProtobufAllTypesBuilder()
-            .UseRandomValues()
-            .Build();
-
-        var sourceMessage = sourceData.ToByteArray();
-
-        var target = _serviceProvider.GetMapper(targetMapping);
-        var actual = await target.MapAsync(sourceMessage);
-
-        var actualData = ProtoBuf.TwoFields.Parser.ParseFrom(actual);
-
-        Assert.Equal(sourceData.EmbeddedMessageValue.EmbeddedInt32Value, actualData.IntegerValue);
-        Assert.Equal(sourceData.EmbeddedMessageValue.EmbeddedStringValue, actualData.StringValue);
     }
 
 }

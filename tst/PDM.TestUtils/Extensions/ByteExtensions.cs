@@ -1,7 +1,4 @@
-﻿using PDM.Core.Test;
-using PDM.Core.Test.Extensions;
-
-namespace PDM.Core.Test.Extensions;
+﻿namespace PDM.TestUtils.Extensions;
 
 [ExcludeFromCodeCoverage]
 internal static class ByteExtensions

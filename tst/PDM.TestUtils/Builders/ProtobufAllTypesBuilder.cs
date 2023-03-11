@@ -1,9 +1,9 @@
-﻿using PDM.Core.Test.Extensions;
+﻿using PDM.TestUtils.Extensions;
 
-namespace PDM.Core.Test.Builders;
+namespace PDM.TestUtils.Builders;
 
 [ExcludeFromCodeCoverage]
-internal class ProtobufAllTypesBuilder
+public class ProtobufAllTypesBuilder
 {
     readonly ProtoBuf.AllTypes _value = new();
 

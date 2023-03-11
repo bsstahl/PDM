@@ -22,6 +22,6 @@ public class TransformationBuilder_AddTransformation_Should
     public void ThrowIfValueIsNotSupplied(string value)
     {
         var target = new TransformationBuilder();
-        Assert.Throws<ArgumentNullException>(() => target.AddTransformation(Enums.TransformationType.InsertField, "SubType", value));
+        _ = Assert.Throws<ArgumentNullException>(() => target.AddTransformation(Enums.TransformationType.InsertField, "SubType", value));
     }
 }
