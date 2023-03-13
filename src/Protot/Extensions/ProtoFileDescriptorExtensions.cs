@@ -5,18 +5,38 @@ namespace Protot.Extensions;
 
 internal static class ProtoFileDescriptorExtensions
 {
-    internal static int TryGetFieldNumber(
-        this TransformationField transformationField,
+    internal static string TryGetFieldNumber(
+        this string fieldName,
         ProtoFileDescriptor fileDescriptor)
     {
-        if (!fileDescriptor.Messages.TryGetValue(transformationField.MessageName, out var message))
+
+       List<int> fieldNumbers = new List<int>();
+        var embeddedFieldNames = fieldName.EmbeddedFieldNames();
+        foreach (var embeddedField in embeddedFieldNames)
         {
-            throw new PrototMapperException($"{transformationField.MessageName} not exist in fileDescriptor");
+            var fieldInfo = embeddedField.SearchField(fileDescriptor);
+            if (fieldInfo == null)
+            {
+                throw new PrototMapperException($"{fieldName} not exist in message");
+            }
+
+            fieldNumbers.Add(fieldInfo.FieldNumber);
         }
-        if (!message.Fields.TryGetValue(transformationField.FieldName, out var field))
+
+        return string.Join('.', fieldNumbers);
+    }
+
+    private static ProtoMessageField? SearchField(this string fieldName, ProtoFileDescriptor fileDescriptor)
+    {
+        foreach (var message in fileDescriptor.Messages)
         {
-            throw new PrototMapperException($"{transformationField.FieldName} not exist in message");
+            message.Value.Fields.TryGetValue(fieldName, out var field);
+            if (field != null)
+            {
+                return field;
+            }
         }
-        return field.FieldNumber;
+
+        return null;
     }
 }

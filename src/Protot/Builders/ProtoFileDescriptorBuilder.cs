@@ -1,26 +1,28 @@
+using Google.Protobuf.Reflection;
 using Protot.Entities;
+using Protot.Extensions;
 
-namespace Protot.Builder;
+namespace Protot.Builders;
 
 internal class ProtoFileDescriptorBuilder
 {
     private readonly ProtoFileDescriptor _protoFileDescriptor = new();
 
-    public ProtoFileDescriptor Build() => _protoFileDescriptor;
+    internal ProtoFileDescriptor Build() => _protoFileDescriptor;
 
-    public ProtoFileDescriptor AddSyntax(string syntax)
+    internal ProtoFileDescriptor AddSyntax(string syntax)
     {
         this._protoFileDescriptor.Syntax = syntax;
         return this._protoFileDescriptor;
     }
     
-    public ProtoFileDescriptor AddNameSpace(string namespaceName)
+    internal ProtoFileDescriptor AddNameSpace(string namespaceName)
     {
         this._protoFileDescriptor.Namespace = namespaceName;
         return this._protoFileDescriptor;
     }
 
-    public ProtoFileDescriptor AddEnum(ProtoEnum? protoEnum)
+    internal ProtoFileDescriptor AddEnum(ProtoEnum? protoEnum)
     {
         if (protoEnum is null)
         {
@@ -31,7 +33,7 @@ internal class ProtoFileDescriptorBuilder
         return this._protoFileDescriptor;
     }
     
-    public ProtoFileDescriptor AddMessage(ProtoMessage? protoMessage)
+    internal ProtoFileDescriptor AddMessage(ProtoMessage? protoMessage)
     {
         if (protoMessage is null)
         {

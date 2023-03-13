@@ -1,6 +1,6 @@
 namespace Protot.Exceptions;
 
-internal sealed class PrototMapperException : Exception
+public sealed class PrototMapperException : Exception
 {
     public PrototMapperException()
     {

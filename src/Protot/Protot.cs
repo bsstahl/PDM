@@ -1,19 +1,17 @@
-using PDM.Builders;
 using PDM.Entities;
-using Protot.Builder;
 using Protot.Entities;
 using Protot.Exceptions;
 using Protot.Extensions;
 
 namespace Protot;
 
-public class PrototMapper
+public class Protot
 {
     private string sourceProtoContent;
     private string targetProtoContent;
-    readonly IEnumerable<Entities.TransformationInput> _transformations;
+    readonly IEnumerable<Entities.ProtoTransformation> _transformations;
 
-    public PrototMapper(string source, string target, IEnumerable<Entities.TransformationInput>? transformations)
+    public Protot(string source, string target, IEnumerable<Entities.ProtoTransformation>? transformations)
     {
         if (string.IsNullOrWhiteSpace(source))
         {
@@ -31,10 +29,10 @@ public class PrototMapper
         }
         this.sourceProtoContent = source;
         this.targetProtoContent = target;
-        this._transformations = transformations ?? Enumerable.Empty<TransformationInput>();
+        this._transformations = transformations ?? Enumerable.Empty<ProtoTransformation>();
     }
 
-    public async Task<IEnumerable<Transformation>> CreateTransformationAsync()
+    public async Task<IEnumerable<Transformation>> CompileAsync()
     {
         var sourceFileDescription = await new ProtoFileDescriptorParser(this.sourceProtoContent).ParseFileAsync();
         var targetFileDescription = await new ProtoFileDescriptorParser(this.targetProtoContent).ParseFileAsync();
@@ -45,14 +43,6 @@ public class PrototMapper
                 $"Either {nameof(sourceFileDescription)} or {nameof(targetFileDescription)} is null");
         }
 
-        var transformationBuilder = new TransformationBuilder();
-        foreach (var mapping in this._transformations)
-        {
-            transformationBuilder.RenameField(
-                mapping.SourceField.TryGetFieldNumber(sourceFileDescription),
-                mapping.TargetField.TryGetFieldNumber(targetFileDescription));
-        }
-
-        return transformationBuilder.Build();
+        return this._transformations.ToProtoMappingAsync(sourceFileDescription, targetFileDescription);
     }
 }
