@@ -1,13 +1,14 @@
 using System.Diagnostics;
 using Protot.Entities;
+using Protot.Exceptions;
 using Protot.Extensions;
 
 namespace Protot;
 
-public class ProtoFileParser
+internal sealed class ProtoFileDescriptorParser
 {
     private string protoText;
-    public ProtoFileParser(string protoText)
+    internal ProtoFileDescriptorParser(string protoText)
     {
         if (string.IsNullOrWhiteSpace(protoText))
         {
@@ -16,15 +17,13 @@ public class ProtoFileParser
         this.protoText = protoText;
     }
 
-    public async Task<ProtoDescriptor> ParseFileAsync()
+    internal async Task<ProtoFileDescriptor?> ParseFileAsync()
     {
         bool isFileDescGenerated = await GenerateFileDescriptor();
-        if (isFileDescGenerated)
-        {
-            var fileDescriptor = ProtocExtensions.GetFileDescriptorPath().ExtractFileInfo();
-        }
+        if (!isFileDescGenerated) throw new ProtoFileParserException("Unable to get message Information");
+        var fileDescriptor = ProtocExtensions.GetFileDescriptorPath().ExtractFileInfo();
+        return fileDescriptor?.ToProtoFileDescriptor();
 
-        return new ProtoDescriptor();
     }
 
     private async Task<bool> GenerateFileDescriptor()
@@ -56,8 +55,7 @@ public class ProtoFileParser
             RedirectStandardError = true,
         };
 
-        Console.WriteLine(protocProcess.FileName + " " + protocProcess.Arguments, "protoc");
-        using Process process = new Process();
+        using var process = new Process();
         process.StartInfo = protocProcess;
         process.Start();
 
