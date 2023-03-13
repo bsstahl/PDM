@@ -13,12 +13,16 @@ public static class LogEventId
 
     public static EventId ParsingField => new(30, nameof(ParsingField));
     public static EventId ParseFieldResult => new(31, nameof(ParseFieldResult));
-    public static EventId ParseMessageResult => new(32, nameof(ParseMessageResult));
+    public static EventId UnableToParseField => new(32, nameof(UnableToParseField));
+    public static EventId ParseMessageResult => new(33, nameof(ParseMessageResult));
+    public static EventId UnableToParseMessage => new(34, nameof(UnableToParseMessage));
 
     public static EventId BuildingMapping => new EventId(40, nameof(BuildingMapping));
     public static EventId MappingBuilt => new EventId(41, nameof(MappingBuilt));
     public static EventId NoFieldToRemove => new EventId(42, nameof(NoFieldToRemove));
     public static EventId MappingRemoved => new EventId(43, nameof(MappingRemoved));
+    public static EventId InvalidTransformation => new EventId(44, nameof(InvalidTransformation));
+    public static EventId SourceFieldNotFound => new EventId(45, nameof(SourceFieldNotFound));
 
     public static EventId FieldMappingProcessed => new EventId(50, nameof(FieldMappingProcessed));
 

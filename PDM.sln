@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PDM.DefaultProviders.Test",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PDM.TestUtils", "tst\PDM.TestUtils\PDM.TestUtils.csproj", "{DA1846FB-7690-4F8F-8FCE-E0C87BC77652}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PDM.Parser.Test", "tst\PDM.Parser.Test\PDM.Parser.Test.csproj", "{8B4E291F-4008-4546-8D5B-33057017D696}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{DA1846FB-7690-4F8F-8FCE-E0C87BC77652}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA1846FB-7690-4F8F-8FCE-E0C87BC77652}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA1846FB-7690-4F8F-8FCE-E0C87BC77652}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B4E291F-4008-4546-8D5B-33057017D696}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B4E291F-4008-4546-8D5B-33057017D696}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B4E291F-4008-4546-8D5B-33057017D696}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B4E291F-4008-4546-8D5B-33057017D696}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -61,6 +67,7 @@ Global
 		{C0C82F43-37E8-4BEF-ACBD-4D31D41A8E22} = {460F91EE-7A06-4B59-AE80-9290FED6C66D}
 		{30A85217-BD0C-4E01-A439-083CD2BD51DB} = {7214354A-8565-48C9-95F0-C18112DA8EB3}
 		{DA1846FB-7690-4F8F-8FCE-E0C87BC77652} = {7214354A-8565-48C9-95F0-C18112DA8EB3}
+		{8B4E291F-4008-4546-8D5B-33057017D696} = {7214354A-8565-48C9-95F0-C18112DA8EB3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {23D296E3-1C54-46AF-9567-DDE6D118674B}

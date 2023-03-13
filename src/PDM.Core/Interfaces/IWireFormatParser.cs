@@ -4,5 +4,5 @@ namespace PDM.Interfaces;
 
 public interface IWireFormatParser
 {
-    Task<IEnumerable<MessageField>> ParseAsync(byte[] message);
+    Task<IEnumerable<SourceMessageField>> ParseAsync(byte[] message);
 }

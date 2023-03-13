@@ -19,7 +19,7 @@ public class ProtobufMapper_MapAsync_Should
     {
         Log.Logger = new LoggerConfiguration()
             .WriteTo.Xunit(output)
-            .MinimumLevel.Verbose()
+            .MinimumLevel.Error()
             .CreateLogger();
 
         _serviceProvider = new ServiceCollection()
@@ -40,7 +40,7 @@ public class ProtobufMapper_MapAsync_Should
         byte[] sourceMessage = Array.Empty<byte>();
         var targetMapping = new List<Entities.Transformation>()
         {
-            { new Entities.Transformation() 
+            { new Entities.Transformation()
                 {
                     TransformationType = Enums.TransformationType.ReplaceField,
                     SubType = "TotallyFakeSubtype",
@@ -228,7 +228,7 @@ public class ProtobufMapper_MapAsync_Should
         };
 
         var targetMapping = new TransformationBuilder()
-            .RenameField(5,50)
+            .RenameField(5, 50)
             .Build();
 
         var sourceMessage = sourceData.ToByteArray();
@@ -426,8 +426,10 @@ public class ProtobufMapper_MapAsync_Should
 
         var actualData = TwoFields.Parser.ParseFrom(actual);
 
-        Assert.Equal(sourceData.EmbeddedMessageValue.EmbeddedInt32Value, actualData.IntegerValue);
+        Assert.NotEmpty(sourceData.EmbeddedMessageValue.EmbeddedStringValue);
+        Assert.NotEqual(0, sourceData.EmbeddedMessageValue.EmbeddedInt32Value);
         Assert.Equal(sourceData.EmbeddedMessageValue.EmbeddedStringValue, actualData.StringValue);
+        Assert.Equal(sourceData.EmbeddedMessageValue.EmbeddedInt32Value, actualData.IntegerValue);
     }
 
 }

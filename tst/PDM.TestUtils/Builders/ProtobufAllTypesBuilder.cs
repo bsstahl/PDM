@@ -1,4 +1,5 @@
-﻿using PDM.TestUtils.Extensions;
+﻿using Google.Protobuf.WellKnownTypes;
+using PDM.TestUtils.Extensions;
 
 namespace PDM.TestUtils.Builders;
 
@@ -91,6 +92,12 @@ public class ProtobufAllTypesBuilder
     {
         return this
             .BytesValue(Google.Protobuf.ByteString.FromBase64(Convert.ToBase64String(value)));
+    }
+
+    public ProtobufAllTypesBuilder BytesValue(string hexString)
+    {
+        return this
+            .BytesValue(Convert.FromHexString(hexString));
     }
 
     public ProtobufAllTypesBuilder EmbeddedMessageValue(ProtoBuf.SampleEmbeddedMessage value)

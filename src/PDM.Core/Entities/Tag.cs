@@ -22,15 +22,21 @@ public sealed record Tag
         return new Varint(value);
     }
 
-    public static Tag Parse(Varint vint)
+    public static Tag? Parse(Varint vint)
     {
+        Tag? result = null;
+
         if (vint is null)
             throw new ArgumentNullException(nameof(vint));
+        else if (vint.Value < int.MaxValue)
+        {
+            var vintValue = vint.Value;
+            var wireType = (WireType)Convert.ToByte(vintValue & 7);
+            var fieldNumber = Convert.ToInt32(vintValue >> 3);
+            result = new Tag(fieldNumber, wireType);
+        }
 
-        var vintValue = vint.Value;
-        var wireType = (WireType)Convert.ToByte(vintValue & 7);
-        var fieldNumber = Convert.ToInt32(vintValue >> 3);
-        return new Tag(fieldNumber, wireType);
+        return result;
     }
 
 }

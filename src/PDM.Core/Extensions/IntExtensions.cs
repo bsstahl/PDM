@@ -2,8 +2,8 @@
 
 internal static class IntExtensions
 {
-    internal static string MapExpression(this int fieldNumber)
-        => $"s => (s.Key == {fieldNumber})";
+    public static string AsSourceKey(this IEnumerable<int> key)
+        => string.Join(',', key);
 
     internal static ulong ZZEncode(this long value)
         => (ulong)(value << 1) ^ (ulong)(value >> 63);

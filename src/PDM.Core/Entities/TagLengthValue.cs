@@ -1,16 +1,14 @@
-﻿using System.Text.Json;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace PDM.Entities;
 
 public class TagLengthValue
 {
-    public int Key { get; set; }
+    public string Key { get; set; } = string.Empty;
 
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public Enums.WireType WireType { get; set; }
 
-    // public int Length { get; set; }
     public string Value { get; set; } = string.Empty;
 
 }

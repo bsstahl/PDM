@@ -36,36 +36,50 @@ public static class LoggerExtensions
             LogEventId.BuildingMapping,
             "Modifying mappings for {TransformationType}.{TransformationSubtype}");
 
-    static readonly Action<ILogger, Mapping, Exception?> _mappingBuiltMessage
-        = LoggerMessage.Define<Mapping>(LogLevel.Debug,
+    static readonly Action<ILogger, TargetMessageField, string, Exception?> _mappingBuiltMessage
+        = LoggerMessage.Define<TargetMessageField, string>(LogLevel.Debug,
             LogEventId.MappingBuilt,
-            "Mapping {Mapping} built");
+            "Mapping for {TargetMessageField} built during {Activity}");
 
-    static readonly Action<ILogger, int, Exception?> _noFieldToRemoveMessage
-        = LoggerMessage.Define<int>(LogLevel.Warning,
+    static readonly Action<ILogger, string, string, Exception?> _noFieldToRemoveMessage
+        = LoggerMessage.Define<string, string>(LogLevel.Warning,
             LogEventId.NoFieldToRemove,
-            "Field {FieldNumber} not present to remove");
+            "Field {FieldNumber} not present to remove during {Activity}");
 
-    static readonly Action<ILogger, Mapping, Exception?> _mappingRemovedMessage
-        = LoggerMessage.Define<Mapping>(LogLevel.Debug,
+    static readonly Action<ILogger, TargetMessageField, string, Exception?> _mappingRemovedMessage
+        = LoggerMessage.Define<TargetMessageField, string>(LogLevel.Debug,
             LogEventId.MappingRemoved,
-            "Mapping {Mapping} removed");
+            "Mapping for {TargetMessageField} removed during {Activity}");
 
-    static readonly Action<ILogger, MessageField, Exception?> _fieldMappingProcessedMessage
-        = LoggerMessage.Define<MessageField>(LogLevel.Information,
+    static readonly Action<ILogger, Transformation, string, Exception?> _invalidTransformationMessage
+        = LoggerMessage.Define<Transformation, string>(LogLevel.Warning,
+            LogEventId.InvalidTransformation,
+            "Invalid transformation {Transform} during {Activity}");
+
+    static readonly Action<ILogger, Transformation, string, Exception?> _sourceFieldNotFoundMessage
+        = LoggerMessage.Define<Transformation, string>(LogLevel.Warning,
+        LogEventId.SourceFieldNotFound,
+        "Source field not found in {Transform} during {Activity}");
+
+    static readonly Action<ILogger, TargetMessageField, Exception?> _fieldMappingProcessedMessage
+        = LoggerMessage.Define<TargetMessageField>(LogLevel.Information,
             LogEventId.FieldMappingProcessed,
             "Mapping of field {FieldMapping} completed");
 
-    static readonly Action<ILogger, MessageField, IEnumerable<byte>, Exception?> _messageFieldExported
-        = LoggerMessage.Define<MessageField, IEnumerable<byte>>(LogLevel.Information,
+    static readonly Action<ILogger, TargetMessageField, IEnumerable<byte>, Exception?> _messageFieldExported
+        = LoggerMessage.Define<TargetMessageField, IEnumerable<byte>>(LogLevel.Information,
             LogEventId.MessageFieldExported,
             "Message field {Field} exported with value {Value}");
 
-    static readonly Action<ILogger, MessageField, Exception?> _invalidMessageField
-        = LoggerMessage.Define<MessageField>(LogLevel.Warning,
+    static readonly Action<ILogger, SourceMessageField, Exception?> _invalidSourceMessageField
+        = LoggerMessage.Define<SourceMessageField>(LogLevel.Warning,
             LogEventId.InvalidMessageField,
-            "Invalid message field {Field}");
+            "Invalid source message field {Field}");
 
+    static readonly Action<ILogger, TargetMessageField, Exception?> _invalidTargetMessageField
+        = LoggerMessage.Define<TargetMessageField>(LogLevel.Warning,
+            LogEventId.InvalidMessageField,
+            "Invalid target message field {Field}");
 
     public static void LogNoLoggerProvided(this ILogger logger)
         => _noLoggerProvidedMessage.Invoke(logger, null);
@@ -85,30 +99,38 @@ public static class LoggerExtensions
     internal static void LogBuildingMapping(this ILogger logger, Transformation transformation)
         => _buildingMappingMessage.Invoke(logger, transformation.TransformationType, transformation.SubType, null);
 
-    internal static void LogMappingBuilt(this ILogger logger, Mapping mapping)
-        => _mappingBuiltMessage.Invoke(logger, mapping, null);
+    internal static void LogMappingBuilt(this ILogger logger, TargetMessageField mapping, string activityName)
+        => _mappingBuiltMessage.Invoke(logger, mapping, activityName, null);
 
-    internal static void LogNoFieldToRemove(this ILogger logger, int key)
-        => _noFieldToRemoveMessage.Invoke(logger, key, null);
+    internal static void LogNoFieldToRemove(this ILogger logger, string key, string activity)
+        => _noFieldToRemoveMessage.Invoke(logger, key, activity, null);
 
-    internal static void LogMappingRemoved(this ILogger logger, Mapping mapping)
-        => _mappingRemovedMessage.Invoke(logger, mapping, null);
+    internal static void LogMappingRemoved(this ILogger logger, TargetMessageField mapping, string activity)
+        => _mappingRemovedMessage.Invoke(logger, mapping, activity, null);
 
-    internal static void LogMessageFieldExported(this ILogger logger, MessageField messageField, IEnumerable<byte> wireTypeValue)
+    internal static void LogInvalidTransformation(this ILogger logger, Transformation transform, string activity)
+        => _invalidTransformationMessage.Invoke(logger, transform, activity, null);
+
+    internal static void LogSourceFieldNotFound(this ILogger logger, Transformation transform, string activity)
+        => _sourceFieldNotFoundMessage.Invoke(logger, transform, activity, null);
+
+    internal static void LogMessageFieldExported(this ILogger logger, TargetMessageField messageField, IEnumerable<byte> wireTypeValue)
         => _messageFieldExported.Invoke(logger, messageField, wireTypeValue, null);
 
-    internal static void LogInvalidMessageField(this ILogger logger, MessageField messageField)
-        => _invalidMessageField.Invoke(logger, messageField, null);
+    internal static void LogInvalidSourceField(this ILogger logger, SourceMessageField messageField)
+        => _invalidSourceMessageField.Invoke(logger, messageField, null);
 
+    internal static void LogInvalidTargetField(this ILogger logger, TargetMessageField messageField)
+        => _invalidTargetMessageField.Invoke(logger, messageField, null);
 
-    internal static void LogMappingRemovalCompleted(this ILogger logger, int key, Mapping? removedMapping)
+    internal static void LogMappingRemovalCompleted(this ILogger logger, string key, TargetMessageField? removedMapping, string activity)
     {
         if (removedMapping is null)
-            logger.LogNoFieldToRemove(key);
+            logger.LogNoFieldToRemove(key, activity);
         else
-            logger.LogMappingRemoved(removedMapping);
+            logger.LogMappingRemoved(removedMapping, activity);
     }
 
-    internal static void LogFieldMappingProcessed(this ILogger logger, MessageField field)
+    internal static void LogFieldMappingProcessed(this ILogger logger, TargetMessageField field)
         => _fieldMappingProcessedMessage.Invoke(logger, field, null);
 }

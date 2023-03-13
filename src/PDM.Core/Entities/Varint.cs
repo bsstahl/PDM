@@ -46,18 +46,29 @@ public sealed record Varint
 
     public static Varint Parse(byte[] message)
     {
-        if (message is null || message.Length < 1)
-            throw new ArgumentNullException(nameof(message));
+        Varint result = Varint.Empty;
 
-        var length = 1;
-        var currentByte = message[0];
-        while (currentByte > 127)
+        if (message is not null && message.Length > 0)
         {
-            currentByte = message[length];
-            length++;
+            bool ok = true;
+            var length = 1;
+            var currentByte = message[0];
+            while (ok && currentByte > 127)
+            {
+                if (length >= message.Length)
+                    ok = false;
+                else
+                {
+                    currentByte = message[length];
+                    length++;
+                }
+            }
+
+            if (ok)
+                result = new Varint(message[0..length]);
         }
 
-        return new Varint(message[0..length]);
+        return result;
     }
 
     public static Varint Create(object value)
@@ -98,6 +109,9 @@ public sealed record Varint
             total = (total << 7) | decodedBytes[i];
         return total;
     }
+
+    public static Varint Empty 
+        => new Varint(Array.Empty<byte>());
 
 }
 
