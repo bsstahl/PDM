@@ -2,6 +2,15 @@
 
 public static class ObjectExtensions
 {
+    internal static byte[] ToLittleEndianBytes(this object value)
+    {
+        dynamic g = value;
+        byte[] b = BitConverter.GetBytes(g);
+        return BitConverter.IsLittleEndian
+            ? b
+            : b.Reverse().ToArray();
+    }
+
     /// <summary>
     /// Returns True if the supplied value is assignable to a byte array
     /// otherwise returns False. Null values return true.

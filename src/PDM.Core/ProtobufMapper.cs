@@ -36,13 +36,13 @@ public class ProtobufMapper
             throw new ArgumentNullException(fieldName);
         }
 
-        _logger.LogLargeData("Source Message", Convert.ToBase64String(sourceMessage));
+        _logger.LogLargeData("Source Message", Convert.ToHexString(sourceMessage));
 
         var result = await sourceMessage
             .MapAsync(_logger, _transformations)
             .ConfigureAwait(false);
 
-        _logger.LogLargeData("Target Message", Convert.ToBase64String(result));
+        _logger.LogLargeData("Target Message", Convert.ToHexString(result));
         _logger.LogMethodExit(nameof(ProtobufMapper), nameof(MapAsync));
 
         return result;

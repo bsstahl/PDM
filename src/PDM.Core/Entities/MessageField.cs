@@ -13,8 +13,9 @@ public class MessageField
     public object? Value { get; set; }
 
 
-    public bool IsValid => (this.Key > 0)
-        && (this.Value is not null);
+    internal bool IsValid => (this.Key > 0)
+        && (this.Value is not null)
+        && (!string.IsNullOrEmpty(this.Value.ToString()));
 
     public MessageField(int key, Enums.WireType wireType)
         : this(key, wireType, null)
@@ -27,8 +28,6 @@ public class MessageField
         this.Value = value;
     }
 
-    public override string ToString()
-    {
-        return JsonSerializer.Serialize(this);
-    }
+    public override string ToString() 
+        => JsonSerializer.Serialize(this);
 }

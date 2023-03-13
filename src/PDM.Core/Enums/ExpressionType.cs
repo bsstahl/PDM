@@ -3,6 +3,6 @@
 public enum ExpressionType
 {
     Linq = 0,
-    Literal = 1
+    Literal = 1,
 }
 

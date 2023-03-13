@@ -11,7 +11,7 @@
 		<PackageTags>Abstractions ProtoBuf Transform</PackageTags>
 		<PackageLicenseExpression>AGPL-3.0-only</PackageLicenseExpression>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<VersionPrefix>0.0.2</VersionPrefix>
+		<VersionPrefix>0.0.3</VersionPrefix>
 		<Platforms>AnyCPU</Platforms>
 		<TargetFramework>net6.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
@@ -27,6 +27,11 @@
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<VersionSuffix>dev</VersionSuffix>
 		<DefineConstants>DEBUG;TRACE</DefineConstants>
+		<TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+	  <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
 	</PropertyGroup>
 
 	<ItemGroup>

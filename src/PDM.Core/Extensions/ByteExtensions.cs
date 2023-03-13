@@ -6,9 +6,9 @@ namespace PDM.Extensions;
 
 internal static class ByteExtensions
 {
-    internal static Task<IEnumerable<MessageField>> Parse(this byte[] message, ILogger logger)
+    internal static Task<IEnumerable<MessageField>> ParseAsync(this byte[] message, ILogger logger)
     {
-        logger.LogMethodEntry(nameof(ByteExtensions), nameof(Parse));
+        logger.LogMethodEntry(nameof(ByteExtensions), nameof(ParseAsync));
 
         var result = new List<MessageField>();
 
@@ -21,17 +21,18 @@ internal static class ByteExtensions
 
             logger.LogParsingField(tag);
 
+            MessageField? currentField = null;
             switch (tag.WireType)
             {
                 case Enums.WireType.VarInt:
                     var (varintField, wireLength) = message[i..].ParseVarint(tag);
                     i += wireLength;
-                    result.Add(varintField);
+                    currentField = varintField;
                     break;
                 case Enums.WireType.I64:
                     var i64Payload = message[i..(i + 8)];
                     i += 8;
-                    result.Add(new MessageField(tag.FieldNumber, tag.WireType, i64Payload));
+                    currentField = new MessageField(tag.FieldNumber, tag.WireType, i64Payload);
                     break;
                 case Enums.WireType.Len:
                     var lenVarint = Varint.Parse(message[i..]);
@@ -39,7 +40,7 @@ internal static class ByteExtensions
                     i += lenVarint.WireLength;
                     var lenPayload = message[i..(i + len)];
                     i += len;
-                    result.Add(new MessageField(tag.FieldNumber, tag.WireType, lenPayload));
+                    currentField = new MessageField(tag.FieldNumber, tag.WireType, lenPayload);
                     break;
                 case Enums.WireType.SGroup:
                 case Enums.WireType.EGroup:
@@ -47,16 +48,23 @@ internal static class ByteExtensions
                 case Enums.WireType.I32:
                     var i32Payload = message[i..(i + 4)];
                     i += 4;
-                    result.Add(new MessageField(tag.FieldNumber, tag.WireType, i32Payload));
+                    currentField = new MessageField(tag.FieldNumber, tag.WireType, i32Payload);
                     break;
                 default:
                     throw new InvalidOperationException("Unreachable code reached");
             }
+
+            if (currentField is not null)
+            {
+                result.Add(currentField);
+                logger.LogParseFieldResult(tag, currentField.Value ?? "null");
+            }
+
         }
 
         logger.LogParseMessageResult(result);
 
-        logger.LogMethodExit(nameof(ByteExtensions), nameof(Parse));
+        logger.LogMethodExit(nameof(ByteExtensions), nameof(ParseAsync));
         return Task.FromResult(result.AsEnumerable());
     }
 
@@ -70,26 +78,30 @@ internal static class ByteExtensions
     internal async static Task<byte[]> MapAsync(this byte[] sourceMessage, ILogger logger, IEnumerable<Transformation> transformations)
     {
         var sourceFields = await sourceMessage
-            .Parse(logger)
+            .ParseAsync(logger)
             .ConfigureAwait(false);
 
-        var targetMappings = transformations
-            .AsMappings(logger, sourceFields);
+        var targetMappings = await transformations
+            .AsMappingsAsync(logger, sourceFields)
+            .ConfigureAwait(false);
 
         var source = sourceFields.AsQueryable();
 
         var targetFields = new List<MessageField>();
         foreach (var targetMapping in targetMappings)
         {
-            dynamic targetValue = targetMapping.Expression.ExpressionType switch
+            if (targetMapping.TargetField is null)
+                throw new InvalidDataException(nameof(targetMapping.TargetField));
+
+            dynamic? targetValue = targetMapping.Expression.ExpressionType switch
             {
                 Enums.ExpressionType.Linq => source
                         .Single(targetMapping.Expression.Value)
                         .Value,
 
-                Enums.ExpressionType.Literal => targetMapping
-                    .Expression
-                    .Value,
+                Enums.ExpressionType.Literal => !string.IsNullOrWhiteSpace(targetMapping.Expression.Value)
+                    ? targetMapping.Expression.Value
+                    : targetMapping.TargetField.Value,
 
                 _ => throw new InvalidOperationException("Unreachable code reached")
             };

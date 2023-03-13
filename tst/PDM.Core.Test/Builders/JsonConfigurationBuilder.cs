@@ -37,7 +37,8 @@ internal class TransformationConfigurationBuilder
 	]
 }}";
 
-	public IConfiguration BuildAllTypes() => this.Build(AllTypesJson);
+	public IConfiguration BuildAllTypes() 
+		=> this.Build(AllTypesJson);
 
 	public IConfiguration Build(string json)
 	{
@@ -46,11 +47,9 @@ internal class TransformationConfigurationBuilder
 			throw new ArgumentException($"'{nameof(json)}' cannot be null or whitespace.", nameof(json));
 		}
 
-		var builder = new ConfigurationBuilder();
-
-		using var stream = new MemoryStream(Encoding.UTF8.GetBytes(json));
-		builder.AddJsonStream(stream);
-
-		return builder.Build();
+        using var stream = new MemoryStream(Encoding.UTF8.GetBytes(json));
+        return new ConfigurationBuilder()
+			.AddJsonStream(stream)
+			.Build();
 	}
 }
