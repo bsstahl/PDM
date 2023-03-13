@@ -41,7 +41,6 @@ internal static class FileDescriptorProtoExtensions
         {
             return builder.Build();
         }
-
         foreach (var message in fileDescriptorProto.MessageType)
         {
             builder.AddMessage(message.ToProtoMessage());
@@ -49,7 +48,6 @@ internal static class FileDescriptorProtoExtensions
 
         return builder.Build();
     }
-
 
     private static ProtoEnum? ToProtoEnum(this EnumDescriptorProto? descriptorProto)
     {
@@ -83,7 +81,6 @@ internal static class FileDescriptorProtoExtensions
             Name = descriptorProto.Name,
             Fields = new Dictionary<string, ProtoMessageField>()
         };
-
         foreach (var field in descriptorProto.Field)
         {
             protoMessage.Fields.Add(field.Name, new ProtoMessageField(
