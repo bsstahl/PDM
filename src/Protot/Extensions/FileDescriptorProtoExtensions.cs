@@ -1,6 +1,6 @@
 using Google.Protobuf;
 using Google.Protobuf.Reflection;
-using Protot.Builder;
+using Protot.Builders;
 using Protot.Entities;
 using Protot.Exceptions;
 
@@ -22,7 +22,7 @@ internal static class FileDescriptorProtoExtensions
     {
         if (fileDescriptorProto == null)
         {
-            throw new ProtoFileParserException($"{nameof(fileDescriptorProto)} is null");
+            throw new PrototMapperException($"{nameof(fileDescriptorProto)} is null");
         }
 
         var builder = new ProtoFileDescriptorBuilder();
@@ -41,7 +41,7 @@ internal static class FileDescriptorProtoExtensions
         {
             return builder.Build();
         }
-        
+
         foreach (var message in fileDescriptorProto.MessageType)
         {
             builder.AddMessage(message.ToProtoMessage());
@@ -49,6 +49,7 @@ internal static class FileDescriptorProtoExtensions
 
         return builder.Build();
     }
+
 
     private static ProtoEnum? ToProtoEnum(this EnumDescriptorProto? descriptorProto)
     {
@@ -82,6 +83,7 @@ internal static class FileDescriptorProtoExtensions
             Name = descriptorProto.Name,
             Fields = new Dictionary<string, ProtoMessageField>()
         };
+
         foreach (var field in descriptorProto.Field)
         {
             protoMessage.Fields.Add(field.Name, new ProtoMessageField(
@@ -89,7 +91,6 @@ internal static class FileDescriptorProtoExtensions
                 field.Number,
                 field.ToWireType()));
         }
-
         return protoMessage;
     }
 }

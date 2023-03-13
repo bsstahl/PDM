@@ -10,17 +10,16 @@ internal sealed class ProtoFileDescriptorParser
     private string protoText;
     internal ProtoFileDescriptorParser(string protoText)
     {
-        if (string.IsNullOrWhiteSpace(protoText))
-        {
-            throw new ArgumentNullException($"Proto Content is empty");
-        }
         this.protoText = protoText;
     }
 
     internal async Task<ProtoFileDescriptor?> ParseFileAsync()
     {
         bool isFileDescGenerated = await GenerateFileDescriptor();
-        if (!isFileDescGenerated) throw new ProtoFileParserException("Unable to get message Information");
+        if (!isFileDescGenerated)
+        {
+            throw new PrototMapperException("Unable to get message Information");
+        }
         var fileDescriptor = ProtocExtensions.GetFileDescriptorPath().ExtractFileInfo();
         return fileDescriptor?.ToProtoFileDescriptor();
 
