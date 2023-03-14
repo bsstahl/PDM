@@ -2,6 +2,7 @@ using PDM.Builders;
 using PDM.Entities;
 using PDM.Enums;
 using Protot.Entities;
+using Protot.Enums;
 
 namespace Protot.Extensions;
 
@@ -25,6 +26,16 @@ internal static class TransformationExtensions
                         transformation.SubType.ToLowerEnum(),
                         protoTags.JoinPairs());
                     break;
+                case TransformationType.InsertField:
+                    var fieldInfo = transformation.Value.ParseInsert();
+                    string fieldValue = $"{fieldInfo.fieldName.TryGetFieldNumber(source)}:{fieldInfo.type.ToWireType()}:{fieldInfo.value}";
+                    transformationBuilder.AddTransformation(
+                        TransformationType.InsertField,
+                        transformation.SubType.ToLowerEnum(),
+                        fieldValue);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
 

@@ -36,4 +36,10 @@ internal static class StringExtensions
    {
        return value.Split('.', StringSplitOptions.RemoveEmptyEntries);
    }
+
+   internal static (string fieldName, string type, string value) ParseInsert(this string transformValue)
+   {
+       var fieldInfo =  transformValue.Split(':');
+       return (fieldInfo[0], fieldInfo[1], fieldInfo[2]);
+   }
 }
