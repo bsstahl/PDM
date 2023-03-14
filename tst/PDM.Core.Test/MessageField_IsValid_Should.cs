@@ -18,22 +18,22 @@ public class MessageField_IsValid_Should
     [Fact]
     public void ReturnFalseIfKeyIsZero()
     {
-        var key = 0;
+        var key = new[] { 0 };
         var wireType = Enums.WireType.Len;
         var value = Int32.MaxValue.GetRandom();
 
-        var actual = new MessageField(key, wireType, value);
+        var actual = new TargetMessageField(key, wireType, value);
         Assert.False(actual.IsValid);
     }
 
     [Fact]
     public void ReturnFalseIfValueIsNull()
     {
-        var key = 0;
+        var key = new[] { 0 };
         var wireType = Enums.WireType.Len;
         object? value = null;
 
-        var actual = new MessageField(key, wireType, value);
+        var actual = new TargetMessageField(key, wireType, value);
         Assert.False(actual.IsValid);
     }
 }

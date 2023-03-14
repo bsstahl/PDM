@@ -1,11 +1,17 @@
 ﻿using PDM.Entities;
 using System.Globalization;
-using System.Runtime.InteropServices;
 
 namespace PDM.Extensions;
 
 internal static class StringExtensions
 {
+    internal static string MapExpression(this string fieldNumber)
+        => $"s => (s.Key == \"{fieldNumber}\")";
+
+    internal static IEnumerable<int> AsTargetKey(this string key)
+        => key.Split('.')
+        .Select(k => int.Parse(k, CultureInfo.InvariantCulture));
+
     internal static string ToLiteralExpression(this string value, Enums.WireType wireType)
         => wireType switch
         {
@@ -17,14 +23,14 @@ internal static class StringExtensions
             _ => throw new InvalidOperationException("Unreachable code reached")
         };
 
-    internal static TagLengthValue ParseTLV(this string value, CultureInfo formatProvider)
+    internal static TagLengthValue ParseTLV(this string value)
     {
         var results = new TagLengthValue();
         var fields = value.Split(':');
         if (fields.Length != 3)
             throw new ArgumentException("Invalid value for TLV");
 
-        _ = int.TryParse(fields[0], NumberStyles.Number, formatProvider, out var key);
+        var key = fields[0];
         var wireType = Enum.Parse<Enums.WireType>(fields[1]);
         var dataField = fields[2];
 
@@ -35,24 +41,23 @@ internal static class StringExtensions
         return results;
     }
     
-    internal static IEnumerable<(int[], int)> ParseFieldPairs(this string value, CultureInfo formatProvider)
+    internal static IEnumerable<(string, IEnumerable<int>)> ParseFieldPairs(this string value, CultureInfo formatProvider)
     {
-        var results = new List<(int[], int)>();
+        var results = new List<(string, IEnumerable<int>)>();
         var fieldPairs = value.Split(',');
         foreach (var fieldPair in fieldPairs)
         {
-            results.Add(fieldPair
-                .ParseFieldPair(formatProvider));
+            results.Add(fieldPair.ParseFieldPair(formatProvider));
         }
 
         return results;
     }
 
-    internal static (int[], int) ParseFieldPair(this string fieldPair, CultureInfo formatProvider)
+    internal static (string, IEnumerable<int>) ParseFieldPair(this string fieldPair, CultureInfo formatProvider)
     {
         var (item1, item2) = fieldPair.ParsePair();
 
-        var sourceKeys = item1
+        var targetKeys = item2
             .Split('.', StringSplitOptions.RemoveEmptyEntries)
             .Select(item => int.TryParse(item, NumberStyles.Integer, formatProvider, out var result)
                 ? result
@@ -61,9 +66,7 @@ internal static class StringExtensions
             .Select(x => x!.Value)
             .ToArray();
 
-        _ = int.TryParse(item2, NumberStyles.Integer, formatProvider, out var targetKey);
-
-        return (sourceKeys, targetKey);
+        return (item1, targetKeys);
     }
 
     internal static (string, string) ParsePair(this string pair)
@@ -71,10 +74,12 @@ internal static class StringExtensions
         (string, string) results = (String.Empty, String.Empty);
 
         var itemPair = pair.Split(':');
-        if (itemPair.Length == 2)
-        {
+        if (itemPair.Length == 1)
+            results = (itemPair[0], string.Empty);
+        else if (itemPair.Length == 2)
             results = (itemPair[0], itemPair[1]);
-        }
+        else
+            throw new InvalidOperationException();
 
         return results;
     }
@@ -92,11 +97,14 @@ internal static class StringExtensions
             g = intValue;
         else if (ulong.TryParse(value, out var ulongValue))
             g = ulongValue;
-        else
-        {
-            _ = long.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var longValue);
+        else if (long.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var longValue))
             g = longValue;
-        }
+        else if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var floatValue))
+            g = floatValue;
+        else if (double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var doubleValue))
+            g = doubleValue;
+        else
+            throw new NotImplementedException($"{value} cannot be parsed as a numeric");
 
         return g;
     }

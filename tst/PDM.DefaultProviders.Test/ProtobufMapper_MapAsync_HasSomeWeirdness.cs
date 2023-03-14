@@ -1,18 +1,18 @@
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using PDM.Builders;
+using PDM.Parser.Extensions;
 using Serilog;
-using System.Diagnostics;
 using Xunit.Abstractions;
+using PDM.TestUtils.Extensions;
+using PDM.TestUtils.ProtoBuf;
 
-namespace PDM.Core.Test;
+namespace PDM.DefaultProviders.Test;
 
 [ExcludeFromCodeCoverage]
 [Collection("MapperTests")]
 public class ProtobufMapper_MapAsync_HasSomeWeirdness
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly ILogger<ProtobufMapper> _mapperLogger;
 
     public ProtobufMapper_MapAsync_HasSomeWeirdness(ITestOutputHelper output)
     {
@@ -23,10 +23,9 @@ public class ProtobufMapper_MapAsync_HasSomeWeirdness
 
         _serviceProvider = new ServiceCollection()
             .AddLogging(l => l.AddSerilog())
+            .UseDefaultParser()
+            .AddSingleton<ProtobufMapper>()
             .BuildServiceProvider();
-
-        _mapperLogger = _serviceProvider
-            .GetRequiredService<ILogger<ProtobufMapper>>();
     }
 
     //[Fact]
@@ -75,7 +74,7 @@ public class ProtobufMapper_MapAsync_HasSomeWeirdness
     public async Task EncodeSignedIntsDifferently()
     {
         var expected = 2132; // Zig-Zag encoded 1066
-        var sourceData = new ProtoBuf.AllTypes()
+        var sourceData = new TestUtils.ProtoBuf.AllTypes()
         {
             SInt32Value = 1066
         };
@@ -86,11 +85,14 @@ public class ProtobufMapper_MapAsync_HasSomeWeirdness
 
         var sourceMessage = sourceData.ToByteArray();
 
-        var target = new ProtobufMapper(_mapperLogger, targetMapping);
-        var actual = await target.MapAsync(sourceMessage);
+        var target = _serviceProvider.GetMapper(targetMapping);
+        var actual = await target.MapAsync(sourceMessage); ;
 
-        var actualData = ProtoBuf.AllTypes.Parser.ParseFrom(actual);
+        var actualData = AllTypes.Parser.ParseFrom(actual);
 
+        // Since the value was encoded using Zig-Zag encoding
+        // we won't get the "intended" value of 1066, but
+        // will instead see the encoded value of 2132
         Assert.Equal(expected, actualData.Int32Value);
     }
 

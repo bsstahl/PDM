@@ -1,4 +1,6 @@
-﻿namespace PDM.Core.Test;
+﻿using Google.Protobuf;
+
+namespace PDM.TestUtils.Extensions;
 
 [ExcludeFromCodeCoverage]
 public static class MessageExtensions

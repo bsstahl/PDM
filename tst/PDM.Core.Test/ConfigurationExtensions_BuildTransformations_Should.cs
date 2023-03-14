@@ -13,8 +13,7 @@ public class ConfigurationExtensions_BuildTransformations_Should
 	{
 		var configuration = (IConfiguration)null!;
 		var configKey = TransformationConfigurationBuilder.ConfigKey;
-
-		Assert.Throws<ArgumentNullException>(() => configuration.BuildTransformations(configKey));
+		_ = Assert.Throws<ArgumentNullException>(() => configuration.BuildTransformations(configKey));
 	}
 
 	[Theory]
@@ -24,8 +23,7 @@ public class ConfigurationExtensions_BuildTransformations_Should
 	public void ThrowArgumentExceptionIfConfigKeyIsNullOrWhiteSpace(string configKey)
 	{
 		var configuration = new TransformationConfigurationBuilder().BuildAllTypes();
-
-		Assert.Throws<ArgumentException>(() => configuration.BuildTransformations(configKey));
+		_ = Assert.Throws<ArgumentException>(() => configuration.BuildTransformations(configKey));
 	}
 
 	[Fact]

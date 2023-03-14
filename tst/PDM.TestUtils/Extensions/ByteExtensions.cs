@@ -1,4 +1,4 @@
-﻿namespace PDM.Core.Test;
+﻿namespace PDM.TestUtils.Extensions;
 
 [ExcludeFromCodeCoverage]
 internal static class ByteExtensions
@@ -6,7 +6,7 @@ internal static class ByteExtensions
     public static byte[] GetRandom(this byte[] _)
     {
         var len = 100.GetRandom(8);
-        
+
         var result = new List<byte>();
         for (var i = 0; i < len; i++)
         {

@@ -118,7 +118,9 @@ public class TransformationBuilder
             .InsertStaticField(fieldNumber, wireType, value.ToString(CultureInfo.InvariantCulture));
     }
 
-    internal TransformationBuilder InsertStaticField(int fieldNumber, WireType wireType, ulong value)
+#pragma warning disable CS3001 // Argument type is not CLS-compliant
+    public TransformationBuilder InsertStaticField(int fieldNumber, WireType wireType, ulong value)
+#pragma warning restore CS3001 // Argument type is not CLS-compliant
     {
         return this
             .InsertStaticField(fieldNumber, wireType, value.ToString(CultureInfo.InvariantCulture));

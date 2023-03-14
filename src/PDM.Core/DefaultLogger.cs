@@ -2,13 +2,12 @@
 
 namespace PDM;
 
-internal sealed class DefaultLogger : ILogger
+public sealed class DefaultLogger<T> : ILogger<T> 
+    where T : class
 {
     public DefaultLogger() 
         => System.Diagnostics.Trace.WriteLine("Default logger configured");
 
-    // Since this object is internal only, as long
-    // as we never use scopes inside of PDM, we won't need this.
     public IDisposable? BeginScope<TState>(TState state) where TState : notnull 
         => null;
 
@@ -19,6 +18,8 @@ internal sealed class DefaultLogger : ILogger
 
     public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
     {
+        if (formatter is null)
+            throw new ArgumentNullException(nameof(formatter));
         var formattedMessage = formatter.Invoke(state, exception);
         var logMessage = $"{logLevel}: {formattedMessage}";
         System.Diagnostics.Trace.WriteLine(logMessage);
