@@ -44,4 +44,32 @@ internal static class TypeExtensions
                 throw new ArgumentOutOfRangeException(nameof(fieldDescriptor.Type), fieldDescriptor.Type, null);
         }
     }
+
+    internal static WireType ToWireType(this string typeString)
+    {
+        switch (typeString.ToLowerInvariant())
+        {
+            case "int32":
+            case "int64":
+            case "uint32":
+            case "uint64":
+            case "sint32":
+            case "sint64":
+            case "bool":
+                return WireType.VarInt;
+            case "fixed64":
+            case "sfixed64":
+            case "double":
+                return WireType.I64;
+            case "string":
+            case "bytes":
+                return WireType.Len;
+            case "fixed32":
+            case "sfixed32":
+            case "float":
+                return WireType.I32;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(typeString), typeString, null);
+        }
+    }
 }

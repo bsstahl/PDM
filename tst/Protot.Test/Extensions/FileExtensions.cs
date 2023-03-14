@@ -1,4 +1,4 @@
-namespace Protot.Test;
+namespace Protot.Test.Extensions;
 
 [ExcludeFromCodeCoverage]
 public static class FileExtensions

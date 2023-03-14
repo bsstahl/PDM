@@ -8,6 +8,7 @@ namespace Protot;
 internal sealed class ProtoFileDescriptorParser
 {
     private string protoText;
+    static SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1,1);
     internal ProtoFileDescriptorParser(string protoText)
     {
         this.protoText = protoText;
@@ -15,13 +16,22 @@ internal sealed class ProtoFileDescriptorParser
 
     internal async Task<ProtoFileDescriptor?> ParseFileAsync()
     {
-        bool isFileDescGenerated = await GenerateFileDescriptor();
-        if (!isFileDescGenerated)
+        await semaphoreSlim.WaitAsync();
+        try
         {
-            throw new PrototMapperException("Unable to get message Information");
+            bool isFileDescGenerated = await GenerateFileDescriptor().ConfigureAwait(false);
+            if (!isFileDescGenerated)
+            {
+                throw new PrototMapperException("Unable to get message Information");
+            }
+
+            var fileDescriptor = ProtocExtensions.GetFileDescriptorPath().ExtractFileInfo();
+            return fileDescriptor?.ToProtoFileDescriptor();
         }
-        var fileDescriptor = ProtocExtensions.GetFileDescriptorPath().ExtractFileInfo();
-        return fileDescriptor?.ToProtoFileDescriptor();
+        finally
+        {
+            semaphoreSlim.Release();
+        }
 
     }
 
