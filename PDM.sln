@@ -29,6 +29,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PDM.Parser.Test", "tst\PDM.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PDM.Serializer", "src\PDM.Serializer\PDM.Serializer.csproj", "{0CE91697-8525-4D78-AECE-34666C96DAA1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PDM.Serializer.Test", "tst\PDM.Serializer.Test\PDM.Serializer.Test.csproj", "{C70F1F3F-8BE9-4B11-A9DA-EB7B996F3C99}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{0CE91697-8525-4D78-AECE-34666C96DAA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0CE91697-8525-4D78-AECE-34666C96DAA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0CE91697-8525-4D78-AECE-34666C96DAA1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C70F1F3F-8BE9-4B11-A9DA-EB7B996F3C99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C70F1F3F-8BE9-4B11-A9DA-EB7B996F3C99}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C70F1F3F-8BE9-4B11-A9DA-EB7B996F3C99}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C70F1F3F-8BE9-4B11-A9DA-EB7B996F3C99}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -75,6 +81,7 @@ Global
 		{DA1846FB-7690-4F8F-8FCE-E0C87BC77652} = {7214354A-8565-48C9-95F0-C18112DA8EB3}
 		{8B4E291F-4008-4546-8D5B-33057017D696} = {7214354A-8565-48C9-95F0-C18112DA8EB3}
 		{0CE91697-8525-4D78-AECE-34666C96DAA1} = {460F91EE-7A06-4B59-AE80-9290FED6C66D}
+		{C70F1F3F-8BE9-4B11-A9DA-EB7B996F3C99} = {7214354A-8565-48C9-95F0-C18112DA8EB3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {23D296E3-1C54-46AF-9567-DDE6D118674B}

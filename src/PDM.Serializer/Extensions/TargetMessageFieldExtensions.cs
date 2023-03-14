@@ -7,7 +7,6 @@ namespace PDM.Serializer.Extensions;
 
 internal static class TargetMessageFieldExtensions
 {
-
     internal static Task<byte[]> ToByteArray(this IEnumerable<TargetMessageField> messageFields, ILogger logger)
     {
         logger.LogMethodEntry(nameof(TargetMessageFieldExtensions), nameof(ToByteArray));

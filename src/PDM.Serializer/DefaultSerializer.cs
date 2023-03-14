@@ -18,8 +18,11 @@ public class DefaultSerializer: Interfaces.IProtobufWireFormatSerializer
 
     public async Task<byte[]> ToByteArrayAsync(IEnumerable<TargetMessageField> messageFields)
     {
-        return messageFields is null 
-            ? throw new ArgumentNullException(nameof(messageFields)) 
-            : await messageFields.ToByteArray(_logger).ConfigureAwait(false);
+        var fields = messageFields 
+            ?? Array.Empty<TargetMessageField>();
+
+        return await fields
+            .ToByteArray(_logger)
+            .ConfigureAwait(false);
     }
 }
