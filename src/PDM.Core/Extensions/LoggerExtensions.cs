@@ -66,20 +66,10 @@ public static class LoggerExtensions
             LogEventId.FieldMappingProcessed,
             "Mapping of field {FieldMapping} completed");
 
-    static readonly Action<ILogger, TargetMessageField, IEnumerable<byte>, Exception?> _messageFieldExported
-        = LoggerMessage.Define<TargetMessageField, IEnumerable<byte>>(LogLevel.Information,
-            LogEventId.MessageFieldExported,
-            "Message field {Field} exported with value {Value}");
-
     static readonly Action<ILogger, SourceMessageField, Exception?> _invalidSourceMessageField
         = LoggerMessage.Define<SourceMessageField>(LogLevel.Warning,
             LogEventId.InvalidMessageField,
             "Invalid source message field {Field}");
-
-    static readonly Action<ILogger, TargetMessageField, Exception?> _invalidTargetMessageField
-        = LoggerMessage.Define<TargetMessageField>(LogLevel.Warning,
-            LogEventId.InvalidMessageField,
-            "Invalid target message field {Field}");
 
     public static void LogNoLoggerProvided(this ILogger logger)
         => _noLoggerProvidedMessage.Invoke(logger, null);
@@ -114,14 +104,8 @@ public static class LoggerExtensions
     internal static void LogSourceFieldNotFound(this ILogger logger, Transformation transform, string activity)
         => _sourceFieldNotFoundMessage.Invoke(logger, transform, activity, null);
 
-    internal static void LogMessageFieldExported(this ILogger logger, TargetMessageField messageField, IEnumerable<byte> wireTypeValue)
-        => _messageFieldExported.Invoke(logger, messageField, wireTypeValue, null);
-
     internal static void LogInvalidSourceField(this ILogger logger, SourceMessageField messageField)
         => _invalidSourceMessageField.Invoke(logger, messageField, null);
-
-    internal static void LogInvalidTargetField(this ILogger logger, TargetMessageField messageField)
-        => _invalidTargetMessageField.Invoke(logger, messageField, null);
 
     internal static void LogMappingRemovalCompleted(this ILogger logger, string key, TargetMessageField? removedMapping, string activity)
     {

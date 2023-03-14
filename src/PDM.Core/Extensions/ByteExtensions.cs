@@ -1,12 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
 using PDM.Entities;
-using System.Linq.Dynamic.Core;
 
 namespace PDM.Extensions;
 
 internal static class ByteExtensions
 {
-    internal async static Task<byte[]> MapAsync(this byte[] sourceMessage, ILogger logger, Interfaces.IWireFormatParser parser, IEnumerable<Transformation> transformations)
+    internal async static Task<byte[]> MapAsync(this byte[] sourceMessage, ILogger logger, Interfaces.IWireFormatParser parser, Interfaces.IProtobufWireFormatSerializer serializer, IEnumerable<Transformation> transformations)
     {
         var sourceFields = await parser
             .ParseAsync(sourceMessage)
@@ -16,6 +15,8 @@ internal static class ByteExtensions
             .AsTargetFieldsAsync(logger, sourceFields)
             .ConfigureAwait(false);
 
-        return targetFields.ToByteArray(logger);
+        return await serializer
+            .ToByteArrayAsync(targetFields)
+            .ConfigureAwait(false);
     }
 }

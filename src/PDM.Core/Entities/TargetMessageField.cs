@@ -13,8 +13,8 @@ public class TargetMessageField
 
     public object? Value { get; set; }
 
-
-    internal bool IsValid => this.Key.Any() 
+    [JsonIgnore]
+    public bool IsValid => this.Key.Any() 
         && this.Key.All(k => k > 0)
         && (this.Value is not null)
         && (!string.IsNullOrEmpty(this.Value.ToString()));

@@ -3,6 +3,7 @@ using PDM.Builders;
 using PDM.TestUtils.ProtoBuf;
 using PDM.TestUtils.Extensions;
 using PDM.Parser.Extensions;
+using PDM.Serializer.Extensions;
 using Serilog;
 using Xunit.Abstractions;
 
@@ -27,6 +28,7 @@ public class ProtobufMapper_MapAsync_ShouldInsertAStaticValue
         _serviceProvider = new ServiceCollection()
             .AddLogging(l => l.AddSerilog())
             .UseDefaultParser()
+            .UseDefaultSerializer()
             .AddSingleton<ProtobufMapper>()
             .BuildServiceProvider();
     }
