@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using PDM.Builders;
 using PDM.Parser.Extensions;
+using PDM.Serializer.Extensions;
 using Serilog;
 using Xunit.Abstractions;
 using PDM.TestUtils.Extensions;
@@ -24,6 +25,7 @@ public class ProtobufMapper_MapAsync_HasSomeWeirdness
         _serviceProvider = new ServiceCollection()
             .AddLogging(l => l.AddSerilog())
             .UseDefaultParser()
+            .UseDefaultSerializer()
             .AddSingleton<ProtobufMapper>()
             .BuildServiceProvider();
     }

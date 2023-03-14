@@ -15,11 +15,12 @@ public static class ServiceProviderExtensions
     {
         var logger = services.GetRequiredService<ILogger<ProtobufMapper>>();
         var parser = services.GetRequiredService<IWireFormatParser>();
-        return services.GetMapper(logger, parser, transformations);
+        var serializer = services.GetRequiredService<IProtobufWireFormatSerializer>();
+        return services.GetMapper(logger, parser, serializer, transformations);
     }
 
-    public static ProtobufMapper GetMapper(this IServiceProvider _, ILogger<ProtobufMapper> logger, IWireFormatParser parser, IEnumerable<Transformation>? transformations)
-        => new(logger, parser, transformations);
+    public static ProtobufMapper GetMapper(this IServiceProvider _, ILogger<ProtobufMapper> logger, IWireFormatParser parser, IProtobufWireFormatSerializer serializer, IEnumerable<Transformation>? transformations)
+        => new(logger, parser, serializer, transformations);
 
     public static ILogger<ProtobufMapper> GetMapperLogger(this IServiceProvider services)
         => services.GetLogger<ProtobufMapper>();

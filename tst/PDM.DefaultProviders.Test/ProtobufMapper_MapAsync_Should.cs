@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using PDM.Builders;
 using PDM.Parser.Extensions;
+using PDM.Serializer.Extensions;
 using PDM.TestUtils.Extensions;
 using PDM.TestUtils.ProtoBuf;
 using PDM.TestUtils.Builders;
@@ -25,6 +26,7 @@ public class ProtobufMapper_MapAsync_Should
         _serviceProvider = new ServiceCollection()
             .AddLogging(l => l.AddSerilog())
             .UseDefaultParser()
+            .UseDefaultSerializer()
             .BuildServiceProvider();
     }
 

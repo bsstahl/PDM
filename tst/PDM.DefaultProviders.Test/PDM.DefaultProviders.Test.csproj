@@ -29,6 +29,7 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\..\src\PDM.Core\PDM.Core.csproj" />
 	  <ProjectReference Include="..\..\src\PDM.Parser\PDM.Parser.csproj" />
+	  <ProjectReference Include="..\..\src\PDM.Serializer\PDM.Serializer.csproj" />
 	  <ProjectReference Include="..\PDM.TestUtils\PDM.TestUtils.csproj" />
 	</ItemGroup>
 

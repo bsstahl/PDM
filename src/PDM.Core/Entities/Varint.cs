@@ -4,9 +4,12 @@ namespace PDM.Entities;
 
 public sealed record Varint
 {
-    internal byte[] RawData { get; }
+    private readonly byte[] _rawData = Array.Empty<byte>();
 
-    public int WireLength => this.RawData.Length;
+    public byte[] GetRawData()
+        => _rawData;
+
+    public int WireLength => _rawData.Length;
 
 #pragma warning disable CS3003 // Type is not CLS-compliant
     public UInt64 Value => CalculateValue(this.DecodedData);
@@ -14,7 +17,7 @@ public sealed record Varint
 
 
     internal Varint(byte[] rawData)
-        => this.RawData = rawData;
+        => _rawData = rawData;
 
     public Varint(long value)
         : this((ulong)value)
@@ -41,7 +44,7 @@ public sealed record Varint
                 currentValue >>= 7;
             }
 
-        this.RawData = rawData.ToArray();
+        _rawData = rawData.ToArray();
     }
 
     public static Varint Parse(byte[] message)
@@ -98,7 +101,7 @@ public sealed record Varint
     }
 
     private byte[] DecodedData
-        => this.RawData
+        => this.GetRawData()
         .Select(d => Convert.ToByte(d & 127))
         .ToArray();
 

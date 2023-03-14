@@ -3,8 +3,11 @@ using System.Globalization;
 
 namespace PDM.Extensions;
 
-internal static class StringExtensions
+public static class StringExtensions
 {
+    public static bool IsValidHexString(this string value)
+        => value.All(h => Uri.IsHexDigit(h));
+
     internal static string MapExpression(this string fieldNumber)
         => $"s => (s.Key == \"{fieldNumber}\")";
 
@@ -141,6 +144,4 @@ internal static class StringExtensions
         return g.ToLittleEndianBytes();
     }
 
-    internal static bool IsValidHexString(this string value)
-        => value.All(h => Uri.IsHexDigit(h));
 }
