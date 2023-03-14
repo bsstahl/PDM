@@ -13,15 +13,10 @@ public class ProtoTransformation
     public TransformationType TransformationType { get; set; }
     
     public TransformationSubtype SubType { get; set; }
-    public string Value { get; set; } 
+    public string Value { get; set; } = string.Empty;
     
     public override string ToString()
     {
         return JsonSerializer.Serialize(this);
-    }
-
-    public IEnumerator GetEnumerator()
-    {
-        throw new NotImplementedException();
     }
 }
