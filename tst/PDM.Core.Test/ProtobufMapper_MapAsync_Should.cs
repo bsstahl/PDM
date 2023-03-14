@@ -7,6 +7,7 @@ using Serilog;
 using System.Diagnostics;
 using Xunit.Abstractions;
 using Moq;
+using PDM.TestUtils;
 
 namespace PDM.Core.Test;
 
