@@ -31,6 +31,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Protot.Core", "src\Protot.C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Protot.Core.Test", "tst\Protot.Core.Test\Protot.Core.Test.csproj", "{B0C822A9-B60C-4358-8677-E85B33D554FC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Protot", "src\Protot\Protot.csproj", "{ABB92CD2-AEF5-44A1-B168-426666BE6B9D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,10 @@ Global
 		{B0C822A9-B60C-4358-8677-E85B33D554FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B0C822A9-B60C-4358-8677-E85B33D554FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B0C822A9-B60C-4358-8677-E85B33D554FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ABB92CD2-AEF5-44A1-B168-426666BE6B9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABB92CD2-AEF5-44A1-B168-426666BE6B9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ABB92CD2-AEF5-44A1-B168-426666BE6B9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ABB92CD2-AEF5-44A1-B168-426666BE6B9D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -82,6 +88,7 @@ Global
 		{8B4E291F-4008-4546-8D5B-33057017D696} = {7214354A-8565-48C9-95F0-C18112DA8EB3}
 		{F3C39581-5DCA-41FB-99D4-1D9D683F1B22} = {460F91EE-7A06-4B59-AE80-9290FED6C66D}
 		{B0C822A9-B60C-4358-8677-E85B33D554FC} = {7214354A-8565-48C9-95F0-C18112DA8EB3}
+		{ABB92CD2-AEF5-44A1-B168-426666BE6B9D} = {460F91EE-7A06-4B59-AE80-9290FED6C66D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {23D296E3-1C54-46AF-9567-DDE6D118674B}

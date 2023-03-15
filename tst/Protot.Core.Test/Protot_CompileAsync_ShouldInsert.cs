@@ -39,7 +39,7 @@ public class Protot_CompileAsync_ShouldInsert
         
         Assert.NotEmpty(compliedTransformation);
         Assert.Contains(compliedTransformation, x => x.TransformationType == TransformationType.InsertField);
-        Assert.Contains(compliedTransformation, x => x.Value == "15:VarInt:173559425");
+        Assert.Contains(compliedTransformation, x => x.Value == "150:VarInt:173559425");
     }
     
 }

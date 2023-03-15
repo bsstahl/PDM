@@ -17,7 +17,7 @@ public static class ConfigurationExtensions
         }
 
         var configSection = configuration.GetRequiredSection(configKey);
-        var transformationConfigurations = new List<ProtoTransformation>();
+        var transformationConfigurations = new ProtoTransformations();
 
         configSection.Bind(transformationConfigurations);
 

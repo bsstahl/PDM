@@ -2,7 +2,7 @@ using PDM.Builders;
 using PDM.Entities;
 using PDM.Enums;
 using Protot.Core.Entities;
-using Protot.Core.Enums;
+
 
 namespace Protot.Core.Extensions;
 
@@ -28,7 +28,7 @@ internal static class TransformationExtensions
                     break;
                 case TransformationType.InsertField:
                     var fieldInfo = transformation.Value.ParseInsert();
-                    string fieldValue = $"{fieldInfo.fieldName.TryGetFieldNumber(source)}:{fieldInfo.type.ToWireType()}:{fieldInfo.value}";
+                    string fieldValue = $"{fieldInfo.fieldName.TryGetFieldNumber(target)}:{fieldInfo.type.ToWireType()}:{fieldInfo.value}";
                     transformationBuilder.AddTransformation(
                         TransformationType.InsertField,
                         transformation.SubType.ToLowerEnum(),
