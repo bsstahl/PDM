@@ -27,9 +27,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PDM.TestUtils", "tst\PDM.Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PDM.Parser.Test", "tst\PDM.Parser.Test\PDM.Parser.Test.csproj", "{8B4E291F-4008-4546-8D5B-33057017D696}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Protot", "src\Protot\Protot.csproj", "{F3C39581-5DCA-41FB-99D4-1D9D683F1B22}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Protot.Core", "src\Protot.Core\Protot.Core.csproj", "{F3C39581-5DCA-41FB-99D4-1D9D683F1B22}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Protot.Test", "tst\Protot.Test\Protot.Test.csproj", "{B0C822A9-B60C-4358-8677-E85B33D554FC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Protot.Core.Test", "tst\Protot.Core.Test\Protot.Core.Test.csproj", "{B0C822A9-B60C-4358-8677-E85B33D554FC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
