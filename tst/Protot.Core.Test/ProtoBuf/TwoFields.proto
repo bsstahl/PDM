@@ -1,0 +1,8 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "PDM.Core.Test.ProtoBuf";
+
+message TwoFields {
+  string StringValue = 5;
+  int32 IntegerValue = 15;
+}

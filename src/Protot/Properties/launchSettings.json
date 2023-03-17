@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "Protot": {
+      "commandName": "Project",
+      "commandLineArgs": "--source_path=\"SOURCE_PATH\"  --target_path=\"TARGET_PATH\"  --transformation_config_path=\"TRANSFORMATION_CONFIG_PATH\"  --transformation_out_path=\"TRANSFORMATION_OUT_PATH\"",
+      "environmentVariables": {
+        
+      }
+    }
+  }
+}
