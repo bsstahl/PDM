@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using PDM.Entities;
-using PDM.Enums;
 using PDM.Extensions;
 
 namespace PDM.Serializer.Extensions;
@@ -36,7 +35,7 @@ internal static class TargetMessageFieldExtensions
         return Task.FromResult(result.ToArray());
     }
 
-    internal static IEnumerable<byte> AsWiretypeValue(this object value, WireType wireType)
+    internal static IEnumerable<byte> AsWiretypeValue(this object value, Enums.WireType wireType)
     {
         var result = new List<Byte>();
 
@@ -64,6 +63,7 @@ internal static class TargetMessageFieldExtensions
                 byte[] lenValue;
                 if (typeof(string).IsAssignableFrom(value.GetType()))
                 {
+                    // TODO: Handle Big Endian machines
                     string stringValue = (string)value;
                     lenValue = stringValue.IsValidHexString()
                         ? Convert.FromHexString(stringValue)

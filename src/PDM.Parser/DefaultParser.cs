@@ -18,7 +18,7 @@ public class DefaultParser : IWireFormatParser
     }
 
     public async Task<IEnumerable<SourceMessageField>> ParseAsync(byte[] message) 
-        => await ParseAsync(message, string.Empty);
+        => await ParseAsync(message ?? Array.Empty<byte>(), string.Empty).ConfigureAwait(false);
 
     private async Task<IEnumerable<SourceMessageField>> ParseAsync(byte[] message, string fieldPrefix)
     {
@@ -97,7 +97,10 @@ public class DefaultParser : IWireFormatParser
                                     var fieldNumber = tag.FieldNumber.GetFullyQualifiedKey(fieldPrefix);
                                     fieldsToAdd.Add(new SourceMessageField(fieldNumber, tag.WireType, lenPayload));
 
-                                    var childFields = await ParseAsync(lenPayload);
+                                    var childFields = await this
+                                        .ParseAsync(lenPayload)
+                                        .ConfigureAwait(false);
+
                                     foreach (var childField in childFields)
                                     {
                                         var fullKey = childField.Key.GetFullyQualifiedKey(fieldNumber);

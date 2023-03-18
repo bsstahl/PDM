@@ -28,10 +28,6 @@ public class TargetMessageField
     { }
 
     public TargetMessageField(IEnumerable<int> key, Enums.WireType wireType, object? value)
-        : this(key, wireType, value, Array.Empty<SourceMessageField>())
-    { }
-
-    public TargetMessageField(IEnumerable<int> key, Enums.WireType wireType, object? value, IEnumerable<SourceMessageField> childFields)
     {
         this.Key = key;
         this.WireType = wireType;
