@@ -26,7 +26,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-		<VersionSuffix>dev</VersionSuffix>
+		<VersionSuffix>pre</VersionSuffix>
 		<DefineConstants>DEBUG;TRACE</DefineConstants>
 	</PropertyGroup>
 
