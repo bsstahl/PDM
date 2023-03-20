@@ -129,7 +129,7 @@ public class TransformationBuilder
     public TransformationBuilder InsertStaticField(int fieldNumber, WireType wireType, float value)
     {
         return this
-            .InsertStaticField(fieldNumber, wireType, value.ToString(CultureInfo.InvariantCulture));
+            .InsertStaticField(fieldNumber, wireType, I32.Create(value).Value);
     }
 
     public TransformationBuilder InsertStaticField(int fieldNumber, WireType wireType, double value)

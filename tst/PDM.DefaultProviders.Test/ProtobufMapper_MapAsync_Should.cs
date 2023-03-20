@@ -20,7 +20,7 @@ public class ProtobufMapper_MapAsync_Should
     {
         Log.Logger = new LoggerConfiguration()
             .WriteTo.Xunit(output)
-            .MinimumLevel.Error()
+            .MinimumLevel.Verbose()
             .CreateLogger();
 
         _serviceProvider = new ServiceCollection()
@@ -433,5 +433,4 @@ public class ProtobufMapper_MapAsync_Should
         Assert.Equal(sourceData.EmbeddedMessageValue.EmbeddedStringValue, actualData.StringValue);
         Assert.Equal(sourceData.EmbeddedMessageValue.EmbeddedInt32Value, actualData.IntegerValue);
     }
-
 }
