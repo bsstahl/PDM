@@ -17,5 +17,4 @@
 	<ItemGroup>
 		<ProjectReference Include="..\PDM.Core\PDM.Core.csproj" />
 	</ItemGroup>
-
 </Project>

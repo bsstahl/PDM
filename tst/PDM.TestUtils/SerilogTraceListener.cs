@@ -1,9 +1,9 @@
 ﻿using System.Diagnostics;
 
-namespace PDM.Core.Test;
+namespace PDM.TestUtils;
 
 [ExcludeFromCodeCoverage]
-internal class SerilogTraceListener : TraceListener
+public class SerilogTraceListener : TraceListener
 {
     readonly Serilog.ILogger _logger;
 

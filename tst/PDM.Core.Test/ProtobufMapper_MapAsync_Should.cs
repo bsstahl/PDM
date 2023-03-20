@@ -7,6 +7,7 @@ using Serilog;
 using System.Diagnostics;
 using Xunit.Abstractions;
 using Moq;
+using PDM.TestUtils;
 
 namespace PDM.Core.Test;
 
@@ -34,7 +35,8 @@ public class ProtobufMapper_MapAsync_Should
         _ = Trace.Listeners.Add(new SerilogTraceListener(Log.Logger));
         var sourceMessage = Convert.FromHexString("2A08666538616230326155DD3841C878A4CEBAE404");
         var parser = Mock.Of<IWireFormatParser>();
-        var target = _serviceProvider.GetMapper(null!, parser, null);
+        var serializer = Mock.Of<IProtobufWireFormatSerializer>();
+        var target = _serviceProvider.GetMapper(null!, parser, serializer, null);
         _ = await target.MapAsync(sourceMessage);
     }
 
@@ -53,7 +55,8 @@ public class ProtobufMapper_MapAsync_Should
 
         var parser = Mock.Of<IWireFormatParser>();
         var logger = _serviceProvider.GetMapperLogger();
-        var target = _serviceProvider.GetMapper(logger, parser, targetMapping);
+        var serializer = Mock.Of<IProtobufWireFormatSerializer>();
+        var target = _serviceProvider.GetMapper(logger, parser, serializer, targetMapping);
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(() => target.MapAsync(sourceMessage!));
     }
 
