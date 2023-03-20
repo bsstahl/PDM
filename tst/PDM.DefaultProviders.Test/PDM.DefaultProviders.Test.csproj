@@ -23,7 +23,7 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
-		<PackageReference Include="TestHelperExtensions" Version="2.2.0" />
+		<PackageReference Include="TestHelperExtensions" Version="2.2.1" />
 	</ItemGroup>
 
 	<ItemGroup>
