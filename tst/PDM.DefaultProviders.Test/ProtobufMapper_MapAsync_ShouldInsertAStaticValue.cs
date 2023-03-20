@@ -245,8 +245,10 @@ public class ProtobufMapper_MapAsync_ShouldInsertAStaticValue
     [Theory]
     [InlineData(float.MaxValue)]
     [InlineData(10234.3874f)]
+    [InlineData(10234.0f)]
     [InlineData(0.0f)]
     [InlineData(-10234.3874f)]
+    [InlineData(-10234.0f)]
     [InlineData(float.MinValue)]
     public async Task I32AsFloat(float expected)
     {

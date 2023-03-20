@@ -162,7 +162,7 @@ public class ProtobufAllTypesBuilder
             .SFixed64Value(long.MaxValue.GetRandom())
             .DoubleValue(double.MaxValue.GetRandom())
             .StringValue(string.Empty.GetRandom())
-            .BytesValue(Array.Empty<byte>().GetRandom())
+            .BytesValue(byte.MaxValue.GetRandomEnumerable().ToArray())
             .EmbeddedMessageValue(int.MaxValue.GetRandom(), string.Empty.GetRandom())
             .AddRandomRepeatedInt32Value()
             .Fixed32Value(Convert.ToUInt32(int.MaxValue.GetRandom(0)))
