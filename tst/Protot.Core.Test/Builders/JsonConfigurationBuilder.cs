@@ -1,14 +1,14 @@
-using System.Text;
 using Microsoft.Extensions.Configuration;
+using System.Text;
 
 namespace Protot.Core.Test.Builders;
 
 [ExcludeFromCodeCoverage]
 internal class JsonConfigurationBuilder
 {
-	public static string ConfigKey => "Transforms";
+    public static string ConfigKey => "Transforms";
 
-	public static string AllTypesJson => $@"
+    public static string AllTypesJson => $@"
 {{
 	""{ConfigKey}"": [
 		{{
@@ -37,19 +37,19 @@ internal class JsonConfigurationBuilder
 	]
 }}";
 
-	public IConfiguration BuildAllTypes() 
-		=> this.Build(AllTypesJson);
+    public IConfiguration BuildAllTypes()
+        => this.Build(AllTypesJson);
 
-	public IConfiguration Build(string json)
-	{
-		if (string.IsNullOrWhiteSpace(json))
-		{
-			throw new ArgumentException($"'{nameof(json)}' cannot be null or whitespace.", nameof(json));
-		}
+    public IConfiguration Build(string json)
+    {
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            throw new ArgumentException($"'{nameof(json)}' cannot be null or whitespace.", nameof(json));
+        }
 
-		using var stream = new MemoryStream(Encoding.UTF8.GetBytes(json));
-		return new ConfigurationBuilder()
-			.AddJsonStream(stream)
-			.Build();
-	}
+        using var stream = new MemoryStream(Encoding.UTF8.GetBytes(json));
+        return new ConfigurationBuilder()
+            .AddJsonStream(stream)
+            .Build();
+    }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using PDM.Entities;
 using PDM.Extensions;
+using PDM.WireTypes;
 
 namespace PDM.Serializer.Extensions;
 

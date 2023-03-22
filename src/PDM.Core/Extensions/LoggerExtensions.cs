@@ -27,8 +27,8 @@ public static class LoggerExtensions
                 "{Type}: {Value}");
 
     static readonly Action<ILogger, string, Exception?> _RequiredFieldMissingMessage
-        = LoggerMessage.Define<string>(LogLevel.Error, 
-            LogEventId.FieldMissing, 
+        = LoggerMessage.Define<string>(LogLevel.Error,
+            LogEventId.FieldMissing,
             "{FieldName} is required to perform a mapping");
 
     static readonly Action<ILogger, Enums.TransformationType, string, Exception?> _buildingMappingMessage

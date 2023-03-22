@@ -5,7 +5,7 @@ using PDM.Serializer.Extensions;
 
 namespace PDM.Serializer;
 
-public class DefaultSerializer: Interfaces.IProtobufWireFormatSerializer
+public class DefaultSerializer : Interfaces.IProtobufWireFormatSerializer
 {
     private readonly ILogger _logger;
 
@@ -18,7 +18,7 @@ public class DefaultSerializer: Interfaces.IProtobufWireFormatSerializer
 
     public async Task<byte[]> ToByteArrayAsync(IEnumerable<TargetMessageField> messageFields)
     {
-        var fields = messageFields 
+        var fields = messageFields
             ?? Array.Empty<TargetMessageField>();
 
         return await fields

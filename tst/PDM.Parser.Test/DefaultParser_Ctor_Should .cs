@@ -1,8 +1,8 @@
-using PDM.Parser.Extensions;
 using Microsoft.Extensions.DependencyInjection;
-using Xunit.Abstractions;
+using PDM.Parser.Extensions;
 using Serilog;
 using System.Diagnostics;
+using Xunit.Abstractions;
 
 namespace PDM.Parser.Test;
 

@@ -1,7 +1,4 @@
-﻿using Google.Protobuf.WellKnownTypes;
-using PDM.TestUtils.Extensions;
-
-namespace PDM.TestUtils.Builders;
+﻿namespace PDM.TestUtils.Builders;
 
 [ExcludeFromCodeCoverage]
 public class ProtobufAllTypesBuilder

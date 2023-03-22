@@ -1,4 +1,5 @@
 ﻿using PDM.Enums;
+using PDM.WireTypes;
 using System.Text.Json.Serialization;
 
 namespace PDM.Entities;

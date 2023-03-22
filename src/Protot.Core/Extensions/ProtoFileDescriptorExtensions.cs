@@ -10,7 +10,7 @@ internal static class ProtoFileDescriptorExtensions
         ProtoFileDescriptor fileDescriptor)
     {
 
-       List<int> fieldNumbers = new List<int>();
+        List<int> fieldNumbers = new List<int>();
         var embeddedFieldNames = fieldName.EmbeddedFieldNames();
         foreach (var embeddedField in embeddedFieldNames)
         {

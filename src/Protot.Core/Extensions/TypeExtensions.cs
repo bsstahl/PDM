@@ -9,10 +9,10 @@ internal static class TypeExtensions
     {
         if (fieldDescriptor.HasTypeName)
         {
-            return  WireType.Len;
+            return WireType.Len;
         }
 
-        if (fieldDescriptor is {HasLabel: true, Label: FieldDescriptorProto.Types.Label.Repeated})
+        if (fieldDescriptor is { HasLabel: true, Label: FieldDescriptorProto.Types.Label.Repeated })
         {
             return WireType.Len;
         }

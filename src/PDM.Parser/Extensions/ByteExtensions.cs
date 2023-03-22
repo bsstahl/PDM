@@ -1,4 +1,5 @@
 ﻿using PDM.Entities;
+using PDM.WireTypes;
 using System.Globalization;
 
 namespace PDM.Parser.Extensions;

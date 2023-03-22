@@ -38,25 +38,25 @@ static void ReadArgument(string[] strings, PrototOptions options)
 {
     foreach (var arg in strings)
     {
-        if(arg.StartArgsWith("--source_path"))
+        if (arg.StartArgsWith("--source_path"))
         {
             options.SourcePath = arg.GetArgumentValue();
         }
-        if(arg.StartArgsWith("--target_path"))
+        if (arg.StartArgsWith("--target_path"))
         {
             options.TargetPath = arg.GetArgumentValue();
         }
-        if(arg.StartArgsWith("--transformation_config_path"))
+        if (arg.StartArgsWith("--transformation_config_path"))
         {
             options.TransformationConfigPath = arg.GetArgumentValue();
         }
-        
-        if(arg.StartArgsWith("--transformation_out_path"))
+
+        if (arg.StartArgsWith("--transformation_out_path"))
         {
             options.TransformationConfigOutPath = arg.GetArgumentValue();
         }
-        
-        if(arg.StartArgsWith("--help") || arg.StartArgsWith("--h"))
+
+        if (arg.StartArgsWith("--help") || arg.StartArgsWith("--h"))
         {
             options.PrintHelp = true;
         }

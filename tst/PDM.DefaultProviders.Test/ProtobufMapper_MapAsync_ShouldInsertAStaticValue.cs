@@ -1,9 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using PDM.Builders;
-using PDM.TestUtils.ProtoBuf;
-using PDM.TestUtils.Extensions;
 using PDM.Parser.Extensions;
 using PDM.Serializer.Extensions;
+using PDM.TestUtils.Extensions;
+using PDM.TestUtils.ProtoBuf;
 using Serilog;
 using Xunit.Abstractions;
 
@@ -389,7 +389,7 @@ public class ProtobufMapper_MapAsync_ShouldInsertAStaticValue
             EmbeddedStringValue = expectedStringValue
         };
 
-        var embeddedBytes = embeddedMessageValue.ToByteArray(); 
+        var embeddedBytes = embeddedMessageValue.ToByteArray();
         var targetMapping = new TransformationBuilder()
             .InsertStaticField(3200, Enums.WireType.Len, embeddedBytes)
             .Build();

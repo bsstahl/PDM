@@ -8,14 +8,14 @@ internal static class RuntimeExtensions
     {
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            return  "windows";
+            return "windows";
         }
-        
+
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
         {
             return "linux";
         }
-        
+
         if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
         {
             return "macosx";

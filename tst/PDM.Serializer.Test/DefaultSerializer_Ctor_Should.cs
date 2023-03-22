@@ -1,10 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
+using PDM.Serializer.Extensions;
+using PDM.TestUtils;
 using Serilog;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Xunit.Abstractions;
-using PDM.Serializer.Extensions;
-using PDM.TestUtils;
 
 namespace PDM.Serializer.Test;
 

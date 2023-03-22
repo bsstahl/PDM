@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
-using System.Globalization;
 using PDM.Constants;
 using PDM.Entities;
 using PDM.Enums;
+using System.Globalization;
 
 namespace PDM.Extensions;
 
@@ -145,7 +145,7 @@ internal static class TargetMessageFieldExtensions
     /// Removes the field matching the target key and
     /// everything below it in the hierarchy
     /// </summary>
-    internal static void RemoveField(this IList<TargetMessageField> result, ILogger logger, IEnumerable<int> targetKey, string activityName) 
+    internal static void RemoveField(this IList<TargetMessageField> result, ILogger logger, IEnumerable<int> targetKey, string activityName)
         => result.RemoveField(logger, targetKey.AsSourceKey(), activityName);
 
     internal static void RemoveField(this IList<TargetMessageField> result, ILogger logger, string targetKeyValue, string activityName)

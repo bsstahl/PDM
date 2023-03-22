@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace PDM.Entities;
+namespace PDM.WireTypes;
 
 public sealed record Varint
 {
@@ -12,7 +12,7 @@ public sealed record Varint
     public int WireLength => _rawData.Length;
 
 #pragma warning disable CS3003 // Type is not CLS-compliant
-    public UInt64 Value => CalculateValue(this.DecodedData);
+    public ulong Value => CalculateValue(DecodedData);
 #pragma warning restore CS3003 // Type is not CLS-compliant
 
 
@@ -38,7 +38,7 @@ public sealed record Varint
             while (currentValue > 0)
             {
                 var currentByte = currentValue > 127
-                    ? Convert.ToByte((currentValue & 0x7F) | 0x80)
+                    ? Convert.ToByte(currentValue & 0x7F | 0x80)
                     : Convert.ToByte(currentValue & 0x7F);
                 rawData.Add(currentByte);
                 currentValue >>= 7;
@@ -49,7 +49,7 @@ public sealed record Varint
 
     public static Varint Parse(byte[] message)
     {
-        Varint result = Varint.Empty;
+        var result = Varint.Empty;
 
         if (message is not null && message.Length > 0)
         {
@@ -81,7 +81,7 @@ public sealed record Varint
             long => new Varint((long)value),
             ulong => new Varint((ulong)value),
             double => new Varint((double)value),
-            string => Varint.CreateFromString((string)value ?? string.Empty),
+            string => CreateFromString((string)value ?? string.Empty),
             _ => throw new NotImplementedException($"{value} ({value.GetType().Name}) cannot be parsed as a numeric")
         };
     }
@@ -101,19 +101,19 @@ public sealed record Varint
     }
 
     private byte[] DecodedData
-        => this.GetRawData()
+        => GetRawData()
         .Select(d => Convert.ToByte(d & 127))
         .ToArray();
 
-    private static UInt64 CalculateValue(byte[] decodedBytes)
+    private static ulong CalculateValue(byte[] decodedBytes)
     {
-        UInt64 total = 0;
+        ulong total = 0;
         for (int i = decodedBytes.Length - 1; i >= 0; i--)
-            total = (total << 7) | decodedBytes[i];
+            total = total << 7 | decodedBytes[i];
         return total;
     }
 
-    public static Varint Empty 
+    public static Varint Empty
         => new Varint(Array.Empty<byte>());
 
 }

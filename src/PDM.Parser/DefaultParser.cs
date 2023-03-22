@@ -3,6 +3,7 @@ using PDM.Entities;
 using PDM.Extensions;
 using PDM.Interfaces;
 using PDM.Parser.Extensions;
+using PDM.WireTypes;
 
 namespace PDM.Parser;
 
@@ -17,7 +18,7 @@ public class DefaultParser : IWireFormatParser
             _logger.LogNoLoggerProvided();
     }
 
-    public async Task<IEnumerable<SourceMessageField>> ParseAsync(byte[] message) 
+    public async Task<IEnumerable<SourceMessageField>> ParseAsync(byte[] message)
         => await ParseAsync(message ?? Array.Empty<byte>(), string.Empty).ConfigureAwait(false);
 
     private async Task<IEnumerable<SourceMessageField>> ParseAsync(byte[] message, string fieldPrefix)
@@ -34,8 +35,8 @@ public class DefaultParser : IWireFormatParser
             Tag? tag;
 
             var vint = Varint.Parse(message[i..]);
-            tag = vint.WireLength == 0 
-                ? null 
+            tag = vint.WireLength == 0
+                ? null
                 : Tag.Parse(vint);
 
             if (tag is null)
@@ -71,19 +72,19 @@ public class DefaultParser : IWireFormatParser
                         }
                         break;
                     case Enums.WireType.I64:
-                        if (i + 8 > message.Length)
+                        var i64Value = I64.Parse(message[i..]);
+                        if (i64Value.WireLength == 0)
                             i = message.Length;
                         else
                         {
-                            var i64Payload = message[i..(i + 8)];
-                            i += 8;
-                            fieldsToAdd.Add(new SourceMessageField(tag.FieldNumber.GetFullyQualifiedKey(fieldPrefix), tag.WireType, i64Payload));
+                            i += i64Value.WireLength;
+                            fieldsToAdd.Add(new SourceMessageField(tag.FieldNumber.GetFullyQualifiedKey(fieldPrefix), tag.WireType, i64Value.GetRawData()));
                         }
                         break;
                     case Enums.WireType.Len:
-                        if (i + 2 <= message.Length)
+                        var lenVarint = Varint.Parse(message[i..]);
+                        if (lenVarint.WireLength > 0)
                         {
-                            var lenVarint = Varint.Parse(message[i..]);
                             if (lenVarint.Value <= int.MaxValue)
                             {
                                 var len = Convert.ToInt32(lenVarint.Value);
@@ -115,13 +116,13 @@ public class DefaultParser : IWireFormatParser
                     case Enums.WireType.EGroup:
                         break;
                     case Enums.WireType.I32:
-                        if (i + 4 > message.Length)
+                        var i32Value = I32.Parse(message[i..]);
+                        if (i32Value.WireLength == 0)
                             i = message.Length;
                         else
                         {
-                            var i32Payload = message[i..(i + 4)];
-                            i += 4;
-                            fieldsToAdd.Add(new SourceMessageField(tag.FieldNumber.GetFullyQualifiedKey(fieldPrefix), tag.WireType, i32Payload));
+                            i += i32Value.WireLength;
+                            fieldsToAdd.Add(new SourceMessageField(tag.FieldNumber.GetFullyQualifiedKey(fieldPrefix), tag.WireType, i32Value.GetRawData()));
                         }
                         break;
                     default: // Invalid field -- end parsing

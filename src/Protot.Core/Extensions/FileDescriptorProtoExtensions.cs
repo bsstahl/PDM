@@ -17,8 +17,8 @@ internal static class FileDescriptorProtoExtensions
         var fileDescriptor = descriptors.FirstOrDefault();
         return fileDescriptor?.ToProto();
     }
-    
-   internal static ProtoFileDescriptor ToProtoFileDescriptor(this FileDescriptorProto fileDescriptorProto)
+
+    internal static ProtoFileDescriptor ToProtoFileDescriptor(this FileDescriptorProto fileDescriptorProto)
     {
         if (fileDescriptorProto == null)
         {
@@ -69,7 +69,7 @@ internal static class FileDescriptorProtoExtensions
 
         return protoEnum;
     }
-    
+
     private static ProtoMessage? ToProtoMessage(this DescriptorProto? descriptorProto)
     {
         if (descriptorProto is null)

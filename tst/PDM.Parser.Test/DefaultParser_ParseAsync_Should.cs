@@ -1,10 +1,9 @@
-using PDM.TestUtils.Builders;
-using PDM.Extensions;
-using PDM.Parser.Extensions;
 using Google.Protobuf;
 using Microsoft.Extensions.DependencyInjection;
-using Xunit.Abstractions;
+using PDM.Parser.Extensions;
+using PDM.TestUtils.Builders;
 using Serilog;
+using Xunit.Abstractions;
 
 namespace PDM.Parser.Test;
 

@@ -6,7 +6,7 @@ internal static class ArgumentExtensions
 {
     internal static string? GetArgumentValue(this string argument)
     {
-        var values =argument.Split("=", StringSplitOptions.RemoveEmptyEntries);
+        var values = argument.Split("=", StringSplitOptions.RemoveEmptyEntries);
         return values.Length == 1 ? null : values[1];
     }
 

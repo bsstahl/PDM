@@ -12,7 +12,7 @@ public class SourceMessageField
 
     public object? Value { get; set; }
 
-    internal bool HasParent 
+    internal bool HasParent
         => this.Key.Contains('.', StringComparison.InvariantCulture);
 
 

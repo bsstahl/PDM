@@ -1,5 +1,4 @@
 using PDM.Enums;
-using Protot.Core;
 using Protot.Core.Builders;
 using Protot.Core.Enums;
 using Protot.Core.Test.Extensions;
@@ -19,7 +18,7 @@ public class Protot_CompileAsync_ShouldInsert
             .MinimumLevel.Verbose()
             .CreateLogger();
     }
-    
+
     [Theory]
     [InlineData("ThreeFields", "MismatchedType")]
     public async Task InsertAStaticValue_VarintAsInt32(string sourceFile, string targetFile)
@@ -27,7 +26,7 @@ public class Protot_CompileAsync_ShouldInsert
         var sourceProto = await sourceFile.GetProtoText();
         var targetProto = await targetFile.GetProtoText();
         var builder = new ProtoTransformationBuilder();
-        var  transformations = builder.AddTransformation(
+        var transformations = builder.AddTransformation(
             TransformationType.InsertField,
             TransformationSubtype.Static,
             "IntegerValue:int32:173559425"
@@ -36,10 +35,10 @@ public class Protot_CompileAsync_ShouldInsert
 
         var prototMapper = new PrototMapper(sourceProto, targetProto, transformations);
         var compliedTransformation = await prototMapper.CompileAsync();
-        
+
         Assert.NotEmpty(compliedTransformation);
         Assert.Contains(compliedTransformation, x => x.TransformationType == TransformationType.InsertField);
         Assert.Contains(compliedTransformation, x => x.Value == "150:VarInt:173559425");
     }
-    
+
 }

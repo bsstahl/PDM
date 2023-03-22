@@ -6,11 +6,11 @@ internal sealed class PrototOptions
 {
     public string? SourcePath { get; set; } = string.Empty;
     public string? TargetPath { get; set; } = string.Empty;
-    
-    public string? TransformationConfigPath{ get; set; } = string.Empty;
-    
-    public string? TransformationConfigOutPath{ get; set; } = string.Empty;
-    
+
+    public string? TransformationConfigPath { get; set; } = string.Empty;
+
+    public string? TransformationConfigOutPath { get; set; } = string.Empty;
+
     public bool PrintHelp { get; set; }
 
     public bool Validate()
@@ -29,7 +29,7 @@ internal sealed class PrototOptions
             Console.WriteLine($"{fieldName} is not valid path");
             return false;
         }
-        
+
         if (!fileName.IsValidProtoFile())
         {
             Console.WriteLine($"{fieldName} is not valid proto file");

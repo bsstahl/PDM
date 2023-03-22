@@ -1,6 +1,4 @@
-using Google.Protobuf.Reflection;
 using Protot.Core.Entities;
-using Protot.Core.Extensions;
 
 namespace Protot.Core.Builders;
 
@@ -15,7 +13,7 @@ internal class ProtoFileDescriptorBuilder
         this._protoFileDescriptor.Syntax = syntax;
         return this._protoFileDescriptor;
     }
-    
+
     internal ProtoFileDescriptor AddNameSpace(string namespaceName)
     {
         this._protoFileDescriptor.Namespace = namespaceName;
@@ -32,7 +30,7 @@ internal class ProtoFileDescriptorBuilder
         this._protoFileDescriptor.Enums.Add(protoEnum);
         return this._protoFileDescriptor;
     }
-    
+
     internal ProtoFileDescriptor AddMessage(ProtoMessage? protoMessage)
     {
         if (protoMessage is null)

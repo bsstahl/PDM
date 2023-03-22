@@ -2,13 +2,13 @@
 
 namespace PDM;
 
-public sealed class DefaultLogger<T> : ILogger<T> 
+public sealed class DefaultLogger<T> : ILogger<T>
     where T : class
 {
-    public DefaultLogger() 
+    public DefaultLogger()
         => System.Diagnostics.Trace.WriteLine("Default logger configured");
 
-    public IDisposable? BeginScope<TState>(TState state) where TState : notnull 
+    public IDisposable? BeginScope<TState>(TState state) where TState : notnull
         => null;
 
     // Since this is the default logger, you get it all

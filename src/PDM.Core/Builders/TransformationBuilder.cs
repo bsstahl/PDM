@@ -2,6 +2,7 @@
 using PDM.Entities;
 using PDM.Enums;
 using PDM.Extensions;
+using PDM.WireTypes;
 using System.Globalization;
 
 namespace PDM.Builders;
@@ -135,7 +136,7 @@ public class TransformationBuilder
     public TransformationBuilder InsertStaticField(int fieldNumber, WireType wireType, double value)
     {
         return this
-            .InsertStaticField(fieldNumber, wireType, value.ToString(CultureInfo.InvariantCulture));
+            .InsertStaticField(fieldNumber, wireType, I64.Create(value).Value);
     }
 
     public TransformationBuilder InsertStaticField(int fieldNumber, WireType wireType, byte[] value)

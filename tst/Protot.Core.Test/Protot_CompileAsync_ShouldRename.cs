@@ -1,5 +1,4 @@
 using PDM.Enums;
-using Protot.Core;
 using Protot.Core.Builders;
 using Protot.Core.Enums;
 using Protot.Core.Test.Extensions;
@@ -19,7 +18,7 @@ public class Protot_CompileAsync_ShouldRename
             .MinimumLevel.Verbose()
             .CreateLogger();
     }
-    
+
     [Theory]
     [InlineData("ThreeFields", "MismatchedType")]
     public async Task SingleFieldRenameTransformation(string sourceFile, string targetFile)
@@ -27,7 +26,7 @@ public class Protot_CompileAsync_ShouldRename
         var sourceProto = await sourceFile.GetProtoText();
         var targetProto = await targetFile.GetProtoText();
         var builder = new ProtoTransformationBuilder();
-        var  transformations = builder.AddTransformation(
+        var transformations = builder.AddTransformation(
             TransformationType.ReplaceField,
             TransformationSubtype.Renames,
             "StringValue:StringValue"
@@ -36,12 +35,12 @@ public class Protot_CompileAsync_ShouldRename
 
         var prototMapper = new PrototMapper(sourceProto, targetProto, transformations);
         var compliedTransformation = await prototMapper.CompileAsync();
-        
+
         Assert.NotEmpty(compliedTransformation);
-        Assert.Contains(compliedTransformation, x => x.TransformationType == TransformationType.ReplaceField );
+        Assert.Contains(compliedTransformation, x => x.TransformationType == TransformationType.ReplaceField);
         Assert.Contains(compliedTransformation, x => x.Value == "5:50");
     }
-    
+
     [Theory]
     [InlineData("AllTypes", "ThreeFields")]
     public async Task EmbeddedFieldRenameTransformation(string sourceFile, string targetFile)
@@ -49,7 +48,7 @@ public class Protot_CompileAsync_ShouldRename
         var sourceProto = await sourceFile.GetProtoText();
         var targetProto = await targetFile.GetProtoText();
         var builder = new ProtoTransformationBuilder();
-        var  transformations = builder.AddTransformation(
+        var transformations = builder.AddTransformation(
             TransformationType.ReplaceField,
             TransformationSubtype.Renames,
             "EmbeddedMessageValue.EmbeddedStringValue:StringValue                                                                                                                                                  "
@@ -58,13 +57,13 @@ public class Protot_CompileAsync_ShouldRename
 
         var prototMapper = new PrototMapper(sourceProto, targetProto, transformations);
         var compliedTransformation = await prototMapper.CompileAsync();
-        
+
         Assert.NotEmpty(compliedTransformation);
         Assert.Contains(compliedTransformation, x => x.TransformationType == TransformationType.ReplaceField);
         Assert.Contains(compliedTransformation, x => x.Value == "3200.10100:5");
     }
-    
-    
+
+
     [Theory]
     [InlineData("AllTypes", "ThreeFields")]
     public async Task MultipleFieldsRenameTransformation(string sourceFile, string targetFile)
@@ -72,7 +71,7 @@ public class Protot_CompileAsync_ShouldRename
         var sourceProto = await sourceFile.GetProtoText();
         var targetProto = await targetFile.GetProtoText();
         var builder = new ProtoTransformationBuilder();
-        var  transformations = builder.AddTransformation(
+        var transformations = builder.AddTransformation(
             TransformationType.ReplaceField,
             TransformationSubtype.Renames,
             "Int32Value:IntegerValue,StringValue:StringValue"
@@ -81,9 +80,9 @@ public class Protot_CompileAsync_ShouldRename
 
         var prototMapper = new PrototMapper(sourceProto, targetProto, transformations);
         var compliedTransformation = await prototMapper.CompileAsync();
-        
+
         Assert.NotEmpty(compliedTransformation);
-        Assert.Contains(compliedTransformation, x => x.TransformationType == TransformationType.ReplaceField );
+        Assert.Contains(compliedTransformation, x => x.TransformationType == TransformationType.ReplaceField);
         Assert.Contains(compliedTransformation, x => x.Value == "1000:15,3000:5");
     }
 }

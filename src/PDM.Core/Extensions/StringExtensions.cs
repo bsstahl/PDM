@@ -43,7 +43,7 @@ public static class StringExtensions
 
         return results;
     }
-    
+
     internal static IEnumerable<(string, IEnumerable<int>)> ParseFieldPairs(this string value, CultureInfo formatProvider)
     {
         var results = new List<(string, IEnumerable<int>)>();

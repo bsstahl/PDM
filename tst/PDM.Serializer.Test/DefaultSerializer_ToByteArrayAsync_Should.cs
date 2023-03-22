@@ -1,11 +1,11 @@
 using Microsoft.Extensions.DependencyInjection;
-using Serilog;
-using System.Diagnostics.CodeAnalysis;
-using Xunit.Abstractions;
+using PDM.Entities;
 using PDM.Serializer.Extensions;
 using PDM.TestUtils.ProtoBuf;
+using Serilog;
+using System.Diagnostics.CodeAnalysis;
 using TestHelperExtensions;
-using PDM.Entities;
+using Xunit.Abstractions;
 
 namespace PDM.Serializer.Test;
 
@@ -95,7 +95,7 @@ public class DefaultSerializer_ToByteArrayAsync_Should
         var key = new[] { 25 };
         var wireType = Enums.WireType.I64;
         var hexStringValue = "1F1AD6BA28915490";
-        
+
         var expectedPrefix = "C901";
         var expectedHexString = expectedPrefix + hexStringValue;
 
@@ -156,7 +156,7 @@ public class DefaultSerializer_ToByteArrayAsync_Should
         var key = new[] { 3100 };
         var wireType = Enums.WireType.Len;
         var expected = Enumerable
-            .Range(1,255)
+            .Range(1, 255)
             .Select(b => Convert.ToByte(b))
             .ToArray();
 

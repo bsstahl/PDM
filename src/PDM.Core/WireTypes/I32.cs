@@ -1,7 +1,7 @@
 ﻿using PDM.Extensions;
 using System.Globalization;
 
-namespace PDM.Entities;
+namespace PDM.WireTypes;
 
 public sealed record I32
 {
@@ -13,7 +13,7 @@ public sealed record I32
     public int WireLength
         => _rawData.Length;
 
-    internal UInt32 Value
+    internal uint Value
         => CalculateValue(_rawData);
 
 
@@ -24,17 +24,17 @@ public sealed record I32
         : this((uint)value)
     { }
 
-    public I32(float value) 
+    public I32(float value)
         => _rawData = value.ToLittleEndianBytes();
 
-    internal I32(UInt32 value)
+    internal I32(uint value)
         => _rawData = value.ToLittleEndianBytes();
 
     public static I32 Parse(byte[] message)
     {
-        return message is null || message.Length != 4
-            ? throw new ArgumentException($"{nameof(message)} for an I32 must have a length of 4")
-            : new I32(message);
+        return message is null || message.Length < 4
+            ? I32.Empty
+            : new I32(message[0..4]);
     }
 
     public static I32 Create(object value)
@@ -44,7 +44,7 @@ public sealed record I32
             int => new I32((int)value),
             uint => new I32((uint)value),
             float => new I32((float)value),
-            string => I32.CreateFromString((string)value ?? string.Empty),
+            string => CreateFromString((string)value ?? string.Empty),
             _ => throw new NotImplementedException($"{value} ({value.GetType().Name}) cannot be parsed as a numeric")
         };
     }
@@ -63,7 +63,7 @@ public sealed record I32
         return result;
     }
 
-    private static UInt32 CalculateValue(byte[] value)
+    private static uint CalculateValue(byte[] value)
         => BitConverter.ToUInt32(value);
 
     public static I32 Empty

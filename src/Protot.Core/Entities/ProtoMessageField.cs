@@ -9,7 +9,7 @@ internal sealed class ProtoMessageField
     internal string Name { get; }
 
     internal int FieldNumber { get; }
-    
+
 
     internal ProtoMessageField(string name, int fieldNumber, WireType wireType)
     {

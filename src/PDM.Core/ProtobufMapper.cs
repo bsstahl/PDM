@@ -19,7 +19,7 @@ public class ProtobufMapper
         if (logger is null)
             _logger.LogNoLoggerProvided();
 
-        _parser = parser 
+        _parser = parser
             ?? throw new ArgumentNullException(nameof(parser));
 
         _serializer = serializer

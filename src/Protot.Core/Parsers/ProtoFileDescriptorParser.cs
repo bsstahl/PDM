@@ -1,14 +1,14 @@
-using System.Diagnostics;
 using Protot.Core.Entities;
 using Protot.Core.Exceptions;
 using Protot.Core.Extensions;
+using System.Diagnostics;
 
 namespace Protot.Core;
 
 internal sealed class ProtoFileDescriptorParser
 {
     private string protoText;
-    static SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1,1);
+    static SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
     internal ProtoFileDescriptorParser(string protoText)
     {
         this.protoText = protoText;

@@ -2,10 +2,10 @@ using Microsoft.Extensions.DependencyInjection;
 using PDM.Builders;
 using PDM.Parser.Extensions;
 using PDM.Serializer.Extensions;
-using Serilog;
-using Xunit.Abstractions;
 using PDM.TestUtils.Extensions;
 using PDM.TestUtils.ProtoBuf;
+using Serilog;
+using Xunit.Abstractions;
 
 namespace PDM.DefaultProviders.Test;
 
@@ -80,7 +80,7 @@ public class ProtobufMapper_MapAsync_HasSomeWeirdness
         {
             SInt32Value = 1066
         };
-        
+
         var targetMapping = new TransformationBuilder()
             .RenameField(1400, 1000) // Go from signed to unsigned
             .Build();
