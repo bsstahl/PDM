@@ -7,35 +7,25 @@ namespace Protot.Core;
 
 public class PrototMapper
 {
-    private string sourceProtoContent;
-    private string targetProtoContent;
+    private ProtoFile source;
+    private ProtoFile target;
     readonly IEnumerable<Entities.ProtoTransformation> _transformations;
 
-    public PrototMapper(string source, string target, IEnumerable<Entities.ProtoTransformation>? transformations)
+    public PrototMapper(ProtoFile source, ProtoFile target, IEnumerable<Entities.ProtoTransformation>? transformations)
     {
-        if (string.IsNullOrWhiteSpace(source))
-        {
-            throw new ArgumentNullException($"{source} is empty");
-        }
-
-        if (string.IsNullOrWhiteSpace(target))
-        {
-            throw new ArgumentNullException($"{target} is empty");
-        }
-
         if (transformations == null || !transformations.Any())
         {
             throw new ArgumentNullException($"{transformations} is null or empty");
         }
-        this.sourceProtoContent = source;
-        this.targetProtoContent = target;
+        this.source = source;
+        this.target = target;
         this._transformations = transformations ?? Enumerable.Empty<ProtoTransformation>();
     }
 
     public async Task<IEnumerable<Transformation>> CompileAsync()
     {
-        var sourceFileDescription = await new ProtoFileDescriptorParser(this.sourceProtoContent).ParseFileAsync();
-        var targetFileDescription = await new ProtoFileDescriptorParser(this.targetProtoContent).ParseFileAsync();
+        var sourceFileDescription = await new ProtoFileDescriptorParser(this.source).ParseFileAsync();
+        var targetFileDescription = await new ProtoFileDescriptorParser(this.target).ParseFileAsync();
 
         if (sourceFileDescription == null || targetFileDescription == null)
         {

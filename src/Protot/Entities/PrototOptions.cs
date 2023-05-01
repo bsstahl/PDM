@@ -4,8 +4,8 @@ namespace Protot.Entities;
 
 internal sealed class PrototOptions
 {
-    public string? SourcePath { get; set; } = string.Empty;
-    public string? TargetPath { get; set; } = string.Empty;
+    public string? SourceFilePath { get; set; } = string.Empty;
+    public string? TargetFilePath { get; set; } = string.Empty;
     
     public string? TransformationConfigPath{ get; set; } = string.Empty;
     
@@ -15,8 +15,8 @@ internal sealed class PrototOptions
 
     public bool Validate()
     {
-        ValidateProtoFile(this.SourcePath, nameof(this.SourcePath));
-        ValidateProtoFile(this.TargetPath, nameof(this.TargetPath));
+        ValidateProtoFile(this.SourceFilePath, nameof(this.SourceFilePath));
+        ValidateProtoFile(this.TargetFilePath, nameof(this.TargetFilePath));
         ValidateJsonFile(this.TransformationConfigPath, nameof(this.TransformationConfigPath));
         ValidateAndCreateJsonFile(this.TransformationConfigOutPath, nameof(this.TransformationConfigOutPath));
         return true;

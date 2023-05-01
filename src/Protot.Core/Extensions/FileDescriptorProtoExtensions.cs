@@ -14,7 +14,7 @@ internal static class FileDescriptorProtoExtensions
         FileDescriptorSet descriptorSet = FileDescriptorSet.Parser.ParseFrom(stream);
         var byteStrings = descriptorSet.File.Select(f => f.ToByteString()).ToList();
         var descriptors = FileDescriptor.BuildFromByteStrings(byteStrings);
-        var fileDescriptor = descriptors.FirstOrDefault();
+        var fileDescriptor = descriptors.FirstOrDefault(x => x.Name.Contains("temp.proto", StringComparison.CurrentCultureIgnoreCase));
         return fileDescriptor?.ToProto();
     }
     
