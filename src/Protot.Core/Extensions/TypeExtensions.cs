@@ -56,6 +56,7 @@ internal static class TypeExtensions
             case "sint32":
             case "sint64":
             case "bool":
+            case "enum":
                 return WireType.VarInt;
             case "fixed64":
             case "sfixed64":
