@@ -5,7 +5,7 @@ namespace PDM.Extensions;
 
 internal static class ByteExtensions
 {
-    internal async static Task<byte[]> MapAsync(this byte[] sourceMessage, ILogger logger, Interfaces.IWireFormatParser parser, Interfaces.IProtobufWireFormatSerializer serializer, IEnumerable<Transformation> transformations)
+    internal static async Task<byte[]> MapAsync(this byte[] sourceMessage, ILogger logger, Interfaces.IWireFormatParser parser, Interfaces.IProtobufWireFormatSerializer serializer, IEnumerable<Transformation> transformations)
     {
         var sourceFields = await parser
             .ParseAsync(sourceMessage)
