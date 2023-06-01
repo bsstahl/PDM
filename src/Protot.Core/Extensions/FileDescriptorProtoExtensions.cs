@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Google.Protobuf;
 using Google.Protobuf.Reflection;
 using Protot.Core.Builders;
@@ -8,44 +9,47 @@ namespace Protot.Core.Extensions;
 
 internal static class FileDescriptorProtoExtensions
 {
-    internal static FileDescriptorProto? ExtractFileInfo(this string fileDescriptorFile)
+    internal static IEnumerable<FileDescriptorProto> ExtractFileInfo(this string fileDescriptorFile)
     {
         using var stream = File.OpenRead(fileDescriptorFile);
         FileDescriptorSet descriptorSet = FileDescriptorSet.Parser.ParseFrom(stream);
         var byteStrings = descriptorSet.File.Select(f => f.ToByteString()).ToList();
         var descriptors = FileDescriptor.BuildFromByteStrings(byteStrings);
-        var fileDescriptor = descriptors.FirstOrDefault();
-        return fileDescriptor?.ToProto();
+        return descriptors.Select(x => x.ToProto());
     }
     
-   internal static ProtoFileDescriptor ToProtoFileDescriptor(this FileDescriptorProto fileDescriptorProto)
+   internal static ProtoFileDescriptor ToProtoFileDescriptor(this IEnumerable<FileDescriptorProto> fileDescriptorProtos, string messageToTransform)
     {
-        if (fileDescriptorProto == null)
+        if (fileDescriptorProtos == null)
         {
-            throw new PrototMapperException($"{nameof(fileDescriptorProto)} is null");
+            throw new PrototMapperException($"{nameof(fileDescriptorProtos)} is null");
         }
-
+       
         var builder = new ProtoFileDescriptorBuilder();
-        builder.AddSyntax(fileDescriptorProto.Syntax);
-        builder.AddNameSpace(fileDescriptorProto.Package);
-
-        if (fileDescriptorProto.EnumType is not null)
+      
+       foreach (var fileDescriptor in fileDescriptorProtos)
         {
-            foreach (var enumType in fileDescriptorProto.EnumType)
+            if (fileDescriptor.EnumType is not null)
             {
-                builder.AddEnum(enumType.ToProtoEnum());
+                foreach (var enumType in fileDescriptor.EnumType)
+                {
+                    builder.AddEnum(enumType.ToProtoEnum());
+                }
+            }
+            
+            foreach (var message in fileDescriptor.MessageType)
+            {
+                if (message.Name == messageToTransform)
+                {
+                    builder.AddMessage(message.ToProtoMessage());
+                }
+                else
+                {
+                    builder.AddReferenceMessage(message.ToProtoMessage());
+                }
             }
         }
-
-        if (fileDescriptorProto.MessageType is null)
-        {
-            return builder.Build();
-        }
-        foreach (var message in fileDescriptorProto.MessageType)
-        {
-            builder.AddMessage(message.ToProtoMessage());
-        }
-
+  
         return builder.Build();
     }
 
@@ -81,6 +85,7 @@ internal static class FileDescriptorProtoExtensions
         {
             Name = descriptorProto.Name,
             Fields = new Dictionary<string, ProtoMessageField>()
+            
         };
 
         foreach (var field in descriptorProto.Field)

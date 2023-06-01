@@ -8,5 +8,7 @@ internal sealed class ProtoFileDescriptor
 
    internal IList<ProtoEnum> Enums { get; set; } = null!;
 
-   internal IDictionary<string, ProtoMessage> Messages { get; set; } = null!;
+   internal ProtoMessage Message { get; set; } = null!;
+   
+   internal IDictionary<string, ProtoMessage> ReferenceMessages { get; set; } = null!;
 }

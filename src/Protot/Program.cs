@@ -16,8 +16,8 @@ else
     {
         try
         {
-            var source = await prototOptions.SourcePath!.ReadFileText();
-            var target = await prototOptions.TargetPath!.ReadFileText();
+            var source = await prototOptions.SourceFilePath!.MapToProtoFile();
+            var target = await prototOptions.TargetFilePath!.MapToProtoFile();
             var transforamtionConfig = await prototOptions.TransformationConfigPath!.ParseProtoTransformation();
             var prototMapper = new PrototMapper(source, target, transforamtionConfig);
             var outTransformations = await prototMapper.CompileAsync();
@@ -40,11 +40,11 @@ static void ReadArgument(string[] strings, PrototOptions options)
     {
         if(arg.StartArgsWith("--source_path"))
         {
-            options.SourcePath = arg.GetArgumentValue();
+            options.SourceFilePath = arg.GetArgumentValue();
         }
         if(arg.StartArgsWith("--target_path"))
         {
-            options.TargetPath = arg.GetArgumentValue();
+            options.TargetFilePath = arg.GetArgumentValue();
         }
         if(arg.StartArgsWith("--transformation_config_path"))
         {

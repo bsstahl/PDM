@@ -4,10 +4,10 @@ namespace Protot.Core.Extensions;
 
 internal static class ProtocExtensions
 {
-    private const string TempProtoFileName = "temp.Proto";
+    private const string TempProtoFileName = "temp.proto";
     private const string ProtoDescriptionFile = "fileDesc";
 
-    internal static string GetProtocPath()
+    internal static (string protocPath, string googleProtoFolder) GetProtocPath()
     {
         var settings = Settings.LoadDefaultSettings(root: null);
         var globalPackagesFolder = SettingsUtility.GetGlobalPackagesFolder(settings);
@@ -15,11 +15,16 @@ internal static class ProtocExtensions
         var latestVersion = grpcToolFolder.MaxBy(x=> x);
         string platformName = RuntimeExtensions.GetOsPlatformName();
         string processorArchitecture = RuntimeExtensions.GetProcessArchitecture();
-        return RuntimeExtensions.IsWindows()
+        var protocPath = RuntimeExtensions.IsWindows()
             ? $"{latestVersion}/tools/{platformName}_{processorArchitecture}/protoc.exe"
             : $"{latestVersion}/tools/{platformName}_{processorArchitecture}/protoc";
+
+        var googleProtoFolder = $"{latestVersion}/build/native/include/";
+
+        return (protocPath, googleProtoFolder);
     }
     
+   
     internal static string GetProtoFilePath()
     {
         string tempFolderPath = GetTempFolder();
@@ -38,5 +43,20 @@ internal static class ProtocExtensions
     internal static string GetTempFolder()
     {
         return $"{Directory.GetCurrentDirectory()}/Temp";
+    }
+
+    internal static void ClearProtoTempDirectory()
+    {
+        var tempFolder = GetTempFolder();
+        if (!Directory.Exists(tempFolder)) return;
+        var tempFolderDirectory = new DirectoryInfo(tempFolder);
+        foreach (var directory in tempFolderDirectory.EnumerateDirectories())
+        {
+            if (directory.Name != "google")
+            {
+                directory.Delete(true);
+            }
+        }
+        //tempFolderDirectory.Delete(true);
     }
 }

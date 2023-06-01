@@ -7,7 +7,7 @@ internal static class TypeExtensions
 {
     internal static WireType ToWireType(this FieldDescriptorProto fieldDescriptor)
     {
-        if (fieldDescriptor.HasTypeName)
+        if (fieldDescriptor.HasTypeName && fieldDescriptor.Type != FieldDescriptorProto.Types.Type.Enum)
         {
             return  WireType.Len;
         }
@@ -56,6 +56,7 @@ internal static class TypeExtensions
             case "sint32":
             case "sint64":
             case "bool":
+            case "enum":
                 return WireType.VarInt;
             case "fixed64":
             case "sfixed64":
