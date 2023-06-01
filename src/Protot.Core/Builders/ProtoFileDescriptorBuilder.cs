@@ -10,18 +10,6 @@ internal class ProtoFileDescriptorBuilder
 
     internal ProtoFileDescriptor Build() => _protoFileDescriptor;
 
-    internal ProtoFileDescriptor AddSyntax(string syntax)
-    {
-        this._protoFileDescriptor.Syntax = syntax;
-        return this._protoFileDescriptor;
-    }
-    
-    internal ProtoFileDescriptor AddNameSpace(string namespaceName)
-    {
-        this._protoFileDescriptor.Namespace = namespaceName;
-        return this._protoFileDescriptor;
-    }
-
     internal ProtoFileDescriptor AddEnum(ProtoEnum? protoEnum)
     {
         if (protoEnum is null)
@@ -39,8 +27,18 @@ internal class ProtoFileDescriptorBuilder
         {
             return this._protoFileDescriptor;
         }
-        this._protoFileDescriptor.Messages ??= new Dictionary<string, ProtoMessage>();
-        this._protoFileDescriptor.Messages.Add(protoMessage.Name, protoMessage);
+
+        this._protoFileDescriptor.Message = protoMessage;
+        return this._protoFileDescriptor;
+    }
+    internal ProtoFileDescriptor AddReferenceMessage(ProtoMessage? protoMessage)
+    {
+        if (protoMessage is null)
+        {
+            return this._protoFileDescriptor;
+        }
+        this._protoFileDescriptor.ReferenceMessages ??= new Dictionary<string, ProtoMessage>();
+        this._protoFileDescriptor.ReferenceMessages.Add(protoMessage.Name, protoMessage);
         return this._protoFileDescriptor;
     }
 }

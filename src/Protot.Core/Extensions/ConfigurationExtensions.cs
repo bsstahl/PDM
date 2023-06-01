@@ -5,7 +5,7 @@ namespace Protot.Core.Extensions;
 
 public static class ConfigurationExtensions
 {
-    public static IEnumerable<ProtoTransformation> BuildTransformations(
+    public static ProtoTransformationConfig BuildTransformations(
         this IConfiguration configuration,
         string configKey)
     {
@@ -17,7 +17,7 @@ public static class ConfigurationExtensions
         }
 
         var configSection = configuration.GetRequiredSection(configKey);
-        var transformationConfigurations = new ProtoTransformations();
+        var transformationConfigurations = new ProtoTransformationConfig();
 
         configSection.Bind(transformationConfigurations);
 

@@ -41,10 +41,10 @@ internal static class FileExtensions
         return await File.ReadAllTextAsync(filePath);
     }
     
-    internal static async Task<IEnumerable<ProtoTransformation>?> ParseProtoTransformation(this string filePath)
+    internal static async Task<ProtoTransformationConfig?> ParseProtoTransformation(this string filePath)
     {
         var fileContent = await ReadFileText(filePath);
-        return JsonSerializer.Deserialize<IEnumerable<ProtoTransformation>>(fileContent);
+        return JsonSerializer.Deserialize<ProtoTransformationConfig>(fileContent);
     }
     
     internal static async Task<bool> WriteTransformation(this IEnumerable<Transformation>? transformations, string filePath)

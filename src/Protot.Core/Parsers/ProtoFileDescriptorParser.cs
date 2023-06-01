@@ -7,10 +7,12 @@ namespace Protot.Core;
 internal sealed class ProtoFileDescriptorParser
 {
     private ProtoFile protoFile;
+    private string messageToTransform;
     static SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1,1);
-    internal ProtoFileDescriptorParser(ProtoFile protoFile)
+    internal ProtoFileDescriptorParser(ProtoFile protoFile, string messageToTransform)
     {
         this.protoFile = protoFile;
+        this.messageToTransform = messageToTransform;
     }
 
     internal async Task<ProtoFileDescriptor?> ParseFileAsync()
@@ -25,7 +27,7 @@ internal sealed class ProtoFileDescriptorParser
             }
 
             var fileDescriptor = ProtocExtensions.GetFileDescriptorPath().ExtractFileInfo();
-            return fileDescriptor?.ToProtoFileDescriptor();
+            return fileDescriptor?.ToProtoFileDescriptor(this.messageToTransform);
         }
         finally
         {

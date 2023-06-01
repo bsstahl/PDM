@@ -7,7 +7,7 @@ internal static class ProtoFileDescriptorExtensions
 {
     internal static string TryGetFieldNumber(
         this string fieldName,
-        ProtoFileDescriptor fileDescriptor)
+       ProtoFileDescriptor fileDescriptor)
     {
 
        List<int> fieldNumbers = new List<int>();
@@ -26,11 +26,18 @@ internal static class ProtoFileDescriptorExtensions
         return string.Join('.', fieldNumbers);
     }
 
-    private static ProtoMessageField? SearchField(this string fieldName, ProtoFileDescriptor fileDescriptor)
+    private static ProtoMessageField? SearchField(this string fieldName,  ProtoFileDescriptor fileDescriptor)
     {
-        foreach (var message in fileDescriptor.Messages)
+        ProtoMessageField? field = null;
+        fileDescriptor.Message.Fields.TryGetValue(fieldName, out  field);
+        if (field != null)
         {
-            message.Value.Fields.TryGetValue(fieldName, out var field);
+            return field;
+        }
+        
+        foreach (var message in fileDescriptor.ReferenceMessages)
+        {
+            message.Value.Fields.TryGetValue(fieldName, out  field);
             if (field != null)
             {
                 return field;

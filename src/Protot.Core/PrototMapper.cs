@@ -9,23 +9,31 @@ public class PrototMapper
 {
     private ProtoFile source;
     private ProtoFile target;
-    readonly IEnumerable<Entities.ProtoTransformation> _transformations;
+    readonly ProtoTransformationConfig transformationConfig;
 
-    public PrototMapper(ProtoFile source, ProtoFile target, IEnumerable<Entities.ProtoTransformation>? transformations)
+    public PrototMapper(ProtoFile source, ProtoFile target,ProtoTransformationConfig? transformationConfig)
     {
-        if (transformations == null || !transformations.Any())
+        if (transformationConfig == null || !transformationConfig.Transformations.Any())
         {
-            throw new ArgumentNullException($"{transformations} is null or empty");
+            throw new ArgumentNullException($"{transformationConfig} is null or empty");
+        }
+        if (string.IsNullOrWhiteSpace(transformationConfig.SourceMessage))
+        {
+            throw new ArgumentNullException($"{transformationConfig.SourceMessage} is null or empty");
+        }
+        if (string.IsNullOrWhiteSpace(transformationConfig.TargetMessage))
+        {
+            throw new ArgumentNullException($"{transformationConfig.TargetMessage} is null or empty");
         }
         this.source = source;
         this.target = target;
-        this._transformations = transformations ?? Enumerable.Empty<ProtoTransformation>();
+        this.transformationConfig = transformationConfig;
     }
 
     public async Task<IEnumerable<Transformation>> CompileAsync()
     {
-        var sourceFileDescription = await new ProtoFileDescriptorParser(this.source).ParseFileAsync();
-        var targetFileDescription = await new ProtoFileDescriptorParser(this.target).ParseFileAsync();
+        var sourceFileDescription = await new ProtoFileDescriptorParser(this.source, this.transformationConfig.SourceMessage).ParseFileAsync();
+        var targetFileDescription = await new ProtoFileDescriptorParser(this.target, this.transformationConfig.TargetMessage).ParseFileAsync();
 
         if (sourceFileDescription == null || targetFileDescription == null)
         {
@@ -33,6 +41,6 @@ public class PrototMapper
                 $"Either {nameof(sourceFileDescription)} or {nameof(targetFileDescription)} is null");
         }
 
-        return this._transformations.ToProtoMappingAsync(sourceFileDescription, targetFileDescription);
+        return this.transformationConfig.ToProtoMappingAsync(sourceFileDescription, targetFileDescription);
     }
 }
