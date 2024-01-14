@@ -22,8 +22,31 @@ public sealed class Len
     public Len(string value)
         => _rawData = Encoding.UTF8.GetBytes(value);
 
-    public static Len Parse(byte[] message) 
-        => throw new NotImplementedException();
+    public static Len Parse(byte[] message)
+    {
+        message = message ?? Array.Empty<byte>();
+
+        Len result = Len.Empty;
+        int i = 0;
+
+        var lenVarint = Varint.Parse(message);
+        if (lenVarint.WireLength > 0)
+        {
+            if (lenVarint.Value <= int.MaxValue)
+            {
+                var len = Convert.ToInt32(lenVarint.Value);
+                if (i + len > message.Length)
+                    i = message.Length;
+                else
+                {
+                    i += lenVarint.WireLength;
+                    result = new Len(message[i..(i + len)]);
+                }
+            }
+        }
+
+        return result;
+    }
 
     public static Len Create(object value)
     {

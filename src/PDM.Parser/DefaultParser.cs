@@ -32,14 +32,12 @@ public class DefaultParser : IWireFormatParser
         var i = 0;
         while (i < message.Length)
         {
-            Tag? tag;
-
             var vint = Varint.Parse(message[i..]);
-            tag = vint.WireLength == 0
-                ? null
+            var tag = vint.WireLength == 0
+                ? Tag.Empty
                 : Tag.Parse(vint);
 
-            if (tag is null)
+            if (tag.FieldNumber == Tag.Empty.FieldNumber)
             {
                 // End processing of this message due to a bad tag
                 // this usually occurs when we are attempting to parse
@@ -82,33 +80,24 @@ public class DefaultParser : IWireFormatParser
                         }
                         break;
                     case Enums.WireType.Len:
-                        var lenVarint = Varint.Parse(message[i..]);
-                        if (lenVarint.WireLength > 0)
+                        var lenValue = Len.Parse(message[i..]);
+                        if (lenValue.WireLength == 0)
+                            i = message.Length;
+                        else
                         {
-                            if (lenVarint.Value <= int.MaxValue)
+                            i += lenValue.WireLength;
+                            var fieldNumber = tag.FieldNumber.GetFullyQualifiedKey(fieldPrefix);
+                            fieldsToAdd.Add(new SourceMessageField(fieldNumber, tag.WireType, lenValue.Value));
+
+                            var childFields = await this
+                                .ParseAsync(lenValue.GetRawData())
+                                .ConfigureAwait(false);
+
+                            foreach (var childField in childFields)
                             {
-                                var len = Convert.ToInt32(lenVarint.Value);
-                                i += lenVarint.WireLength;
-                                if (i + len > message.Length)
-                                    i = message.Length;
-                                else
-                                {
-                                    var lenPayload = message[i..(i + len)];
-                                    i += len;
-                                    var fieldNumber = tag.FieldNumber.GetFullyQualifiedKey(fieldPrefix);
-                                    fieldsToAdd.Add(new SourceMessageField(fieldNumber, tag.WireType, lenPayload));
-
-                                    var childFields = await this
-                                        .ParseAsync(lenPayload)
-                                        .ConfigureAwait(false);
-
-                                    foreach (var childField in childFields)
-                                    {
-                                        var fullKey = childField.Key.GetFullyQualifiedKey(fieldNumber);
-                                        var fullyQualifiedChildField = new SourceMessageField(fullKey, childField.WireType, childField.Value);
-                                        fieldsToAdd.Add(fullyQualifiedChildField);
-                                    }
-                                }
+                                var fullKey = childField.Key.GetFullyQualifiedKey(fieldNumber);
+                                var fullyQualifiedChildField = new SourceMessageField(fullKey, childField.WireType, childField.Value);
+                                fieldsToAdd.Add(fullyQualifiedChildField);
                             }
                         }
                         break;

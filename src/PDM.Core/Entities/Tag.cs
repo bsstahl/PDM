@@ -23,13 +23,11 @@ public sealed record Tag
         return new Varint(value);
     }
 
-    public static Tag? Parse(Varint vint)
+    public static Tag Parse(Varint vint)
     {
-        Tag? result = null;
+        Tag result = Tag.Empty;
 
-        if (vint is null)
-            throw new ArgumentNullException(nameof(vint));
-        else if (vint.Value < int.MaxValue)
+        if (vint is not null && vint.Value < int.MaxValue)
         {
             var vintValue = vint.Value;
             var wireType = (WireType)Convert.ToByte(vintValue & 7);
@@ -39,5 +37,8 @@ public sealed record Tag
 
         return result;
     }
+
+    public static Tag Empty
+        => new Tag(0, WireType.VarInt);
 
 }
